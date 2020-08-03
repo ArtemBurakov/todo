@@ -18,8 +18,22 @@
         tools:layout="@layout/fragment_dashboard" />
 
     <fragment
+        android:id="@+id/navigation_task"
+        android:name="com.example.todo.ui.task.TaskFragment"
+        android:label="Task"
+        tools:layout="@layout/fragment_task" >
+    </fragment>
+
+    <fragment
         android:id="@+id/navigation_notifications"
         android:name="com.example.todo.ui.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
+
+    <fragment
+        android:id="@+id/navigation_account"
+        android:name="com.example.todo.ui.account.AccountFragment"
+        android:label="Account"
+        tools:layout="@layout/fragment_account" />
+
 </navigation>

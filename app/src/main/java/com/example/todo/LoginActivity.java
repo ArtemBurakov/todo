@@ -86,11 +86,10 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-
     private void signUp() {
-//        Intent intent_name = new Intent();
-//        intent_name.setClass(this, SignUpActivity.class);
-//        startActivity(intent_name);
+        Intent intent_name = new Intent();
+        intent_name.setClass(this, MainActivity.class);
+        startActivity(intent_name);
     }
 
     /**
@@ -251,7 +250,6 @@ public class LoginActivity extends AppCompatActivity {
             showProgress(false);
 
             if (success) {
-
                 //start Main activity
                 Intent intent_name = new Intent();
                 intent_name.setClass(getApplicationContext(), MainActivity.class);

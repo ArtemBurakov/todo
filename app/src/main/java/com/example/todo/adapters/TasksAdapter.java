@@ -29,17 +29,19 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
 
     private ArrayList<Task> tasksArrayList;
     private Context mContext;
+    private OnTaskListener mOnTaskListener;
 
-    public TasksAdapter(ArrayList<Task> tasksArrayList, Context context) {
+    public TasksAdapter(ArrayList<Task> tasksArrayList, Context context, OnTaskListener onTaskListener) {
         this.tasksArrayList = tasksArrayList;
         this.mContext = context;
+        this.mOnTaskListener = onTaskListener;
     }
 
     @NonNull
     @Override
     public TaskViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_task, parent, false);
-        return new TaskViewHolder(view);
+        return new TaskViewHolder(view, mOnTaskListener);
     }
 
     public void onBindViewHolder(@NonNull TaskViewHolder holder, final int position) {
@@ -56,11 +58,9 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
                     Log.e(TAG, "Checked");
 
                     task.setStatus(20);
-                    HomeFragment.updateTask(task, position);
-
+                    HomeFragment.updateTask(task);
+                    removeItemAtPosition(position);
                     ((CompoundButton) view).setChecked(false);
-                } else {
-                    Log.e(TAG, "Unchecked");
                 }
             }
         });
@@ -77,16 +77,29 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
         notifyItemRangeChanged(position, tasksArrayList.size());
     }
 
-    public static class TaskViewHolder extends RecyclerView.ViewHolder {
+    public static class TaskViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         CheckBox checkBox;
         TextView taskName, taskText;
+        OnTaskListener onTaskListener;
 
-        public TaskViewHolder(@NonNull View itemView) {
+        public TaskViewHolder(@NonNull View itemView, OnTaskListener onTaskListener) {
             super(itemView);
             checkBox = itemView.findViewById(R.id.checkBox);
             taskName = itemView.findViewById(R.id.taskName);
             taskText = itemView.findViewById(R.id.taskText);
+            this.onTaskListener = onTaskListener;
+
+            itemView.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View v) {
+            onTaskListener.onTaskClick(getAdapterPosition());
+        }
+    }
+
+    public interface OnTaskListener{
+        void onTaskClick(int position);
     }
 }

@@ -75,7 +75,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
     }
 
     // Add task
-    public Task addTask(String name, String text, int status, int created_at, int updated_at) {
+    public Task addTask(String name, String text, int status, long created_at, long updated_at) {
         Task task = null;
 
         Log.e(TAG, "Adding task " + name + ", status which = " + status + ", to table " + TABLE_TASKS);

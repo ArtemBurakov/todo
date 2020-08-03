@@ -7,4 +7,6 @@
     <string name="error_invalid_password">Invalid password</string>
     <string name="error_invalid_username">Invalid username</string>
     <string name="error_incorrect_password">Incorrect password</string>
+    <string name="error_invalid_taskName">Invalid name</string>
+    <string name="error_invalid_taskText">Incorrect text</string>
 </resources>

@@ -1,8 +1,8 @@
 package com.example.todo.models;
 
 public class Task {
-    private long id;
-    private int status, created_at, updated_at;
+    private long id, updated_at, created_at;
+    private int status;
     private String name, text;
 
     // Getters
@@ -14,11 +14,11 @@ public class Task {
         return status;
     }
 
-    public int getCreated_at() {
+    public long getCreated_at() {
         return created_at;
     }
 
-    public int getUpdated_at() {
+    public long getUpdated_at() {
         return updated_at;
     }
 
@@ -39,11 +39,11 @@ public class Task {
         this.status = status;
     }
 
-    public void setCreated_at(int created_at) {
+    public void setCreated_at(long created_at) {
         this.created_at = created_at;
     }
 
-    public void setUpdated_at(int updated_at) {
+    public void setUpdated_at(long updated_at) {
         this.updated_at = updated_at;
     }
 
