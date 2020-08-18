@@ -1,6 +1,8 @@
 package com.example.todo;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.example.todo.models.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -13,11 +15,21 @@ import androidx.navigation.ui.NavigationUI;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = "MainActivity";
+
     public static Task selectedTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.e(TAG, "AuthToken = " + LoginActivity.getAuthToken(this));
+
+        if (LoginActivity.getAuthToken(this) == null){
+            Intent intent = new Intent(this, LoginActivity.class);
+            this.startActivity(intent);
+            finish();
+        }
+
         setContentView(R.layout.activity_main);
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each

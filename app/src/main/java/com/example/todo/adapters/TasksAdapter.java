@@ -11,30 +11,28 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.todo.MainActivity;
 import com.example.todo.R;
+import com.example.todo.TaskDiffUtilCallback;
+import com.example.todo.database.TasksDatabaseHelper;
 import com.example.todo.models.Task;
-import com.example.todo.ui.home.HomeFragment;
 
 import java.util.ArrayList;
-import java.util.Objects;
-
-import static com.google.android.material.internal.ContextUtils.getActivity;
 
 public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHolder> {
 
     private static final String TAG = "TasksAdapter";
 
     private ArrayList<Task> tasksArrayList;
-    private Context mContext;
     private OnTaskListener mOnTaskListener;
+    private TasksDatabaseHelper tasksDatabaseHelper;
 
     public TasksAdapter(ArrayList<Task> tasksArrayList, Context context, OnTaskListener onTaskListener) {
         this.tasksArrayList = tasksArrayList;
-        this.mContext = context;
         this.mOnTaskListener = onTaskListener;
+        this.tasksDatabaseHelper = TasksDatabaseHelper.getInstance(context);
     }
 
     @NonNull
@@ -44,37 +42,33 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
         return new TaskViewHolder(view, mOnTaskListener);
     }
 
+    @Override
     public void onBindViewHolder(@NonNull TaskViewHolder holder, final int position) {
+        Log.e(TAG, "OnBindViewHolder=== " + position);
+
         final Task task = tasksArrayList.get(position);
 
         holder.taskName.setText(task.getName());
         holder.taskText.setText(task.getText());
-
         holder.checkBox.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("RestrictedApi")
             @Override
             public void onClick(View view) {
-                if (((CompoundButton) view).isChecked()) {
-                    Log.e(TAG, "Checked");
+            if (((CompoundButton) view).isChecked()) {
+                ((CompoundButton) view).setChecked(false);
 
-                    task.setStatus(20);
-                    HomeFragment.updateTask(task);
-                    removeItemAtPosition(position);
-                    ((CompoundButton) view).setChecked(false);
-                }
+                // Remove item from list
+                tasksArrayList.remove(position);
+                notifyItemRemoved(position);
+                notifyItemRangeChanged(position, tasksArrayList.size());
+
+                // Update task
+                task.setStatus(TasksDatabaseHelper.statusDone);
+                task.setSync_status(1);
+                tasksDatabaseHelper.updateTask(task);
+            }
             }
         });
-    }
-
-    @Override
-    public int getItemCount() {
-        return tasksArrayList.size();
-    }
-
-    public void removeItemAtPosition(int position) {
-        tasksArrayList.remove(position);
-        notifyItemRemoved(position);
-        notifyItemRangeChanged(position, tasksArrayList.size());
     }
 
     public static class TaskViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -101,5 +95,18 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
 
     public interface OnTaskListener{
         void onTaskClick(int position);
+    }
+
+    @Override
+    public int getItemCount() {
+        return tasksArrayList.size();
+    }
+
+    public void updateTasksArrayList(final ArrayList<Task> newTasksArrayList) {
+        // Attach differences to adapter
+        final DiffUtil.DiffResult result = DiffUtil.calculateDiff(
+                new TaskDiffUtilCallback(newTasksArrayList, tasksArrayList));
+        tasksArrayList = newTasksArrayList;
+        result.dispatchUpdatesTo(TasksAdapter.this);
     }
 }

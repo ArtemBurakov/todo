@@ -1,16 +1,24 @@
 package com.example.todo.models;
 
 public class Task {
-    private long id, updated_at, created_at;
-    private int status;
+    private long updated_at, created_at;
+    private Integer id, status, server_id, sync_status;
     private String name, text;
 
     // Getters
-    public long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public int getStatus() {
+    public Integer getServer_id() {
+        return server_id;
+    }
+
+    public Integer getSync_status() {
+        return sync_status;
+    }
+
+    public Integer getStatus() {
         return status;
     }
 
@@ -31,11 +39,19 @@ public class Task {
     }
 
     // Setters
-    public void setId(long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public void setStatus(int status) {
+    public void setServer_id(Integer server_id) {
+        this.server_id = server_id;
+    }
+
+    public void setSync_status(Integer sync_status) {
+        this.sync_status = sync_status;
+    }
+
+    public void setStatus(Integer status) {
         this.status = status;
     }
 

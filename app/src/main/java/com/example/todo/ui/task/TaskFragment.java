@@ -3,6 +3,7 @@ package com.example.todo.ui.task;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,25 +18,31 @@ import androidx.navigation.Navigation;
 
 import com.example.todo.MainActivity;
 import com.example.todo.R;
+import com.example.todo.database.TasksDatabaseHelper;
 import com.example.todo.models.Task;
-import com.example.todo.ui.home.HomeFragment;
-
-import java.time.Instant;
 
 public class TaskFragment extends Fragment {
 
+    private static final String TAG = "TaskFragment";
+
     private EditText taskNameView, taskTextView;
     private View focusView;
-    private long time;
-    private String name, text;
+
+    private String name;
+    private String text;
+
+    private Context context;
+    private TasksDatabaseHelper tasksDatabaseHelper;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        context = container.getContext();
         return inflater.inflate(R.layout.fragment_task, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        tasksDatabaseHelper = TasksDatabaseHelper.getInstance(context);
 
         taskNameView = requireView().findViewById(R.id.taskNameEditText);
         taskTextView = requireView().findViewById(R.id.taskTextEditText);
@@ -60,8 +67,12 @@ public class TaskFragment extends Fragment {
         deleteTaskButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                HomeFragment.deleteTask(MainActivity.selectedTask);
-                navigateHome();
+            Task task = MainActivity.selectedTask;
+            task.setStatus(TasksDatabaseHelper.statusDeleted);
+            task.setSync_status(1);
+            tasksDatabaseHelper.updateTask(task);
+
+            navigateHome();
             }
         });
 
@@ -82,25 +93,38 @@ public class TaskFragment extends Fragment {
     }
 
     private void attemptCreateTask() {
+        Task newTask = new Task();
+
         if (validateInput()) {
-            HomeFragment.addTask(name, text, time);
+            // Create new task
+            newTask.setName(name);
+            newTask.setText(text);
+            newTask.setStatus(TasksDatabaseHelper.statusActive);
+            newTask.setSync_status(1);
+            newTask.setCreated_at(0);
+            newTask.setUpdated_at(0);
+            tasksDatabaseHelper.addTask(newTask);
+
             navigateHome();
         } else {
-            // There was an error; don't attempt to create task
+            // Error; don't attempt to create task
             focusView.requestFocus();
         }
     }
 
     private void attemptUpdateTask() {
-        final Task task = MainActivity.selectedTask;
+        Task task = MainActivity.selectedTask;
 
         if (validateInput()) {
+            // Update task
             task.setName(name);
             task.setText(text);
-            HomeFragment.updateTask(task);
+            task.setSync_status(1);
+            tasksDatabaseHelper.updateTask(task);
+
             navigateHome();
         } else {
-            // There was an error; don't attempt to create task
+            // Error; don't attempt to update task
             focusView.requestFocus();
         }
     }
@@ -111,7 +135,6 @@ public class TaskFragment extends Fragment {
         taskTextView.setError(null);
 
         // Store values at the time of the create attempt
-        time = Instant.now().getEpochSecond();
         name = taskNameView.getText().toString();
         text = taskTextView.getText().toString();
 
@@ -145,6 +168,6 @@ public class TaskFragment extends Fragment {
 
     private void navigateHome() {
         // Navigate to home fragment
-        Navigation.findNavController(getView()).navigate(R.id.navigation_home);
+        Navigation.findNavController(requireView()).navigate(R.id.navigation_home);
     }
 }

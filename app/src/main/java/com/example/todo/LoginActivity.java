@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -87,9 +88,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void signUp() {
-        Intent intent_name = new Intent();
-        intent_name.setClass(this, MainActivity.class);
-        startActivity(intent_name);
+//        Intent intent_name = new Intent();
+//        intent_name.setClass(this, MainActivity.class);
+//        startActivity(intent_name);
     }
 
     /**
@@ -205,9 +206,9 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected Boolean doInBackground(Void... params) {
 
-            //attempt authentication against a network service.
+            // Attempt authentication against a network service.
             ApiUser response;
-            String apiUrl = "http://10.0.2.2/todo/backend/web/v1/"; //192.168.88.151
+            String apiUrl = "http://10.0.2.2/todo/backend/web/v1/"; //192.168.88.151 // 10.0.2.2
             apiService = ApiUtils.getAPIService(apiUrl);
             try {
                 Call<ApiUser> call = apiService.authUser(mUsername, mPassword);
@@ -215,13 +216,13 @@ public class LoginActivity extends AppCompatActivity {
 
                 if (response != null){
 
-                    Log.d("responce_success=====", response.toString());
+                    Log.d("responce_success===== ", response.toString());
                     String access_token = response.getAccessToken();
                     Integer userId = response.getUserId();
 
                     if (access_token != null){
 
-                        setAuthToken(access_token);
+                        setAuthToken(access_token, getApplicationContext());
                         if (userId != null){
                             setUserId(userId);
                             setUsername(mUsername);
@@ -250,7 +251,7 @@ public class LoginActivity extends AppCompatActivity {
             showProgress(false);
 
             if (success) {
-                //start Main activity
+                // Start Main activity
                 Intent intent_name = new Intent();
                 intent_name.setClass(getApplicationContext(), MainActivity.class);
                 startActivity(intent_name);
@@ -268,12 +269,20 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    public static String getAuthToken(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("SETTINGS", Context.MODE_PRIVATE);
+        return sharedPreferences.getString("access_token", null);
+    }
 
-    public void setAuthToken(String access_token) {
-        SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("SETTINGS", MODE_PRIVATE).edit();
-
+    public static void setAuthToken(String access_token, Context context) {
+        SharedPreferences.Editor editor = context.getSharedPreferences("SETTINGS", MODE_PRIVATE).edit();
         editor.putString("access_token", "Bearer " + access_token);
         editor.apply();
+    }
+
+    public static void deleteAuthToken(Context context) {
+        SharedPreferences.Editor editor = context.getSharedPreferences("SETTINGS", MODE_PRIVATE).edit();
+        editor.remove("access_token").apply();
     }
 
 
