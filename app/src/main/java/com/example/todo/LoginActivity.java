@@ -299,4 +299,15 @@ public class LoginActivity extends AppCompatActivity {
         editor.putString("username", username);
         editor.apply();
     }
+
+    public static void setFcmToken(String fcm_token, String token, Context context) {
+        SharedPreferences.Editor editor = context.getSharedPreferences("SETTINGS", MODE_PRIVATE).edit();
+        editor.putString(fcm_token, token);
+        editor.apply();
+    }
+
+    public static String getFcmToken(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("SETTINGS", Context.MODE_PRIVATE);
+        return sharedPreferences.getString("fcm_token", null);
+    }
 }

@@ -1,8 +1,10 @@
 package com.example.todo.ui.home;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +15,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -46,10 +49,36 @@ public class HomeFragment extends Fragment implements TasksAdapter.OnTaskListene
     private TasksAdapter tasksAdapter;
     private TasksDatabaseHelper tasksDatabaseHelper;
 
+    @Override
+    public void onAttach(@NonNull Context context)
+    {
+        super.onAttach(context);
+        this.context = context;
+    }
+
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        context = container.getContext();
+        LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(context);
+        lbm.registerReceiver(receiver, new IntentFilter("fcmNotification"));
+
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
+
+    @Override
+    public void onDestroyView()
+    {
+        super.onDestroyView();
+        context.unregisterReceiver(receiver);
+    }
+
+    public BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent != null) {
+                Log.e(TAG, "==="+intent.getAction());
+                startSync();
+            }
+        }
+    };
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {

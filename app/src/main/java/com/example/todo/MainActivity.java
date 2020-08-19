@@ -1,12 +1,25 @@
 package com.example.todo;
 
+import android.annotation.SuppressLint;
+import android.app.FragmentManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.app.Fragment;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.example.todo.models.Task;
+import com.example.todo.remote.ApiFcmToken;
+import com.example.todo.ui.home.HomeFragment;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -17,17 +30,37 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
+    public static Context context;
+
     public static Task selectedTask;
+    public ApiFcmTokenSendTask syncFcmToken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.e(TAG, "AuthToken = " + LoginActivity.getAuthToken(this));
+        context = getApplicationContext();
 
         if (LoginActivity.getAuthToken(this) == null){
             Intent intent = new Intent(this, LoginActivity.class);
             this.startActivity(intent);
             finish();
+        } else {
+            FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull com.google.android.gms.tasks.Task<InstanceIdResult> task) {
+                        if (!task.isSuccessful()) {
+                            Log.e(TAG, "getInstanceId failed", task.getException());
+                            return;
+                        }
+
+                        // Get new Instance ID token
+                        String fcmToken = task.getResult().getToken();
+                        if (!fcmToken.equals(LoginActivity.getFcmToken(getApplicationContext()))) {
+                            startApiFcmTokenSendTask(fcmToken);
+                        }
+                    }
+                });
         }
 
         setContentView(R.layout.activity_main);
@@ -40,5 +73,47 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
+    }
+
+    public static Context getContextOfApplication() {
+        return context;
+    }
+
+    public void startApiFcmTokenSendTask(String token){
+        if (syncFcmToken == null) {
+            syncFcmToken = new ApiFcmTokenSendTask(token);
+            syncFcmToken.execute();
+        }
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    public class ApiFcmTokenSendTask extends AsyncTask<Void, Void, Boolean> {
+
+        private final String token;
+
+        public ApiFcmTokenSendTask(String token) {
+            this.token = token;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            ApiFcmToken.createToken(token);
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            syncFcmToken = null;
+
+            if (success) {
+                Log.e(TAG, "Success");
+                LoginActivity.setFcmToken("fcm_token", this.token, getApplicationContext());
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            syncFcmToken = null;
+        }
     }
 }

@@ -20,6 +20,10 @@ public interface ApiService {
     @POST("users/authorize")
     Call<ApiUser> authUser(@Field("username") String username, @Field("password") String password);
 
+    @FormUrlEncoded
+    @POST("user-fcm-tokens")
+    Call<ApiFcmToken> addToken(@Header("Authorization") String authorization, @Field("registration_token") String fcmToken);
+
     @GET("todos")
     Call<List<ApiTask>> getTodos(@Header("Authorization") String authorization, @Query("updated_after") String updated_after);
 
