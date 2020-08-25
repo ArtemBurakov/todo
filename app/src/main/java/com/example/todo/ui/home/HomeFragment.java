@@ -67,7 +67,7 @@ public class HomeFragment extends Fragment implements TasksAdapter.OnTaskListene
     public void onDestroyView()
     {
         super.onDestroyView();
-        context.unregisterReceiver(receiver);
+        LocalBroadcastManager.getInstance(context).unregisterReceiver(receiver);
     }
 
     public BroadcastReceiver receiver = new BroadcastReceiver() {
