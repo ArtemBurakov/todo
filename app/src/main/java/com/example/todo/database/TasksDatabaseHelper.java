@@ -4,12 +4,17 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.example.todo.models.Task;
 
 import java.util.ArrayList;
+
+import retrofit2.http.DELETE;
+
+import static com.google.firebase.messaging.Constants.MessagePayloadKeys.FROM;
 
 public class TasksDatabaseHelper extends SQLiteOpenHelper {
 
@@ -79,6 +84,22 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
             // Simplest implementation is to drop all old tables and recreate them
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_TASKS);
             onCreate(db);
+        }
+    }
+
+    // Delete all tasks from table tasks
+    public static void deleteAllTasks(Context context) {
+        Log.e(TAG, "Deleting all tasks from table " + TABLE_TASKS);
+        
+        TasksDatabaseHelper tasksDatabaseHelper = new TasksDatabaseHelper(context);
+        SQLiteDatabase db = tasksDatabaseHelper.getWritableDatabase();
+
+        try {
+            db.execSQL("DELETE FROM tasks");
+            db.execSQL("DELETE FROM SQLITE_SEQUENCE WHERE NAME = '" + TABLE_TASKS + "'");
+            db.close();
+        } catch (SQLiteException e) {
+            e.printStackTrace();
         }
     }
 

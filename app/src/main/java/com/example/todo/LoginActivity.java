@@ -24,6 +24,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 
+import com.example.todo.database.TasksDatabaseHelper;
 import com.example.todo.remote.ApiService;
 import com.example.todo.remote.ApiUser;
 import com.example.todo.remote.ApiUtils;
@@ -225,7 +226,6 @@ public class LoginActivity extends AppCompatActivity {
                         setAuthToken(access_token, getApplicationContext());
                         if (userId != null){
                             setUserId(userId);
-                            setUsername(mUsername);
                         }
                         return true;
                     }
@@ -251,6 +251,19 @@ public class LoginActivity extends AppCompatActivity {
             showProgress(false);
 
             if (success) {
+                // Check if new user or not
+                String savedUsername = getUsername(getApplicationContext());
+
+                if (savedUsername != null && !savedUsername.equals(mUsername)) {
+                    Log.e("LoginActivity", "New user====");
+
+                    // Delete all tasks from db
+                    TasksDatabaseHelper.deleteAllTasks(getApplicationContext());
+                }
+
+                // Save username
+                setUsername(mUsername);
+
                 // Start Main activity
                 Intent intent_name = new Intent();
                 intent_name.setClass(getApplicationContext(), MainActivity.class);
@@ -298,6 +311,11 @@ public class LoginActivity extends AppCompatActivity {
 
         editor.putString("username", username);
         editor.apply();
+    }
+
+    public static String getUsername(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("SETTINGS", Context.MODE_PRIVATE);
+        return sharedPreferences.getString("username", null);
     }
 
     public static void setFcmToken(String fcm_token, String token, Context context) {
