@@ -44,7 +44,7 @@ public class HomeFragment extends Fragment implements TasksAdapter.OnTaskListene
     private Context context;
 
     private ApiTaskSync syncTask = null;
-    private Boolean authorized;
+    private Boolean unauthorized = false;
 
     private TasksAdapter tasksAdapter;
     private TasksDatabaseHelper tasksDatabaseHelper;
@@ -189,7 +189,7 @@ public class HomeFragment extends Fragment implements TasksAdapter.OnTaskListene
                 }
                 // Unauthorized
                 else if (response.code() == 401) {
-                    authorized = false;
+                    unauthorized = true;
                     return false;
                 }
                 else{
@@ -209,17 +209,17 @@ public class HomeFragment extends Fragment implements TasksAdapter.OnTaskListene
 
             if (success) {
                 Log.e(TAG, "Success");
-                authorized = true;
                 updateRecyclerView();
             }
+            else {
+                if (unauthorized){
+                    Log.e("SYNC ITEM ERROR: ", "unauthorized");
+                    LoginActivity.deleteAuthToken(context);
 
-            if (!authorized){
-                Log.e("SYNC ITEM ERROR: ", "unauthorized");
-                LoginActivity.deleteAuthToken(context);
-
-                Intent intent = new Intent(context, LoginActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
+                    Intent intent = new Intent(context, LoginActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent);
+                }
             }
         }
 
@@ -271,18 +271,16 @@ public class HomeFragment extends Fragment implements TasksAdapter.OnTaskListene
                     tasksDatabaseHelper.updateTask(task);
 
                     Log.e(TAG, "Task has been synced successfully");
-                    authorized = true;
                     return true;
                 }
                 // Unauthorized
                 else if (response.code() == 401) {
-                    authorized = false;
+                    unauthorized = false;
                     return false;
                 }
                 // Handle other responses
                 else {
                     Log.e(TAG, "TASK SYNC ERROR");
-                    authorized = false;
                     return false;
                 }
             } catch (IOException e) {

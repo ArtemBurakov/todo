@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="bottomNavigationColor" format="color"/>
+    <attr name="contentTextColor" format="color"/>
+
+    <attr name="home_selector" format="color"/>
+    <attr name="dashboard_selector" format="color"/>
+    <attr name="create_selector" format="color"/>
+    <attr name="notification_selector" format="color"/>
+    <attr name="setting_selector" format="color"/>
+</resources>

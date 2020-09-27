@@ -1,19 +1,14 @@
 package com.example.todo;
 
 import android.annotation.SuppressLint;
-import android.app.FragmentManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.app.Fragment;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.example.todo.models.Task;
 import com.example.todo.remote.ApiFcmToken;
-import com.example.todo.ui.home.HomeFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -21,6 +16,7 @@ import com.google.firebase.iid.InstanceIdResult;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -53,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
                             Log.e(TAG, "getInstanceId failed", task.getException());
                             return;
                         }
-
                         // Get new Instance ID token
                         String fcmToken = task.getResult().getToken();
                         if (!fcmToken.equals(LoginActivity.getFcmToken(getApplicationContext()))) {
@@ -63,8 +58,18 @@ public class MainActivity extends AppCompatActivity {
                 });
         }
 
+        if (InitApplicationTheme.isNightModeEnabled(getApplicationContext())) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            setTheme(R.style.DarkTheme);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            setTheme(R.style.LightTheme);
+        }
+
         setContentView(R.layout.activity_main);
         BottomNavigationView navView = findViewById(R.id.nav_view);
+        navView.setItemIconTintList(null);
+
         // Passing each menu ID as a set of Ids because each
         // Menu should be considered as top level destinations
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(

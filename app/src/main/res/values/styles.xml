@@ -1,14 +1,42 @@
 <resources>
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+    <!-- Light application theme -->
+    <style name="LightTheme" parent="Theme.AppCompat.DayNight">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:statusBarColor">@color/colorPurple</item>
+
+        <item name="bottomNavigationColor">@color/bottomNavColor</item>
+        <item name="contentTextColor">@color/contentTextColor</item>
+
+        <item name="home_selector">@drawable/home_selector</item>
+        <item name="dashboard_selector">@drawable/dashboard_selector</item>
+        <item name="create_selector">@drawable/create_selector</item>
+        <item name="notification_selector">@drawable/notification_selector</item>
+        <item name="setting_selector">@drawable/setting_selector</item>
+
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
-    <style name="AppTheme.NoActionBar">
+    <!-- Dark application theme -->
+    <style name="DarkTheme" parent="Theme.AppCompat.DayNight">
+        <item name="colorPrimary">@color/contentBodyColorDark</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkMode</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="bottomNavigationColor">@color/bottomNavColorDark</item>
+        <item name="contentTextColor">@color/contentTextColorDark</item>
+
+        <item name="home_selector">@drawable/home_selector_white</item>
+        <item name="dashboard_selector">@drawable/dashboard_selector_white</item>
+        <item name="create_selector">@drawable/create_selector_white</item>
+        <item name="notification_selector">@drawable/notification_selector_white</item>
+        <item name="setting_selector">@drawable/setting_selector_white</item>
+
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
+    <!-- Status bar -->
+    <style name="NoStatusBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
