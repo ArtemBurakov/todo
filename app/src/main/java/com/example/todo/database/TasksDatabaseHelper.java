@@ -134,7 +134,9 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(KEY_TASK_SERVER_ID, task.getServer_id());
+        if (task.getServer_id() != null) {
+            values.put(KEY_TASK_SERVER_ID, task.getServer_id());
+        }
         values.put(KEY_TASK_SYNC_STATUS, task.getSync_status());
         values.put(KEY_TASK_NAME, task.getName());
         values.put(KEY_TASK_TEXT, task.getText());
@@ -180,8 +182,10 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
             if (cursor.moveToFirst()) {
                 do {
                     Task task = new Task();
+                    if (!cursor.isNull(cursor.getColumnIndex(KEY_TASK_SERVER_ID))) {
+                        task.setServer_id(cursor.getInt(cursor.getColumnIndex(KEY_TASK_SERVER_ID)));
+                    }
                     task.setId(cursor.getInt(cursor.getColumnIndex(KEY_TASK_ID)));
-                    task.setServer_id(cursor.getInt(cursor.getColumnIndex(KEY_TASK_SERVER_ID)));
                     task.setName(cursor.getString(cursor.getColumnIndex(KEY_TASK_NAME)));
                     task.setText(cursor.getString(cursor.getColumnIndex(KEY_TASK_TEXT)));
                     task.setStatus(cursor.getInt(cursor.getColumnIndex(KEY_TASK_STATUS)));

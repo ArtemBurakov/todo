@@ -5,6 +5,7 @@
     <string name="title_notifications">Notifications</string>
     <string name="error_field_required">Field required</string>
     <string name="error_invalid_password">Invalid password</string>
+    <string name="error_invalid_email">Invalid email</string>
     <string name="error_invalid_username">Invalid username</string>
     <string name="error_incorrect_password">Incorrect password</string>
     <string name="error_invalid_taskName">Invalid name</string>

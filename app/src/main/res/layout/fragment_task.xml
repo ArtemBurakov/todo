@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.todo.ui.task.TaskFragment">
+    tools:context="com.example.todo.ui.task.TaskFragment"
+    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -41,7 +42,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/taskTextView"
             android:layout_marginTop="10dp"
-            android:inputType="textVisiblePassword"/>
+            android:inputType="textMultiLine"/>
 
         <Button
             android:id="@+id/createTaskButton"

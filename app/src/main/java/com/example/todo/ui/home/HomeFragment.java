@@ -115,7 +115,7 @@ public class HomeFragment extends Fragment implements TasksAdapter.OnTaskListene
     @SuppressLint("StaticFieldLeak")
     public class ApiTaskSync extends AsyncTask<Void, Void, Boolean> {
 
-        String apiUrl = "http://10.0.2.2/todo/backend/web/v1/"; // 192.168.88.151, 10.0.2.2
+        String apiUrl = "http://10.0.2.2/todo/backend/web/v1/";
         ApiService apiService = ApiUtils.getAPIService(apiUrl);
 
         @Override

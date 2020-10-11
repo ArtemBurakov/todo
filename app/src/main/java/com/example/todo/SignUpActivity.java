@@ -4,15 +4,13 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-
-import android.content.Intent;
+import android.util.Patterns;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -23,75 +21,63 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-
-import com.example.todo.database.TasksDatabaseHelper;
 import com.example.todo.remote.ApiService;
-import com.example.todo.remote.ApiUser;
 import com.example.todo.remote.ApiUtils;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.Objects;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.Response;
 
-/**
- * A login screen that offers login via username/password.
- */
-public class LoginActivity extends AppCompatActivity {
+public class SignUpActivity extends AppCompatActivity {
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
-    private UserLoginTask authTask = null;
+    private UserSignUpTask registerTask = null;
 
     // UI references.
     private AutoCompleteTextView usernameView;
+    private AutoCompleteTextView userEmailView;
     private EditText passwordView;
     private View progressView;
-    private View loginFormView;
+    private View signUpFormView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-        // Set up the login form.
+        setContentView(R.layout.activity_signup);
+
         usernameView = (AutoCompleteTextView) findViewById(R.id.username);
+        userEmailView = (AutoCompleteTextView) findViewById(R.id.userEmail);
 
         passwordView = (EditText) findViewById(R.id.password);
         passwordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
+                    attemptSignup();
                     return true;
                 }
                 return false;
             }
         });
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.username_sign_in_button);
-        mEmailSignInButton.setOnClickListener(new View.OnClickListener() {
+        Button mSignUpButton = (Button) findViewById(R.id.username_sign_up_button);
+        mSignUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                attemptLogin();
+                attemptSignup();
             }
         });
 
-        loginFormView = findViewById(R.id.login_form);
+        signUpFormView = findViewById(R.id.signUp_form);
         progressView = findViewById(R.id.login_progress);
-
-        TextView signUp = findViewById(R.id.sign_up);
-        signUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                signUp();
-            }
-        });
-    }
-
-    private void signUp() {
-        Intent intent_name = new Intent();
-        intent_name.setClass(this, SignUpActivity.class);
-        startActivity(intent_name);
     }
 
     /**
@@ -99,17 +85,19 @@ public class LoginActivity extends AppCompatActivity {
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
-    private void attemptLogin() {
-        if (authTask != null) {
+    private void attemptSignup() {
+        if (registerTask != null) {
             return;
         }
 
         // Reset errors.
         usernameView.setError(null);
+        userEmailView.setError(null);
         passwordView.setError(null);
 
         // Store values at the time of the login attempt.
         String username = usernameView.getText().toString();
+        String email = userEmailView.getText().toString();
         String password = passwordView.getText().toString();
 
         boolean cancel = false;
@@ -123,6 +111,17 @@ public class LoginActivity extends AppCompatActivity {
         } else if (!isPasswordValid(password)) {
             passwordView.setError(getString(R.string.error_invalid_password));
             focusView = passwordView;
+            cancel = true;
+        }
+
+        // Check for a valid email.
+        if (TextUtils.isEmpty(email)) {
+            userEmailView.setError(getString(R.string.error_field_required));
+            focusView = userEmailView;
+            cancel = true;
+        } else if (!isEmailValid(email)) {
+            userEmailView.setError(getString(R.string.error_invalid_email));
+            focusView = userEmailView;
             cancel = true;
         }
 
@@ -145,14 +144,20 @@ public class LoginActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            authTask = new UserLoginTask(username, password);
-            authTask.execute((Void) null);
+            registerTask = new UserSignUpTask(username, email, password);
+            registerTask.execute((Void) null);
         }
     }
 
     private boolean isUsernameValid(String username) {
         //TODO: Replace this with your own logic
         return username.length() > 10;
+    }
+
+    private boolean isEmailValid(String email) {
+        //TODO: Replace this with your own logic
+        Log.e("SignUpActivity", "Verifying email");
+        return Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
     private boolean isPasswordValid(String password) {
@@ -168,12 +173,12 @@ public class LoginActivity extends AppCompatActivity {
 
         int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
-        loginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-        loginFormView.animate().setDuration(shortAnimTime).alpha(
+        signUpFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+        signUpFormView.animate().setDuration(shortAnimTime).alpha(
                 show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                loginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+                signUpFormView.setVisibility(show ? View.GONE : View.VISIBLE);
             }
         });
 
@@ -188,57 +193,66 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-     * Represents an asynchronous login task used to authenticate
+     * Represents an asynchronous sign up task used to register
      * the user.
      */
     @SuppressLint("StaticFieldLeak")
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+    public class UserSignUpTask extends AsyncTask<Void, Void, Boolean> {
 
         private final String mUsername;
+        private final String mEmail;
         private final String mPassword;
 
         ApiService apiService;
 
-        UserLoginTask(String username, String password) {
+        UserSignUpTask(String username, String email, String password) {
             mUsername = username;
+            mEmail = email;
             mPassword = password;
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
 
-            // Attempt authentication against a network service.
-            ApiUser response;
+            // Attempt registration against a network service.
             String apiUrl = "http://10.0.2.2/todo/backend/web/v1/";
             apiService = ApiUtils.getAPIService(apiUrl);
             try {
-                Call<ApiUser> call = apiService.authUser(mUsername, mPassword);
-                response = call.execute().body();
+                Call<ResponseBody> call = apiService.signUpUser(mUsername, mEmail, mPassword);
+                Response response = call.execute();
 
-                if (response != null){
+                if (response.isSuccessful()){
 
                     Log.d("responce_success===== ", response.toString());
-                    String access_token = response.getAccessToken();
-                    Integer userId = response.getUserId();
+                    return true;
+                }
+                else {
+                    if (response.code() == 422) {
+                        try {
+                            String errorBody = response.errorBody().string();
+                            JSONArray jsonArray = new JSONArray(errorBody);
 
-                    if (access_token != null){
+                            for (int i = 0; i < jsonArray.length(); i++) {
 
-                        setAuthToken(access_token, getApplicationContext());
-                        if (userId != null){
-                            setUserId(userId);
+                                JSONObject object = jsonArray.getJSONObject(i);
+
+                                if (object.get("field").equals("username")) {
+                                    usernameView.setError(object.get("message").toString());
+                                } else if (object.get("field").equals("email")) {
+                                    userEmailView.setError(object.get("message").toString());
+                                }
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            return false;
                         }
-                        return true;
                     }
-                    else{
-                        Log.e("ERROR: ", "empty access token");
+                    else {
+                        Log.e("ERROR: ", "incorrect auth response");
                         return false;
                     }
-                }
-                else{
-                    Log.e("ERROR: ", "incorrect auth response");
                     return false;
                 }
-
             } catch (IOException e) {
                 Log.e("ERROR: ", Objects.requireNonNull(e.getMessage()));
                 return false;
@@ -247,85 +261,27 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            authTask = null;
+            registerTask = null;
             showProgress(false);
 
             if (success) {
-                // Check if new user or not
-                String savedUsername = getUsername(getApplicationContext());
-
-                if (savedUsername != null && !savedUsername.equals(mUsername)) {
-                    Log.e("LoginActivity", "New user====");
-
-                    // Delete all tasks from db
-                    TasksDatabaseHelper.deleteAllTasks(getApplicationContext());
-                }
-
-                // Save username
-                setUsername(mUsername);
-
                 // Start Main activity
                 Intent intent_name = new Intent();
-                intent_name.setClass(getApplicationContext(), MainActivity.class);
+                intent_name.setClass(getApplicationContext(), LoginActivity.class);
                 startActivity(intent_name);
                 finish();
             } else {
                 passwordView.setError(getString(R.string.error_incorrect_password));
                 passwordView.requestFocus();
+                userEmailView.requestFocus();
+                usernameView.requestFocus();
             }
         }
 
         @Override
         protected void onCancelled() {
-            authTask = null;
+            registerTask = null;
             showProgress(false);
         }
-    }
-
-    public static String getAuthToken(Context context) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences("SETTINGS", Context.MODE_PRIVATE);
-        return sharedPreferences.getString("access_token", null);
-    }
-
-    public static void setAuthToken(String access_token, Context context) {
-        SharedPreferences.Editor editor = context.getSharedPreferences("SETTINGS", MODE_PRIVATE).edit();
-        editor.putString("access_token", "Bearer " + access_token);
-        editor.apply();
-    }
-
-    public static void deleteAuthToken(Context context) {
-        SharedPreferences.Editor editor = context.getSharedPreferences("SETTINGS", MODE_PRIVATE).edit();
-        editor.remove("access_token").apply();
-    }
-
-
-    public void setUserId(Integer userId) {
-        SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("SETTINGS", MODE_PRIVATE).edit();
-
-        editor.putLong("userId", userId);
-        editor.apply();
-    }
-
-    public void setUsername(String username) {
-        SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("SETTINGS", MODE_PRIVATE).edit();
-
-        editor.putString("username", username);
-        editor.apply();
-    }
-
-    public static String getUsername(Context context) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences("SETTINGS", Context.MODE_PRIVATE);
-        return sharedPreferences.getString("username", null);
-    }
-
-    public static void setFcmToken(String fcm_token, String token, Context context) {
-        SharedPreferences.Editor editor = context.getSharedPreferences("SETTINGS", MODE_PRIVATE).edit();
-        editor.putString(fcm_token, token);
-        editor.apply();
-    }
-
-    public static String getFcmToken(Context context) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences("SETTINGS", Context.MODE_PRIVATE);
-        return sharedPreferences.getString("fcm_token", null);
     }
 }

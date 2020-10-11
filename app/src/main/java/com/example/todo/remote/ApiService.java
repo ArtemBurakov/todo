@@ -2,6 +2,7 @@ package com.example.todo.remote;
 
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
@@ -19,6 +20,10 @@ public interface ApiService {
     @FormUrlEncoded
     @POST("users/authorize")
     Call<ApiUser> authUser(@Field("username") String username, @Field("password") String password);
+
+    @FormUrlEncoded
+    @POST("users/sign-up")
+    Call<ResponseBody> signUpUser(@Field("username") String username, @Field("email") String userEmail, @Field("password") String password);
 
     @FormUrlEncoded
     @POST("user-fcm-tokens")
