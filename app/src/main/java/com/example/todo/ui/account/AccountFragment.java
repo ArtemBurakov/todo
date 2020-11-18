@@ -7,18 +7,18 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.todo.InitApplicationTheme;
 import com.example.todo.LoginActivity;
 import com.example.todo.R;
+import com.mahfa.dnswitch.DayNightSwitch;
+import com.mahfa.dnswitch.DayNightSwitchListener;
 
 public class AccountFragment extends Fragment {
 
@@ -49,16 +49,16 @@ public class AccountFragment extends Fragment {
             }
         });
 
-        final SwitchCompat switchCompat = requireView().findViewById(R.id.darkModeSwitch);
+        DayNightSwitch dayNightSwitch = (DayNightSwitch) requireView().findViewById(R.id.day_night_switch);
 
         if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
-            switchCompat.setChecked(true);
+            dayNightSwitch.setIsNight(true);
         }
 
-        switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        dayNightSwitch.setListener(new DayNightSwitchListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
+            public void onSwitch(boolean isNight) {
+                if (isNight) {
                     InitApplicationTheme.setNightMode(true, context);
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
                 } else {

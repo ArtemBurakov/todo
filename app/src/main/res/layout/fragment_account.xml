@@ -39,13 +39,10 @@
 
                 </RelativeLayout>
 
-                <androidx.appcompat.widget.SwitchCompat
-                    android:id="@+id/darkModeSwitch"
-                    android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
-                    android:drawableStart="@drawable/ic_dark_mode"
-                    android:text="Dark Mode"
-                    android:textColor="?attr/contentTextColor"/>
+                <com.mahfa.dnswitch.DayNightSwitch
+                    android:layout_width="50dp"
+                    android:layout_height="28dp"
+                    android:id="@+id/day_night_switch" />
 
                 <TextView
                     android:id="@+id/logoutTextView"

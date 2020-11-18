@@ -75,7 +75,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         if (modelName != null){
 
-            //communicate with Main activity
+            //communicate with Home fragment
             Intent intent = new Intent("FcmNotification");
             intent.putExtra("modelName", modelName);
             broadcaster.sendBroadcast(intent);
