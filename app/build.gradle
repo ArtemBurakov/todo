@@ -46,5 +46,6 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
-    implementation 'com.github.Mahfa:DayNightSwitch:1.2'
+    //switch button
+    implementation 'com.kyleduo.switchbutton:library:2.0.2'
 }

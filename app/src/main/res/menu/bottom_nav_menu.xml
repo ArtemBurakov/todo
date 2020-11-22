@@ -22,8 +22,8 @@
         android:title="@string/title_notifications" />
 
     <item
-        android:id="@+id/navigation_account"
+        android:id="@+id/navigation_settings"
         android:icon="?attr/setting_selector"
-        android:title="Account" />
+        android:title="Settings" />
 
 </menu>

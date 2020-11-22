@@ -1,4 +1,4 @@
-package com.example.todo.ui.account;
+package com.example.todo.ui.settings;
 
 import android.content.Intent;
 import android.content.Context;
@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,10 +18,9 @@ import androidx.fragment.app.Fragment;
 import com.example.todo.InitApplicationTheme;
 import com.example.todo.LoginActivity;
 import com.example.todo.R;
-import com.mahfa.dnswitch.DayNightSwitch;
-import com.mahfa.dnswitch.DayNightSwitchListener;
+import com.kyleduo.switchbutton.SwitchButton;
 
-public class AccountFragment extends Fragment {
+public class SettingsFragment extends Fragment {
 
     private Context context;
     private LayoutInflater inflater;
@@ -28,7 +28,7 @@ public class AccountFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         context = container.getContext();
         this.inflater = inflater;
-        return inflater.inflate(R.layout.fragment_account, container, false);
+        return inflater.inflate(R.layout.fragment_settings, container, false);
     }
 
     @Override
@@ -49,24 +49,22 @@ public class AccountFragment extends Fragment {
             }
         });
 
-        DayNightSwitch dayNightSwitch = (DayNightSwitch) requireView().findViewById(R.id.day_night_switch);
+        final SwitchButton dayNightSwitch = (SwitchButton) requireView().findViewById(R.id.day_night_switch);
 
         if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
-            dayNightSwitch.setIsNight(true);
+            dayNightSwitch.setCheckedImmediatelyNoEvent(true);
         }
 
-        dayNightSwitch.setListener(new DayNightSwitchListener() {
+        dayNightSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onSwitch(boolean isNight) {
-                if (isNight) {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
                     InitApplicationTheme.setNightMode(true, context);
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
                 } else {
                     InitApplicationTheme.setNightMode(false, context);
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                 }
-
-                getActivity().recreate();
             }
         });
     }

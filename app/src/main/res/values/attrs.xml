@@ -2,6 +2,7 @@
 <resources>
     <attr name="bottomNavigationColor" format="color"/>
     <attr name="contentTextColor" format="color"/>
+    <attr name="settingHeaderBackgroundColor" format="color"/>
 
     <attr name="home_selector" format="color"/>
     <attr name="dashboard_selector" format="color"/>

@@ -7,6 +7,7 @@
 
         <item name="bottomNavigationColor">@color/bottomNavColor</item>
         <item name="contentTextColor">@color/contentTextColor</item>
+        <item name="settingHeaderBackgroundColor">@color/settingHeaderColor</item>
 
         <item name="home_selector">@drawable/home_selector</item>
         <item name="dashboard_selector">@drawable/dashboard_selector</item>
@@ -26,6 +27,7 @@
 
         <item name="bottomNavigationColor">@color/bottomNavColorDark</item>
         <item name="contentTextColor">@color/contentTextColorDark</item>
+        <item name="settingHeaderBackgroundColor">@color/settingHeaderColorDark</item>
 
         <item name="home_selector">@drawable/home_selector_white</item>
         <item name="dashboard_selector">@drawable/dashboard_selector_white</item>
@@ -46,6 +48,57 @@
     <style name="WindowAnimationTransition">
         <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
         <item name="android:windowExitAnimation">@android:anim/fade_out</item>
+    </style>
+
+    <style name="SettingItem">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="SettingParentItem" parent="SettingItem">
+        <item name="android:padding">15dp</item>
+    </style>
+
+    <style name="SettingGroup" parent="SettingItem">
+        <item name="android:background">@drawable/layout_bg</item>
+        <item name="android:layout_margin">2dp</item>
+        <item name="android:elevation">1dp</item>
+    </style>
+
+    <style name="SettingHeader" parent="SettingItem">
+        <item name="android:paddingTop">15dp</item>
+        <item name="android:paddingBottom">15dp</item>
+        <item name="android:layout_marginStart">2dp</item>
+        <item name="android:layout_marginEnd">2dp</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">?attr/contentTextColor</item>
+    </style>
+
+    <style name="SettingTitle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:layout_alignParentStart">true</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">?attr/contentTextColor</item>
+    </style>
+
+    <style name="SwitchButton">
+        <item name="android:layout_width">44dp</item>
+        <item name="android:layout_height">25dp</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:layout_alignParentEnd">true</item>
+        <item name="kswThumbColor">#ffffff</item>
+        <item name="kswBackDrawable">@drawable/ios_back_drawable</item>
+    </style>
+
+    <style name="MoreImageView">
+        <item name="android:layout_width">15dp</item>
+        <item name="android:layout_height">15dp</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:layout_alignParentEnd">true</item>
+        <item name="android:src">@drawable/ic_more</item>
     </style>
 
 </resources>
