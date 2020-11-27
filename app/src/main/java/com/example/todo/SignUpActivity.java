@@ -14,7 +14,6 @@ import android.util.Patterns;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -42,8 +41,8 @@ public class SignUpActivity extends AppCompatActivity {
     private UserSignUpTask registerTask = null;
 
     // UI references.
-    private AutoCompleteTextView usernameView;
-    private AutoCompleteTextView userEmailView;
+    private EditText usernameView;
+    private EditText userEmailView;
     private EditText passwordView;
     private View progressView;
     private View signUpFormView;
@@ -53,10 +52,10 @@ public class SignUpActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
-        usernameView = (AutoCompleteTextView) findViewById(R.id.username);
-        userEmailView = (AutoCompleteTextView) findViewById(R.id.userEmail);
+        usernameView = (EditText) findViewById(R.id.editTextUsername);
+        userEmailView = (EditText) findViewById(R.id.editTextEmail);
 
-        passwordView = (EditText) findViewById(R.id.password);
+        passwordView = (EditText) findViewById(R.id.editTextPassword);
         passwordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -76,7 +75,18 @@ public class SignUpActivity extends AppCompatActivity {
             }
         });
 
-        signUpFormView = findViewById(R.id.signUp_form);
+        TextView mLogInButton = (TextView) findViewById(R.id.log_in_text_view);
+        mLogInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent_name = new Intent();
+                intent_name.setClass(getApplicationContext(), LoginActivity.class);
+                startActivity(intent_name);
+                finish();
+            }
+        });
+
+        signUpFormView = findViewById(R.id.mainLayout);
         progressView = findViewById(R.id.login_progress);
     }
 

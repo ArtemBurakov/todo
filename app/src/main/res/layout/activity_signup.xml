@@ -1,174 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.todo.LoginActivity">
-
-    <ProgressBar
-        android:id="@+id/login_progress"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:minHeight="50dp"
-        android:minWidth="50dp"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:visibility="gone"
-        android:indeterminateTint="@color/colorPurple"/>
+    android:fillViewport="true"
+    android:background="#ffffff">
 
     <RelativeLayout
-        android:id="@+id/signUp_form"
+        style="@style/LoginActivity"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
+
+        <ProgressBar
+            style="?android:attr/progressBarStyle"
+            android:id="@+id/login_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="50dp"
+            android:minWidth="50dp"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:visibility="gone"
+            android:indeterminateTint="#1E90FF"/>
 
         <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <ImageView
-                android:layout_weight="4"
-                android:src="@drawable/ic_background"
-                android:scaleType="centerCrop"
-                android:layout_width="match_parent"
-                android:layout_height="0dp" />
-
-            <View
-                android:layout_weight="1"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:gravity="center"
+            android:id="@+id/mainLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="35dp"
+            android:layout_centerVertical="true"
             android:orientation="vertical">
 
             <TextView
-                android:layout_margin="?actionBarSize"
-                android:textStyle="bold"
-                android:textSize="40sp"
-                android:textColor="#fff"
-                android:text="Sign up"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <AutoCompleteTextView
-                android:id="@+id/username"
-                android:textColor="#fff"
-                android:textColorHint="#eee"
-                android:paddingStart="10dp"
-                android:hint="Username"
-                android:layout_margin="20dp"
-                android:layout_width="match_parent"
-                android:layout_height="?actionBarSize"
-                android:background="@drawable/rounded_corner"
-                android:textSize="17sp"
-                android:autofillHints=""
-                tools:ignore="RtlSymmetry"
-                android:inputType="textEmailAddress"
-                android:maxLines="3"
-                android:singleLine="true"/>
-
-            <AutoCompleteTextView
-                android:id="@+id/userEmail"
-                android:textColor="#fff"
-                android:textColorHint="#eee"
-                android:paddingStart="10dp"
-                android:hint="Email"
-                android:layout_margin="20dp"
-                android:layout_width="match_parent"
-                android:layout_height="?actionBarSize"
-                android:background="@drawable/rounded_corner"
-                android:textSize="17sp"
-                android:autofillHints=""
-                tools:ignore="RtlSymmetry"
-                android:inputType="textEmailAddress"
-                android:maxLines="1"
-                android:singleLine="true"/>
+                style="@style/LoginHeader"
+                android:id="@+id/header"
+                android:text="Done with it"/>
 
             <EditText
-                android:id="@+id/password"
-                android:textColor="#fff"
-                android:textColorHint="#eee"
-                android:paddingStart="10dp"
-                android:hint="Password"
+                style="@style/EditText"
+                android:id="@+id/editTextUsername"
+                android:hint="Username"
+                android:inputType="textVisiblePassword"
+                android:autofillHints="" />
+
+            <EditText
+                style="@style/EditText"
+                android:id="@+id/editTextEmail"
+                android:inputType="textVisiblePassword"
+                android:hint="Email"
+                android:autofillHints="" />
+
+            <EditText
+                style="@style/EditText"
+                android:id="@+id/editTextPassword"
                 android:inputType="textPassword"
-                android:layout_margin="20dp"
-                android:layout_width="match_parent"
-                android:layout_height="?actionBarSize"
-                android:background="@drawable/rounded_corner"
-                android:textSize="17sp"
-                tools:ignore="RtlSymmetry"
-                android:autofillHints=""
-                android:imeActionId="6"
-                android:imeOptions="actionUnspecified"
-                android:maxLines="1"
-                android:singleLine="true"/>
+                android:hint="Password"
+                android:autofillHints="" />
 
             <Button
+                style="@style/LoginActivityItem"
                 android:id="@+id/username_sign_up_button"
-                android:paddingRight="20dp"
-                android:paddingLeft="20dp"
                 android:background="@drawable/rounded_corner_button"
-                android:text="sign up"
-                android:textColor="#777"
-                android:layout_width="wrap_content"
-                android:layout_height="35dp" />
-
-            <TextView
-                android:layout_marginTop="20dp"
-                android:textColor="#000000"
-                android:text="Forgot Password ?"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:text="Sign up"
+                android:textColor="#ffffff"/>
 
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/options_form"
-            android:layout_marginBottom="30dp"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:layout_alignParentBottom="true"
+        <RelativeLayout
+            android:id="@+id/footerLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:layout_marginBottom="5dp"
-                android:text="Or Signup with"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/mainLayout"
+            android:layout_alignParentBottom="true"
+            android:layout_marginTop="0dp">
 
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                tools:ignore="UselessParent">
 
-                <ImageButton
-                    android:layout_marginEnd="15dp"
-                    android:background="@drawable/ic_google"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp" />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="25dp"
+                    android:gravity="center">
 
-                <ImageButton
-                    android:layout_marginEnd="15dp"
-                    android:background="@drawable/ic_facebook"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp" />
+                    <TextView
+                        android:id="@+id/string_question"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:text="Already have account?" />
 
-                <ImageButton
-                    android:background="@drawable/ic_twitter"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp" />
+                    <TextView
+                        android:id="@+id/log_in_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="3dp"
+                        android:layout_toEndOf="@+id/string_question"
+                        android:text="Log in."
+                        android:textColor="#000000" />
+
+                </RelativeLayout>
 
             </LinearLayout>
 
-        </LinearLayout>
+        </RelativeLayout>
 
     </RelativeLayout>
 
-</RelativeLayout>
+</ScrollView>

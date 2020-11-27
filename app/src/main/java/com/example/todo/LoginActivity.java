@@ -16,7 +16,6 @@ import android.content.Intent;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -44,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
     private UserLoginTask authTask = null;
 
     // UI references.
-    private AutoCompleteTextView usernameView;
+    private EditText usernameView;
     private EditText passwordView;
     private View progressView;
     private View loginFormView;
@@ -54,9 +53,9 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         // Set up the login form.
-        usernameView = (AutoCompleteTextView) findViewById(R.id.username);
+        usernameView = (EditText) findViewById(R.id.editTextUsername);
 
-        passwordView = (EditText) findViewById(R.id.password);
+        passwordView = (EditText) findViewById(R.id.editTextPassword);
         passwordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -68,7 +67,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.username_sign_in_button);
+        Button mEmailSignInButton = (Button) findViewById(R.id.username_log_in_button);
         mEmailSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -76,8 +75,8 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        loginFormView = findViewById(R.id.login_form);
-        progressView = findViewById(R.id.login_progress);
+        loginFormView = findViewById(R.id.mainLayout);
+        progressView = findViewById(R.id.progressBar);
 
         TextView signUp = findViewById(R.id.sign_up);
         signUp.setOnClickListener(new View.OnClickListener() {
