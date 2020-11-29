@@ -23,8 +23,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.todo.LoginActivity;
 import com.example.todo.MainActivity;
 import com.example.todo.R;
+import com.example.todo.adapters.CardsAdapter;
 import com.example.todo.adapters.TasksAdapter;
 import com.example.todo.database.TasksDatabaseHelper;
+import com.example.todo.models.Card;
 import com.example.todo.models.Task;
 import com.example.todo.remote.ApiService;
 import com.example.todo.remote.ApiTask;
@@ -37,7 +39,7 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Response;
 
-public class HomeFragment extends Fragment implements TasksAdapter.OnTaskListener {
+public class HomeFragment extends Fragment implements TasksAdapter.OnTaskListener, CardsAdapter.OnCardListener {
 
     private static final String TAG = "HomeFragment";
 
@@ -47,6 +49,7 @@ public class HomeFragment extends Fragment implements TasksAdapter.OnTaskListene
     private Boolean unauthorized = false;
 
     private TasksAdapter tasksAdapter;
+    private CardsAdapter cardsAdapter;
     private TasksDatabaseHelper tasksDatabaseHelper;
 
     @Override
@@ -84,6 +87,7 @@ public class HomeFragment extends Fragment implements TasksAdapter.OnTaskListene
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initRecyclerView();
+        initCardRecyclerView();
         startSync();
     }
 
@@ -110,6 +114,24 @@ public class HomeFragment extends Fragment implements TasksAdapter.OnTaskListene
 
         // Attach the adapter to a RecyclerView
         recyclerView.setAdapter(tasksAdapter);
+    }
+
+    private void initCardRecyclerView() {
+        RecyclerView cardRecyclerView = requireView().findViewById(R.id.cardRecyclerView);
+
+        // Construct the data source
+        tasksDatabaseHelper = TasksDatabaseHelper.getInstance(context);
+        ArrayList<Card> cardsArray = tasksDatabaseHelper.getCards();
+
+        // Setting LayoutManager
+        cardRecyclerView.setHasFixedSize(true);
+        cardRecyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+
+        // Create the adapter to convert the array to views
+        cardsAdapter = new CardsAdapter(cardsArray, context, this);
+
+        // Attach the adapter to a RecyclerView
+        cardRecyclerView.setAdapter(cardsAdapter);
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -303,5 +325,9 @@ public class HomeFragment extends Fragment implements TasksAdapter.OnTaskListene
 
         // Navigate to task fragment
         Navigation.findNavController(requireView()).navigate(R.id.navigation_task);
+    }
+
+    public void onCardClick(int position) {
+        Log.e(TAG, "card " + position);
     }
 }

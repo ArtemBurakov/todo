@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.example.todo.models.Card;
 import com.example.todo.models.Task;
 
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
 
     // Table Names
     private static final String TABLE_TASKS = "tasks";
+    private static final String TABLE_CARDS = "cards";
 
     // Post Table Columns
     private static final String KEY_TASK_ID = "id";
@@ -35,6 +37,12 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
     private static final String KEY_TASK_STATUS = "status";
     private static final String KEY_TASK_CREATED_AT = "created_at";
     private static final String KEY_TASK_UPDATED_AT = "updated_at";
+
+    // Cards Table Columns
+    private static final String KEY_CARD_ID = "id";
+    private static final String KEY_CARD_NAME = "name";
+    private static final String KEY_CARD_CREATED_AT = "created_at";
+    private static final String KEY_CARD_UPDATED_AT = "updated_at";
 
     private static TasksDatabaseHelper sInstance;
 
@@ -73,6 +81,16 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
                 KEY_TASK_UPDATED_AT + " int" +
                 ")";
         db.execSQL(CREATE_TASKS_TABLE);
+
+        // Cards
+        String CREATE_CARDS_TABLE = "CREATE TABLE " + TABLE_CARDS +
+                "(" +
+                KEY_CARD_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + // Define a primary key
+                KEY_CARD_NAME + " TEXT," +
+                KEY_CARD_CREATED_AT + " int," +
+                KEY_CARD_UPDATED_AT + " int" +
+                ")";
+        db.execSQL(CREATE_CARDS_TABLE);
     }
 
     // Called when the database needs to be upgraded.
@@ -83,6 +101,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
         if (oldVersion != newVersion) {
             // Simplest implementation is to drop all old tables and recreate them
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_TASKS);
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_CARDS);
             onCreate(db);
         }
     }
@@ -90,7 +109,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
     // Delete all tasks from table tasks
     public static void deleteAllTasks(Context context) {
         Log.e(TAG, "Deleting all tasks from table " + TABLE_TASKS);
-        
+
         TasksDatabaseHelper tasksDatabaseHelper = new TasksDatabaseHelper(context);
         SQLiteDatabase db = tasksDatabaseHelper.getWritableDatabase();
 
@@ -170,6 +189,77 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
             }
         }
         return null;
+    }
+
+    // Get card
+    public Card getCard(long id) {
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor cursor = db.rawQuery("select * from " + TABLE_CARDS + " where ID = ?", new String[] {String.valueOf(id)});
+
+        try {
+            if (cursor.moveToFirst()) {
+                Card card = new Card();
+                card.setId(cursor.getInt(cursor.getColumnIndex(KEY_CARD_ID)));
+                card.setName(cursor.getString(cursor.getColumnIndex(KEY_CARD_NAME)));
+                card.setCreated_at(cursor.getInt(cursor.getColumnIndex(KEY_CARD_CREATED_AT)));
+                card.setUpdated_at(cursor.getInt(cursor.getColumnIndex(KEY_CARD_UPDATED_AT)));
+                return card;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error while trying to get card from database");
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
+        return null;
+    }
+
+    // Get cards
+    public ArrayList<Card> getCards() {
+        ArrayList<Card> cards = new ArrayList<>();
+
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("select * from " + TABLE_CARDS, null);
+        try {
+            if (cursor.moveToFirst()) {
+                do {
+                    Card card = new Card();
+                    card.setId(cursor.getInt(cursor.getColumnIndex(KEY_CARD_ID)));
+                    card.setName(cursor.getString(cursor.getColumnIndex(KEY_CARD_NAME)));
+                    card.setCreated_at(cursor.getInt(cursor.getColumnIndex(KEY_CARD_CREATED_AT)));
+                    card.setUpdated_at(cursor.getInt(cursor.getColumnIndex(KEY_CARD_UPDATED_AT)));
+
+                    cards.add(card);
+                } while(cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error while trying to get cards from database");
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
+        return cards;
+    }
+
+    // Add card
+    public void addCard(Card card) {
+        Log.e(TAG, "Adding card " + card.getName() + " to table " + TABLE_CARDS);
+
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(KEY_CARD_NAME, card.getName());
+        if (card.getCreated_at() > 0) {
+            values.put(KEY_CARD_CREATED_AT, card.getCreated_at());
+        }
+        if (card.getUpdated_at() > 0) {
+            values.put(KEY_CARD_UPDATED_AT, card.getUpdated_at());
+        }
+        long id = db.insert(TABLE_CARDS, null, values);
+        if (id != -1) {
+            card = getCard(id);
+        }
     }
 
     // Get Active tasks
