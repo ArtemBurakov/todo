@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -46,6 +47,7 @@ public class SignUpActivity extends AppCompatActivity {
     private EditText passwordView;
     private View progressView;
     private View signUpFormView;
+    private RelativeLayout footerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +89,7 @@ public class SignUpActivity extends AppCompatActivity {
         });
 
         signUpFormView = findViewById(R.id.mainLayout);
+        footerLayout = findViewById(R.id.footerLayout);
         progressView = findViewById(R.id.login_progress);
     }
 
@@ -191,6 +194,15 @@ public class SignUpActivity extends AppCompatActivity {
                 signUpFormView.setVisibility(show ? View.GONE : View.VISIBLE);
             }
         });
+
+        footerLayout.setVisibility(show ? View.GONE : View.VISIBLE);
+        footerLayout.animate().setDuration(shortAnimTime).alpha(
+                show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                footerLayout.setVisibility(show ? View.GONE : View.VISIBLE);
+            }
+        });;
 
         progressView.setVisibility(show ? View.VISIBLE : View.GONE);
         progressView.animate().setDuration(shortAnimTime).alpha(
