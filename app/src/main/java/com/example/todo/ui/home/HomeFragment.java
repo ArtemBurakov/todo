@@ -329,5 +329,8 @@ public class HomeFragment extends Fragment implements TasksAdapter.OnTaskListene
 
     public void onCardClick(int position) {
         Log.e(TAG, "card " + position);
+
+        MainActivity.selectedCard = tasksDatabaseHelper.getCards().get(position);
+        Navigation.findNavController(requireView()).navigate(R.id.navigation_card);
     }
 }

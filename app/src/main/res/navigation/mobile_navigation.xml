@@ -25,6 +25,13 @@
     </fragment>
 
     <fragment
+        android:id="@+id/navigation_card"
+        android:name="com.example.todo.ui.card.CardFragment"
+        android:label="Card"
+        tools:layout="@layout/fragment_card" >
+    </fragment>
+
+    <fragment
         android:id="@+id/navigation_notifications"
         android:name="com.example.todo.ui.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
@@ -35,5 +42,4 @@
         android:name="com.example.todo.ui.settings.SettingsFragment"
         android:label="Settings"
         tools:layout="@layout/fragment_settings" />
-
 </navigation>

@@ -2,7 +2,7 @@ package com.example.todo.models;
 
 public class Task {
     private long updated_at, created_at;
-    private Integer id, status, server_id, sync_status;
+    private Integer id, status, server_id, card_id, sync_status;
     private String name, text;
 
     // Getters
@@ -12,6 +12,10 @@ public class Task {
 
     public Integer getServer_id() {
         return server_id;
+    }
+
+    public Integer getCard_id() {
+        return card_id;
     }
 
     public Integer getSync_status() {
@@ -45,6 +49,10 @@ public class Task {
 
     public void setServer_id(Integer server_id) {
         this.server_id = server_id;
+    }
+
+    public void setCard_id(Integer card_id) {
+        this.card_id = card_id;
     }
 
     public void setSync_status(Integer sync_status) {

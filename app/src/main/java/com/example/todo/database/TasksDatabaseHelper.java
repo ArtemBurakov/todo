@@ -31,6 +31,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
     // Post Table Columns
     private static final String KEY_TASK_ID = "id";
     private static final String KEY_TASK_SERVER_ID = "server_id";
+    private static final String KEY_TASK_CARD_ID = "card_id";
     private static final String KEY_TASK_SYNC_STATUS = "sync_status";
     private static final String KEY_TASK_NAME = "name";
     private static final String KEY_TASK_TEXT = "text";
@@ -73,6 +74,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
                 "(" +
                 KEY_TASK_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + // Define a primary key
                 KEY_TASK_SERVER_ID + " INTEGER," +
+                KEY_TASK_CARD_ID + " INTEGER," +
                 KEY_TASK_SYNC_STATUS + " INTEGER," +
                 KEY_TASK_NAME + " TEXT," +
                 KEY_TASK_TEXT + " TEXT," +
@@ -129,6 +131,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(KEY_TASK_SYNC_STATUS, task.getSync_status());
+        values.put(KEY_TASK_CARD_ID, task.getCard_id());
         values.put(KEY_TASK_NAME, task.getName());
         values.put(KEY_TASK_TEXT, task.getText());
         values.put(KEY_TASK_STATUS, task.getStatus());
@@ -260,6 +263,35 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
         if (id != -1) {
             card = getCard(id);
         }
+    }
+
+    // Get Completed tasks
+    public ArrayList<Task> getCardTasks(Integer card_id) {
+        ArrayList<Task> tasks = new ArrayList<>();
+
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("select * from " + TABLE_TASKS + " where CARD_ID = ?", new String[] {String.valueOf(card_id)});
+        try {
+            if (cursor.moveToFirst()) {
+                do {
+                    Task task = new Task();
+                    task.setId(cursor.getInt(cursor.getColumnIndex(KEY_TASK_ID)));
+                    task.setName(cursor.getString(cursor.getColumnIndex(KEY_TASK_NAME)));
+                    task.setText(cursor.getString(cursor.getColumnIndex(KEY_TASK_TEXT)));
+                    task.setStatus(cursor.getInt(cursor.getColumnIndex(KEY_TASK_STATUS)));
+                    task.setCreated_at(cursor.getInt(cursor.getColumnIndex(KEY_TASK_CREATED_AT)));
+                    task.setUpdated_at(cursor.getInt(cursor.getColumnIndex(KEY_TASK_UPDATED_AT)));
+                    tasks.add(task);
+                } while(cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error while trying to get tasks from database");
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
+        return tasks;
     }
 
     // Get Active tasks

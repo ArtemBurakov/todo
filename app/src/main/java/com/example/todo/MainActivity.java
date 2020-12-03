@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.example.todo.models.Card;
 import com.example.todo.models.Task;
 import com.example.todo.remote.ApiFcmToken;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -29,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     public static Context context;
 
     public static Task selectedTask;
+    public static Card selectedCard;
     public ApiFcmTokenSendTask syncFcmToken;
 
     @Override
