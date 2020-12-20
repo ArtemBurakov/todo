@@ -299,7 +299,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
         ArrayList<Task> tasks = new ArrayList<>();
 
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery("select * from " + TABLE_TASKS + " where " + KEY_TASK_STATUS + " = ? ", new String[] {String.valueOf(10)});
+        Cursor cursor = db.rawQuery("select * from " + TABLE_TASKS + " where " + KEY_TASK_STATUS + " = ? AND " + KEY_TASK_CARD_ID + " IS NULL ", new String[] {String.valueOf(10)});
         try {
             if (cursor.moveToFirst()) {
                 do {

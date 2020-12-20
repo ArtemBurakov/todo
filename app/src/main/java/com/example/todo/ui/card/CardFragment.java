@@ -1,11 +1,14 @@
 package com.example.todo.ui.card;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,6 +42,13 @@ public class CardFragment extends Fragment implements TasksAdapter.OnTaskListene
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Button createTaskInCard = requireView().findViewById(R.id.createTaskButton);
+        createTaskInCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Navigation.findNavController(requireView()).navigate(R.id.navigation_task);
+            }
+        });
 
         initRecyclerView();
     }
@@ -62,7 +72,7 @@ public class CardFragment extends Fragment implements TasksAdapter.OnTaskListene
     }
 
     public void onTaskClick(int position) {
-        MainActivity.selectedTask = tasksDatabaseHelper.getActiveTasks().get(position);
+        MainActivity.selectedTask = tasksDatabaseHelper.getCardTasks(MainActivity.selectedCard.getId()).get(position);
 
         // Navigate to task fragment
         Navigation.findNavController(requireView()).navigate(R.id.navigation_task);

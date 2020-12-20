@@ -6,8 +6,15 @@
     android:layout_height="match_parent"
     tools:context=".ui.home.HomeFragment">
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/createCardButton"
+        android:text="Create Card" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/cardRecyclerView"
+        android:layout_below="@+id/createCardButton"
         android:layout_height="wrap_content"
         android:layout_width="match_parent">
     </androidx.recyclerview.widget.RecyclerView>

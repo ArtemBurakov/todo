@@ -32,6 +32,13 @@
     </fragment>
 
     <fragment
+        android:id="@+id/navigation_create_card"
+        android:name="com.example.todo.ui.card.CreateCardFragment"
+        android:label="Create Card"
+        tools:layout="@layout/fragment_card" >
+    </fragment>
+
+    <fragment
         android:id="@+id/navigation_notifications"
         android:name="com.example.todo.ui.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
