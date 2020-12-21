@@ -1,46 +1,20 @@
-<resources>
-    <!-- Light application theme -->
-    <style name="LightTheme" parent="Theme.AppCompat.DayNight">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-
-        <item name="bottomNavigationColor">@color/bottomNavColor</item>
-        <item name="contentTextColor">@color/contentTextColor</item>
-        <item name="settingHeaderBackgroundColor">@color/settingHeaderColor</item>
-
-        <item name="home_selector">@drawable/home_selector</item>
-        <item name="dashboard_selector">@drawable/dashboard_selector</item>
-        <item name="create_selector">@drawable/create_selector</item>
-        <item name="notification_selector">@drawable/notification_selector</item>
-        <item name="setting_selector">@drawable/setting_selector</item>
-
-        <item name="android:windowLightStatusBar">true</item>
-        <item name="android:windowAnimationStyle">@style/WindowAnimationTransition</item>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.MyApplication" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/purple_200</item>
+        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorOnPrimary">@color/black</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondaryVariant">@color/teal_200</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
     </style>
 
-    <!-- Dark application theme -->
-    <style name="DarkTheme" parent="Theme.AppCompat.DayNight">
-        <item name="colorPrimary">@color/contentBodyColorDark</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDarkMode</item>
-        <item name="colorAccent">@color/colorAccent</item>
-
-        <item name="bottomNavigationColor">@color/bottomNavColorDark</item>
-        <item name="contentTextColor">@color/contentTextColorDark</item>
-        <item name="settingHeaderBackgroundColor">@color/settingHeaderColorDark</item>
-
-        <item name="home_selector">@drawable/home_selector_white</item>
-        <item name="dashboard_selector">@drawable/dashboard_selector_white</item>
-        <item name="create_selector">@drawable/create_selector_white</item>
-        <item name="notification_selector">@drawable/notification_selector_white</item>
-        <item name="setting_selector">@drawable/setting_selector_white</item>
-
-        <item name="android:windowLightStatusBar">false</item>
-        <item name="android:windowAnimationStyle">@style/WindowAnimationTransition</item>
-    </style>
-
-    <!-- Status bar -->
-    <style name="NoTitle" parent="LightTheme">
+    <style name="NoTitle">
         <item name="windowNoTitle">true</item>
     </style>
 
@@ -98,7 +72,6 @@
         <item name="android:layout_marginEnd">2dp</item>
         <item name="android:textSize">17sp</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">?attr/contentTextColor</item>
     </style>
 
     <style name="SettingTitle">
@@ -107,7 +80,6 @@
         <item name="android:layout_centerVertical">true</item>
         <item name="android:layout_alignParentStart">true</item>
         <item name="android:textSize">16sp</item>
-        <item name="android:textColor">?attr/contentTextColor</item>
     </style>
 
     <style name="SwitchButton">
@@ -135,5 +107,4 @@
         <item name="android:layout_alignParentEnd">true</item>
         <item name="android:src">@drawable/ic_more</item>
     </style>
-
 </resources>

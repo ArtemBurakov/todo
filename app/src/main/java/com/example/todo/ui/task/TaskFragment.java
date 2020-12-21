@@ -101,7 +101,9 @@ public class TaskFragment extends Fragment {
             newTask.setText(text);
             newTask.setStatus(TasksDatabaseHelper.statusActive);
             newTask.setSync_status(1);
-            newTask.setCard_id(MainActivity.selectedCard.getId());
+            if (MainActivity.selectedCard != null) {
+                newTask.setCard_id(MainActivity.selectedCard.getId());
+            }
             newTask.setCreated_at(0);
             newTask.setUpdated_at(0);
             tasksDatabaseHelper.addTask(newTask);
