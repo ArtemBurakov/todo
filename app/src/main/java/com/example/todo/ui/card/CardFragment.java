@@ -1,30 +1,23 @@
 package com.example.todo.ui.card;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.todo.MainActivity;
 import com.example.todo.R;
-import com.example.todo.adapters.CardsAdapter;
 import com.example.todo.adapters.TasksAdapter;
 import com.example.todo.database.TasksDatabaseHelper;
 import com.example.todo.models.Task;
-import com.google.android.gms.tasks.Tasks;
 
 import java.util.ArrayList;
 
