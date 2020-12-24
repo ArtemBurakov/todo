@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/createTaskButton"
-        android:text="Create Card" />
+        android:text="Create Task" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/cardTasksRecyclerView"

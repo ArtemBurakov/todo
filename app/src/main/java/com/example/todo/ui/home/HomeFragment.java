@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,6 +31,7 @@ import com.example.todo.models.Task;
 import com.example.todo.remote.ApiService;
 import com.example.todo.remote.ApiTask;
 import com.example.todo.remote.ApiUtils;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -53,6 +53,8 @@ public class HomeFragment extends Fragment implements TasksAdapter.OnTaskListene
     private CardsAdapter cardsAdapter;
     private TasksDatabaseHelper tasksDatabaseHelper;
 
+    public ExtendedFloatingActionButton extendedFab;
+
     @Override
     public void onAttach(@NonNull Context context)
     {
@@ -72,6 +74,7 @@ public class HomeFragment extends Fragment implements TasksAdapter.OnTaskListene
     {
         super.onDestroyView();
         LocalBroadcastManager.getInstance(context).unregisterReceiver(receiver);
+        extendedFab.hide();
     }
 
     public BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -87,13 +90,16 @@ public class HomeFragment extends Fragment implements TasksAdapter.OnTaskListene
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Button createCard = requireView().findViewById(R.id.createCardButton);
-        createCard.setOnClickListener(new View.OnClickListener() {
+
+        extendedFab = getActivity().findViewById(R.id.extended_fab);
+        extendedFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Navigation.findNavController(requireView()).navigate(R.id.navigation_create_card);
+                Navigation.findNavController(requireView()).navigate(R.id.navigation_task);
             }
         });
+
+        extendedFab.show();
 
         initRecyclerView();
         initCardRecyclerView();
@@ -123,6 +129,19 @@ public class HomeFragment extends Fragment implements TasksAdapter.OnTaskListene
 
         // Attach the adapter to a RecyclerView
         recyclerView.setAdapter(tasksAdapter);
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+                if (!recyclerView.canScrollVertically(-1) && newState==RecyclerView.SCROLL_STATE_IDLE) {
+                    extendedFab.extend();
+                } else {
+                    extendedFab.shrink();
+                }
+            }
+        });
     }
 
     private void initCardRecyclerView() {
