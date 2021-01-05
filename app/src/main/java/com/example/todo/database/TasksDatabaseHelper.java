@@ -8,14 +8,10 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.example.todo.models.Card;
+import com.example.todo.models.Board;
 import com.example.todo.models.Task;
 
 import java.util.ArrayList;
-
-import retrofit2.http.DELETE;
-
-import static com.google.firebase.messaging.Constants.MessagePayloadKeys.FROM;
 
 public class TasksDatabaseHelper extends SQLiteOpenHelper {
 
@@ -26,12 +22,12 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
 
     // Table Names
     private static final String TABLE_TASKS = "tasks";
-    private static final String TABLE_CARDS = "cards";
+    private static final String TABLE_BOARDS = "boards";
 
     // Post Table Columns
     private static final String KEY_TASK_ID = "id";
     private static final String KEY_TASK_SERVER_ID = "server_id";
-    private static final String KEY_TASK_CARD_ID = "card_id";
+    private static final String KEY_TASK_BOARD_ID = "board_id";
     private static final String KEY_TASK_SYNC_STATUS = "sync_status";
     private static final String KEY_TASK_NAME = "name";
     private static final String KEY_TASK_TEXT = "text";
@@ -39,11 +35,11 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
     private static final String KEY_TASK_CREATED_AT = "created_at";
     private static final String KEY_TASK_UPDATED_AT = "updated_at";
 
-    // Cards Table Columns
-    private static final String KEY_CARD_ID = "id";
-    private static final String KEY_CARD_NAME = "name";
-    private static final String KEY_CARD_CREATED_AT = "created_at";
-    private static final String KEY_CARD_UPDATED_AT = "updated_at";
+    // Boards Table Columns
+    private static final String KEY_BOARD_ID = "id";
+    private static final String KEY_BOARD_NAME = "name";
+    private static final String KEY_BOARD_CREATED_AT = "created_at";
+    private static final String KEY_BOARD_UPDATED_AT = "updated_at";
 
     private static TasksDatabaseHelper sInstance;
 
@@ -74,7 +70,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
                 "(" +
                 KEY_TASK_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + // Define a primary key
                 KEY_TASK_SERVER_ID + " INTEGER," +
-                KEY_TASK_CARD_ID + " INTEGER," +
+                KEY_TASK_BOARD_ID + " INTEGER," +
                 KEY_TASK_SYNC_STATUS + " INTEGER," +
                 KEY_TASK_NAME + " TEXT," +
                 KEY_TASK_TEXT + " TEXT," +
@@ -84,15 +80,15 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
                 ")";
         db.execSQL(CREATE_TASKS_TABLE);
 
-        // Cards
-        String CREATE_CARDS_TABLE = "CREATE TABLE " + TABLE_CARDS +
+        // Boards
+        String CREATE_BOARDS_TABLE = "CREATE TABLE " + TABLE_BOARDS +
                 "(" +
-                KEY_CARD_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + // Define a primary key
-                KEY_CARD_NAME + " TEXT," +
-                KEY_CARD_CREATED_AT + " int," +
-                KEY_CARD_UPDATED_AT + " int" +
+                KEY_BOARD_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + // Define a primary key
+                KEY_BOARD_NAME + " TEXT," +
+                KEY_BOARD_CREATED_AT + " int," +
+                KEY_BOARD_UPDATED_AT + " int" +
                 ")";
-        db.execSQL(CREATE_CARDS_TABLE);
+        db.execSQL(CREATE_BOARDS_TABLE);
     }
 
     // Called when the database needs to be upgraded.
@@ -103,7 +99,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
         if (oldVersion != newVersion) {
             // Simplest implementation is to drop all old tables and recreate them
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_TASKS);
-            db.execSQL("DROP TABLE IF EXISTS " + TABLE_CARDS);
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_BOARDS);
             onCreate(db);
         }
     }
@@ -131,7 +127,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(KEY_TASK_SYNC_STATUS, task.getSync_status());
-        values.put(KEY_TASK_CARD_ID, task.getCard_id());
+        values.put(KEY_TASK_BOARD_ID, task.getBoard_id());
         values.put(KEY_TASK_NAME, task.getName());
         values.put(KEY_TASK_TEXT, task.getText());
         values.put(KEY_TASK_STATUS, task.getStatus());
@@ -194,22 +190,22 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
         return null;
     }
 
-    // Get card
-    public Card getCard(long id) {
+    // Get board
+    public Board getBoard(long id) {
         SQLiteDatabase db = getWritableDatabase();
-        Cursor cursor = db.rawQuery("select * from " + TABLE_CARDS + " where ID = ?", new String[] {String.valueOf(id)});
+        Cursor cursor = db.rawQuery("select * from " + TABLE_BOARDS + " where ID = ?", new String[] {String.valueOf(id)});
 
         try {
             if (cursor.moveToFirst()) {
-                Card card = new Card();
-                card.setId(cursor.getInt(cursor.getColumnIndex(KEY_CARD_ID)));
-                card.setName(cursor.getString(cursor.getColumnIndex(KEY_CARD_NAME)));
-                card.setCreated_at(cursor.getInt(cursor.getColumnIndex(KEY_CARD_CREATED_AT)));
-                card.setUpdated_at(cursor.getInt(cursor.getColumnIndex(KEY_CARD_UPDATED_AT)));
-                return card;
+                Board board = new Board();
+                board.setId(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_ID)));
+                board.setName(cursor.getString(cursor.getColumnIndex(KEY_BOARD_NAME)));
+                board.setCreated_at(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_CREATED_AT)));
+                board.setUpdated_at(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_UPDATED_AT)));
+                return board;
             }
         } catch (Exception e) {
-            Log.e(TAG, "Error while trying to get card from database");
+            Log.e(TAG, "Error while trying to get board from database");
         } finally {
             if (cursor != null && !cursor.isClosed()) {
                 cursor.close();
@@ -218,59 +214,61 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
         return null;
     }
 
-    // Get cards
-    public ArrayList<Card> getCards() {
-        ArrayList<Card> cards = new ArrayList<>();
+    // Get boards
+    public ArrayList<Board> getBoards() {
+        ArrayList<Board> boards = new ArrayList<>();
 
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery("select * from " + TABLE_CARDS, null);
+        Cursor cursor = db.rawQuery("select * from " + TABLE_BOARDS, null);
         try {
             if (cursor.moveToFirst()) {
                 do {
-                    Card card = new Card();
-                    card.setId(cursor.getInt(cursor.getColumnIndex(KEY_CARD_ID)));
-                    card.setName(cursor.getString(cursor.getColumnIndex(KEY_CARD_NAME)));
-                    card.setCreated_at(cursor.getInt(cursor.getColumnIndex(KEY_CARD_CREATED_AT)));
-                    card.setUpdated_at(cursor.getInt(cursor.getColumnIndex(KEY_CARD_UPDATED_AT)));
+                    Board board = new Board();
+                    board.setId(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_ID)));
+                    board.setName(cursor.getString(cursor.getColumnIndex(KEY_BOARD_NAME)));
+                    board.setCreated_at(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_CREATED_AT)));
+                    board.setUpdated_at(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_UPDATED_AT)));
 
-                    cards.add(card);
+                    boards.add(board);
                 } while(cursor.moveToNext());
             }
         } catch (Exception e) {
-            Log.e(TAG, "Error while trying to get cards from database");
+            Log.e(TAG, "Error while trying to get boards from database");
         } finally {
             if (cursor != null && !cursor.isClosed()) {
                 cursor.close();
             }
         }
-        return cards;
+        return boards;
     }
 
-    // Add card
-    public void addCard(Card card) {
-        Log.e(TAG, "Adding card " + card.getName() + " to table " + TABLE_CARDS);
+    // Add board
+    public Board addBoard(Board board) {
+        Log.e(TAG, "Adding board " + board.getName() + " to table " + TABLE_BOARDS);
 
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(KEY_CARD_NAME, card.getName());
-        if (card.getCreated_at() > 0) {
-            values.put(KEY_CARD_CREATED_AT, card.getCreated_at());
+        values.put(KEY_BOARD_NAME, board.getName());
+        if (board.getCreated_at() > 0) {
+            values.put(KEY_BOARD_CREATED_AT, board.getCreated_at());
         }
-        if (card.getUpdated_at() > 0) {
-            values.put(KEY_CARD_UPDATED_AT, card.getUpdated_at());
+        if (board.getUpdated_at() > 0) {
+            values.put(KEY_BOARD_UPDATED_AT, board.getUpdated_at());
         }
-        long id = db.insert(TABLE_CARDS, null, values);
+        long id = db.insert(TABLE_BOARDS, null, values);
         if (id != -1) {
-            card = getCard(id);
+            board = getBoard(id);
         }
+
+        return board;
     }
 
     // Get Completed tasks
-    public ArrayList<Task> getCardTasks(Integer card_id) {
+    public ArrayList<Task> getBoardTasks(Integer board_id) {
         ArrayList<Task> tasks = new ArrayList<>();
 
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery("select * from " + TABLE_TASKS + " where CARD_ID = ?", new String[] {String.valueOf(card_id)});
+        Cursor cursor = db.rawQuery("select * from " + TABLE_TASKS + " where BOARD_ID = ?", new String[] {String.valueOf(board_id)});
         try {
             if (cursor.moveToFirst()) {
                 do {
@@ -299,7 +297,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
         ArrayList<Task> tasks = new ArrayList<>();
 
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery("select * from " + TABLE_TASKS + " where " + KEY_TASK_STATUS + " = ? AND " + KEY_TASK_CARD_ID + " IS NULL ", new String[] {String.valueOf(10)});
+        Cursor cursor = db.rawQuery("select * from " + TABLE_TASKS + " where " + KEY_TASK_STATUS + " = ? AND " + KEY_TASK_BOARD_ID + " IS NULL ", new String[] {String.valueOf(10)});
         try {
             if (cursor.moveToFirst()) {
                 do {

@@ -1,4 +1,4 @@
-package com.example.todo.ui.card;
+package com.example.todo.ui.board;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -23,20 +23,20 @@ import java.util.ArrayList;
 
 import static com.example.todo.MainActivity.context;
 
-public class CardFragment extends Fragment implements TasksAdapter.OnTaskListener {
+public class BoardFragment extends Fragment implements TasksAdapter.OnTaskListener {
 
     private TasksAdapter tasksAdapter;
     private TasksDatabaseHelper tasksDatabaseHelper;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_card, container, false);
+        return inflater.inflate(R.layout.fragment_board, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Button createTaskInCard = requireView().findViewById(R.id.createTaskButton);
-        createTaskInCard.setOnClickListener(new View.OnClickListener() {
+        Button createTaskInBoard = requireView().findViewById(R.id.createTaskButton);
+        createTaskInBoard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Navigation.findNavController(requireView()).navigate(R.id.navigation_task);
@@ -47,11 +47,11 @@ public class CardFragment extends Fragment implements TasksAdapter.OnTaskListene
     }
 
     private void initRecyclerView() {
-        RecyclerView recyclerView = requireView().findViewById(R.id.cardTasksRecyclerView);
+        RecyclerView recyclerView = requireView().findViewById(R.id.boardTasksRecyclerView);
 
         // Construct the data source
         tasksDatabaseHelper = TasksDatabaseHelper.getInstance(context);
-        ArrayList<Task> tasksArray = tasksDatabaseHelper.getCardTasks(MainActivity.selectedCard.getId());
+        ArrayList<Task> tasksArray = tasksDatabaseHelper.getBoardTasks(MainActivity.selectedBoard.getId());
 
         // Setting LayoutManager
         recyclerView.setHasFixedSize(true);
@@ -65,7 +65,7 @@ public class CardFragment extends Fragment implements TasksAdapter.OnTaskListene
     }
 
     public void onTaskClick(int position) {
-        MainActivity.selectedTask = tasksDatabaseHelper.getCardTasks(MainActivity.selectedCard.getId()).get(position);
+        MainActivity.selectedTask = tasksDatabaseHelper.getBoardTasks(MainActivity.selectedBoard.getId()).get(position);
 
         // Navigate to task fragment
         Navigation.findNavController(requireView()).navigate(R.id.navigation_task);

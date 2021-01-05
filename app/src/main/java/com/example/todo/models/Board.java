@@ -1,6 +1,6 @@
 package com.example.todo.models;
 
-public class Card {
+public class Board {
     private long updated_at, created_at;
     private Integer id;
     private String name;

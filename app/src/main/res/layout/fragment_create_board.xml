@@ -10,7 +10,7 @@
         android:padding="20dp">
 
         <TextView
-            android:id="@+id/cardNameView"
+            android:id="@+id/boardNameView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -18,21 +18,21 @@
             android:textSize="20sp"/>
 
         <EditText
-            android:id="@+id/cardNameEditText"
+            android:id="@+id/boardNameEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/cardNameView"
+            android:layout_below="@+id/boardNameView"
             android:layout_marginTop="10dp"
             android:inputType="textVisiblePassword"/>
 
         <Button
-            android:id="@+id/createCardButton"
+            android:id="@+id/createBoardButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/rounded_corner_button"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:text="Create card"
+            android:text="Create board"
             android:textSize="20sp"/>
 
     </RelativeLayout>

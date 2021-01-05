@@ -1,4 +1,4 @@
-package com.example.todo.ui.card;
+package com.example.todo.ui.board;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -14,15 +14,15 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
+import com.example.todo.MainActivity;
 import com.example.todo.R;
 import com.example.todo.database.TasksDatabaseHelper;
-import com.example.todo.models.Card;
-import com.example.todo.models.Task;
+import com.example.todo.models.Board;
 
-public class CreateCardFragment extends Fragment {
+public class CreateBoardFragment extends Fragment {
 
-    private EditText cardNameView;
-    private Button createCard;
+    private EditText boardNameView;
+    private Button createBoard;
     private String name;
     private View focusView;
 
@@ -31,53 +31,53 @@ public class CreateCardFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         context = container.getContext();
-        return inflater.inflate(R.layout.fragment_create_card, container, false);
+        return inflater.inflate(R.layout.fragment_create_board, container, false);
     }
 
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         tasksDatabaseHelper = TasksDatabaseHelper.getInstance(context);
 
-        cardNameView = requireView().findViewById(R.id.cardNameEditText);
-        createCard = requireView().findViewById(R.id.createCardButton);
-        createCard.setOnClickListener(new View.OnClickListener() {
+        boardNameView = requireView().findViewById(R.id.boardNameEditText);
+        createBoard = requireView().findViewById(R.id.createBoardButton);
+        createBoard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                attemptCreateCard();
+                attemptCreateBoard();
             }
         });
     }
 
-    private void attemptCreateCard() {
-        Card newCard = new Card();
+    private void attemptCreateBoard() {
+        Board newBoard = new Board();
 
         if (validateInput()) {
-            // Create new task
-            newCard.setName(name);
-            newCard.setCreated_at(0);
-            newCard.setUpdated_at(0);
-            tasksDatabaseHelper.addCard(newCard);
+            // Create new board
+            newBoard.setName(name);
+            newBoard.setCreated_at(0);
+            newBoard.setUpdated_at(0);
+            MainActivity.selectedBoard = tasksDatabaseHelper.addBoard(newBoard);
 
             navigateHome();
         } else {
-            // Error; don't attempt to create task
+            // Error; don't attempt to create board
             focusView.requestFocus();
         }
     }
 
     private boolean validateInput() {
         // Reset errors
-        cardNameView.setError(null);
+        boardNameView.setError(null);
 
         // Store values at the time of the create attempt
-        name = cardNameView.getText().toString();
+        name = boardNameView.getText().toString();
 
         focusView = null;
 
-        // Check for a valid task name
+        // Check for a valid board name
         if (TextUtils.isEmpty(name)) {
-            cardNameView.setError(getString(R.string.error_field_required));
-            focusView = cardNameView;
+            boardNameView.setError(getString(R.string.error_field_required));
+            focusView = boardNameView;
             return false;
         }
 
@@ -85,7 +85,7 @@ public class CreateCardFragment extends Fragment {
     }
 
     private void navigateHome() {
-        // Navigate to home fragment
-        Navigation.findNavController(requireView()).navigate(R.id.navigation_home);
+        // Navigate to board fragment
+        Navigation.findNavController(requireView()).navigate(R.id.navigation_board);
     }
 }

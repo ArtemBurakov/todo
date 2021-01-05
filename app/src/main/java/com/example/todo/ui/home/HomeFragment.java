@@ -23,10 +23,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.todo.LoginActivity;
 import com.example.todo.MainActivity;
 import com.example.todo.R;
-import com.example.todo.adapters.CardsAdapter;
 import com.example.todo.adapters.TasksAdapter;
 import com.example.todo.database.TasksDatabaseHelper;
-import com.example.todo.models.Card;
 import com.example.todo.models.Task;
 import com.example.todo.remote.ApiService;
 import com.example.todo.remote.ApiTask;
@@ -40,7 +38,7 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Response;
 
-public class HomeFragment extends Fragment implements TasksAdapter.OnTaskListener, CardsAdapter.OnCardListener {
+public class HomeFragment extends Fragment implements TasksAdapter.OnTaskListener {
 
     private static final String TAG = "HomeFragment";
 
@@ -50,7 +48,6 @@ public class HomeFragment extends Fragment implements TasksAdapter.OnTaskListene
     private Boolean unauthorized = false;
 
     private TasksAdapter tasksAdapter;
-    private CardsAdapter cardsAdapter;
     private TasksDatabaseHelper tasksDatabaseHelper;
 
     public ExtendedFloatingActionButton extendedFab;
@@ -74,7 +71,6 @@ public class HomeFragment extends Fragment implements TasksAdapter.OnTaskListene
     {
         super.onDestroyView();
         LocalBroadcastManager.getInstance(context).unregisterReceiver(receiver);
-        extendedFab.hide();
     }
 
     public BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -92,17 +88,19 @@ public class HomeFragment extends Fragment implements TasksAdapter.OnTaskListene
         super.onViewCreated(view, savedInstanceState);
 
         extendedFab = getActivity().findViewById(R.id.extended_fab);
+        extendedFab.setText("Create Task");
         extendedFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Navigation.findNavController(requireView()).navigate(R.id.navigation_task);
+                extendedFab.hide();
             }
         });
 
         extendedFab.show();
+        extendedFab.extend();
 
         initRecyclerView();
-        initCardRecyclerView();
         startSync();
     }
 
@@ -142,24 +140,6 @@ public class HomeFragment extends Fragment implements TasksAdapter.OnTaskListene
                 }
             }
         });
-    }
-
-    private void initCardRecyclerView() {
-        RecyclerView cardRecyclerView = requireView().findViewById(R.id.cardRecyclerView);
-
-        // Construct the data source
-        tasksDatabaseHelper = TasksDatabaseHelper.getInstance(context);
-        ArrayList<Card> cardsArray = tasksDatabaseHelper.getCards();
-
-        // Setting LayoutManager
-        cardRecyclerView.setHasFixedSize(true);
-        cardRecyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
-
-        // Create the adapter to convert the array to views
-        cardsAdapter = new CardsAdapter(cardsArray, context, this);
-
-        // Attach the adapter to a RecyclerView
-        cardRecyclerView.setAdapter(cardsAdapter);
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -350,15 +330,9 @@ public class HomeFragment extends Fragment implements TasksAdapter.OnTaskListene
 
     public void onTaskClick(int position) {
         MainActivity.selectedTask = tasksDatabaseHelper.getActiveTasks().get(position);
+        extendedFab.hide();
 
         // Navigate to task fragment
         Navigation.findNavController(requireView()).navigate(R.id.navigation_task);
-    }
-
-    public void onCardClick(int position) {
-        Log.e(TAG, "card " + position);
-
-        MainActivity.selectedCard = tasksDatabaseHelper.getCards().get(position);
-        Navigation.findNavController(requireView()).navigate(R.id.navigation_card);
     }
 }

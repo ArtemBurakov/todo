@@ -1,8 +1,7 @@
 <resources>
     <string name="app_name">Todo</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="title_home">Tasks</string>
+    <string name="title_dashboard">Boards</string>
     <string name="error_field_required">Field required</string>
     <string name="error_invalid_password">Invalid password</string>
     <string name="error_invalid_email">Invalid email</string>

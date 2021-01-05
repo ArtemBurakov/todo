@@ -3,7 +3,6 @@ package com.example.todo.ui.task;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -101,8 +100,8 @@ public class TaskFragment extends Fragment {
             newTask.setText(text);
             newTask.setStatus(TasksDatabaseHelper.statusActive);
             newTask.setSync_status(1);
-            if (MainActivity.selectedCard != null) {
-                newTask.setCard_id(MainActivity.selectedCard.getId());
+            if (MainActivity.selectedBoard != null) {
+                newTask.setBoard_id(MainActivity.selectedBoard.getId());
             }
             newTask.setCreated_at(0);
             newTask.setUpdated_at(0);
