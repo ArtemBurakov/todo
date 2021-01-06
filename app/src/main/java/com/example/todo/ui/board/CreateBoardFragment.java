@@ -12,6 +12,8 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.Navigation;
 
 import com.example.todo.MainActivity;
@@ -54,11 +56,12 @@ public class CreateBoardFragment extends Fragment {
         if (validateInput()) {
             // Create new board
             newBoard.setName(name);
+            newBoard.setSync_status(1);
             newBoard.setCreated_at(0);
             newBoard.setUpdated_at(0);
             MainActivity.selectedBoard = tasksDatabaseHelper.addBoard(newBoard);
 
-            navigateHome();
+            navigateDashboard();
         } else {
             // Error; don't attempt to create board
             focusView.requestFocus();
@@ -84,8 +87,8 @@ public class CreateBoardFragment extends Fragment {
         return true;
     }
 
-    private void navigateHome() {
-        // Navigate to board fragment
-        Navigation.findNavController(requireView()).navigate(R.id.navigation_board);
+    private void navigateDashboard() {
+        // Navigate to dashboard fragment
+        Navigation.findNavController(requireView()).navigate(R.id.navigation_dashboard);
     }
 }

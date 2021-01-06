@@ -8,8 +8,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.todo.BoardDiffUtilCallback;
 import com.example.todo.R;
 import com.example.todo.database.TasksDatabaseHelper;
 import com.example.todo.models.Board;
@@ -73,5 +75,13 @@ public class BoardsAdapter extends RecyclerView.Adapter<BoardsAdapter.BoardViewH
     @Override
     public int getItemCount() {
         return boardsArrayList.size();
+    }
+
+    public void updateBoardsArrayList(final ArrayList<Board> newBoardsArrayList) {
+        // Attach differences to adapter
+        final DiffUtil.DiffResult result = DiffUtil.calculateDiff(
+                new BoardDiffUtilCallback(newBoardsArrayList, boardsArrayList));
+        boardsArrayList = newBoardsArrayList;
+        result.dispatchUpdatesTo(BoardsAdapter.this);
     }
 }

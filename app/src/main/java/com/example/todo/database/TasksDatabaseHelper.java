@@ -24,7 +24,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
     private static final String TABLE_TASKS = "tasks";
     private static final String TABLE_BOARDS = "boards";
 
-    // Post Table Columns
+    // Task Table Columns
     private static final String KEY_TASK_ID = "id";
     private static final String KEY_TASK_SERVER_ID = "server_id";
     private static final String KEY_TASK_BOARD_ID = "board_id";
@@ -37,6 +37,8 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
 
     // Boards Table Columns
     private static final String KEY_BOARD_ID = "id";
+    private static final String KEY_BOARD_SERVER_ID = "server_id";
+    private static final String KEY_BOARD_SYNC_STATUS = "sync_status";
     private static final String KEY_BOARD_NAME = "name";
     private static final String KEY_BOARD_CREATED_AT = "created_at";
     private static final String KEY_BOARD_UPDATED_AT = "updated_at";
@@ -84,6 +86,8 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
         String CREATE_BOARDS_TABLE = "CREATE TABLE " + TABLE_BOARDS +
                 "(" +
                 KEY_BOARD_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + // Define a primary key
+                KEY_BOARD_SERVER_ID + " INTEGER," +
+                KEY_BOARD_SYNC_STATUS + " INTEGER," +
                 KEY_BOARD_NAME + " TEXT," +
                 KEY_BOARD_CREATED_AT + " int," +
                 KEY_BOARD_UPDATED_AT + " int" +
@@ -120,6 +124,22 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    // Delete all boards from table boards
+    public static void deleteAllBoards(Context context) {
+        Log.e(TAG, "Deleting all boards from table " + TABLE_BOARDS);
+
+        TasksDatabaseHelper tasksDatabaseHelper = new TasksDatabaseHelper(context);
+        SQLiteDatabase db = tasksDatabaseHelper.getWritableDatabase();
+
+        try {
+            db.execSQL("DELETE FROM boards");
+            db.execSQL("DELETE FROM SQLITE_SEQUENCE WHERE NAME = '" + TABLE_BOARDS + "'");
+            db.close();
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+        }
+    }
+
     // Add task
     public void addTask(Task task) {
         Log.e(TAG, "Adding task " + task.getName() + ", sync status which = " + task.getSync_status() + " server_id = " + task.getServer_id() + ", to table " + TABLE_TASKS);
@@ -146,6 +166,31 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    // Add board
+    public Board addBoard(Board board) {
+        Log.e(TAG, "Adding board " + board.getName() + " to table " + TABLE_BOARDS);
+
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(KEY_BOARD_NAME, board.getName());
+        values.put(KEY_BOARD_SYNC_STATUS, board.getSync_status());
+        if (board.getCreated_at() > 0) {
+            values.put(KEY_BOARD_CREATED_AT, board.getCreated_at());
+        }
+        if (board.getUpdated_at() > 0) {
+            values.put(KEY_BOARD_UPDATED_AT, board.getUpdated_at());
+        }
+        if (board.getServer_id() != null) {
+            values.put(KEY_TASK_SERVER_ID, board.getServer_id());
+        }
+        long id = db.insert(TABLE_BOARDS, null, values);
+        if (id != -1) {
+            board = getBoard(id);
+        }
+
+        return board;
+    }
+
     // Update task
     public void updateTask(Task task) {
         Log.e(TAG, "Updating task " + task.getName() + ", sync status = " + task.getSync_status() + ", server_id = " + task.getServer_id() + ", status = " + task.getStatus() + " in table " + TABLE_TASKS);
@@ -162,6 +207,22 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_TASK_CREATED_AT, task.getCreated_at());
         values.put(KEY_TASK_UPDATED_AT, task.getUpdated_at());
         long result = db.update(TABLE_TASKS, values, KEY_TASK_ID + " = ?", new String[] {String.valueOf(task.getId())});
+    }
+
+    // Update board
+    public void updateBoard(Board board) {
+        Log.e(TAG, "Updating board " + board.getName() + ", sync status = " + board.getSync_status() + ", server_id = " + board.getServer_id() + " in table " + TABLE_BOARDS);
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        if (board.getServer_id() != null) {
+            values.put(KEY_BOARD_SERVER_ID, board.getServer_id());
+        }
+        values.put(KEY_BOARD_SYNC_STATUS, board.getSync_status());
+        values.put(KEY_BOARD_NAME, board.getName());
+        values.put(KEY_BOARD_CREATED_AT, board.getCreated_at());
+        values.put(KEY_BOARD_UPDATED_AT, board.getUpdated_at());
+        long result = db.update(TABLE_BOARDS, values, KEY_BOARD_ID + " = ?", new String[] {String.valueOf(board.getId())});
     }
 
     // Get task
@@ -214,55 +275,6 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
         return null;
     }
 
-    // Get boards
-    public ArrayList<Board> getBoards() {
-        ArrayList<Board> boards = new ArrayList<>();
-
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery("select * from " + TABLE_BOARDS, null);
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-                    Board board = new Board();
-                    board.setId(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_ID)));
-                    board.setName(cursor.getString(cursor.getColumnIndex(KEY_BOARD_NAME)));
-                    board.setCreated_at(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_CREATED_AT)));
-                    board.setUpdated_at(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_UPDATED_AT)));
-
-                    boards.add(board);
-                } while(cursor.moveToNext());
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Error while trying to get boards from database");
-        } finally {
-            if (cursor != null && !cursor.isClosed()) {
-                cursor.close();
-            }
-        }
-        return boards;
-    }
-
-    // Add board
-    public Board addBoard(Board board) {
-        Log.e(TAG, "Adding board " + board.getName() + " to table " + TABLE_BOARDS);
-
-        SQLiteDatabase db = getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(KEY_BOARD_NAME, board.getName());
-        if (board.getCreated_at() > 0) {
-            values.put(KEY_BOARD_CREATED_AT, board.getCreated_at());
-        }
-        if (board.getUpdated_at() > 0) {
-            values.put(KEY_BOARD_UPDATED_AT, board.getUpdated_at());
-        }
-        long id = db.insert(TABLE_BOARDS, null, values);
-        if (id != -1) {
-            board = getBoard(id);
-        }
-
-        return board;
-    }
-
     // Get Completed tasks
     public ArrayList<Task> getBoardTasks(Integer board_id) {
         ArrayList<Task> tasks = new ArrayList<>();
@@ -291,7 +303,6 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
         }
         return tasks;
     }
-
     // Get Active tasks
     public ArrayList<Task> getActiveTasks() {
         ArrayList<Task> tasks = new ArrayList<>();
@@ -417,6 +428,39 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
         return tasks;
     }
 
+    // Get not synced boards
+    public ArrayList<Board> getNotSyncedBoards() {
+        ArrayList<Board> boards = new ArrayList<>();
+
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("select * from " + TABLE_BOARDS + " where " + KEY_BOARD_SYNC_STATUS + " = ?", new String[] {String.valueOf(1)});
+        try {
+            if (cursor.moveToFirst()) {
+                do {
+                    Board board = new Board();
+                    if (cursor.isNull(cursor.getColumnIndex(KEY_BOARD_SERVER_ID))) {
+                        board.setServer_id(null);
+                    } else {
+                        board.setServer_id(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_SERVER_ID)));
+                    }
+                    board.setId(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_ID)));
+                    board.setSync_status(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_SYNC_STATUS)));
+                    board.setName(cursor.getString(cursor.getColumnIndex(KEY_BOARD_NAME)));
+                    board.setCreated_at(cursor.getLong(cursor.getColumnIndex(KEY_BOARD_CREATED_AT)));
+                    board.setUpdated_at(cursor.getLong(cursor.getColumnIndex(KEY_BOARD_UPDATED_AT)));
+                    boards.add(board);
+                } while(cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error while trying to get boards from database");
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
+        return boards;
+    }
+
     // Get tasks
     public ArrayList<Task> getTasks(Integer server_id) {
         ArrayList<Task> tasks = new ArrayList<>();
@@ -447,7 +491,63 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
         return tasks;
     }
 
-    // Get latest update_at timestamp
+    // Get boards
+    public ArrayList<Board> getBoards() {
+        ArrayList<Board> boards = new ArrayList<>();
+
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("select * from " + TABLE_BOARDS, null);
+        try {
+            if (cursor.moveToFirst()) {
+                do {
+                    Board board = new Board();
+                    board.setId(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_ID)));
+                    board.setName(cursor.getString(cursor.getColumnIndex(KEY_BOARD_NAME)));
+                    board.setCreated_at(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_CREATED_AT)));
+                    board.setUpdated_at(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_UPDATED_AT)));
+
+                    boards.add(board);
+                } while(cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error while trying to get boards from database");
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
+        return boards;
+    }
+
+    // Get boards by server_id
+    public ArrayList<Board> getBoardsByServerId(Integer server_id) {
+        ArrayList<Board> boards = new ArrayList<>();
+
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor cursor = db.rawQuery("select * from " + TABLE_BOARDS + " where " + KEY_BOARD_SERVER_ID + " = ?", new String[] {String.valueOf(server_id)});
+
+        try {
+            if (cursor.moveToFirst()) {
+                do {
+                    Board board = new Board();
+                    board.setId(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_ID)));
+                    board.setName(cursor.getString(cursor.getColumnIndex(KEY_BOARD_NAME)));
+                    board.setCreated_at(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_CREATED_AT)));
+                    board.setUpdated_at(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_UPDATED_AT)));
+                    boards.add(board);
+                } while(cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error while trying to get boards from database");
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
+        return boards;
+    }
+
+    // Get latest update_at timestamp for task
     public ArrayList<Task> getTasksUpdateAfter() {
         ArrayList<Task> tasks = new ArrayList<>();
 
@@ -463,12 +563,37 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
                 } while(cursor.moveToNext());
             }
         } catch (Exception e) {
-            Log.e(TAG, "Error while trying to get tasks from database");
+            Log.e(TAG, "Error while trying to get task from database");
         } finally {
             if (cursor != null && !cursor.isClosed()) {
                 cursor.close();
             }
         }
         return tasks;
+    }
+
+    // Get latest update_at timestamp for board
+    public ArrayList<Board> getBoardsUpdateAfter() {
+        ArrayList<Board> boards = new ArrayList<>();
+
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor cursor = db.rawQuery("select max(updated_at) as updated_at from boards", null);
+
+        try {
+            if (cursor.moveToFirst()) {
+                do {
+                    Board board = new Board();
+                    board.setUpdated_at(cursor.getInt(cursor.getColumnIndex("updated_at")));
+                    boards.add(board);
+                } while(cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error while trying to get board from database");
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
+        return boards;
     }
 }

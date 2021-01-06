@@ -1,11 +1,15 @@
 package com.example.todo.remote;
 
-public class ApiTask {
+public class ApiBoard {
     private Integer id, user_id, status;
-    private String name, text;
-    private long created_at, updated_at;
+    private String name;
+    private long updated_at, created_at;
 
     // Getters
+    public Integer getId() {
+        return id;
+    }
+
     public Integer getUser_id() {
         return user_id;
     }
@@ -14,16 +18,8 @@ public class ApiTask {
         return status;
     }
 
-    public Integer getId() {
-        return id;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public String getText() {
-        return text;
     }
 
     public long getCreated_at() {
@@ -35,6 +31,10 @@ public class ApiTask {
     }
 
     // Setters
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     public void setUser_id(Integer user_id) {
         this.user_id = user_id;
     }
@@ -43,16 +43,8 @@ public class ApiTask {
         this.status = status;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
     public void setName(String name) {
         this.name = name;
-    }
-
-    public void setText(String text) {
-        this.text = text;
     }
 
     public void setCreated_at(long created_at) {

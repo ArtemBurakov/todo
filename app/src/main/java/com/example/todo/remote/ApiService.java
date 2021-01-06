@@ -32,15 +32,24 @@ public interface ApiService {
     @GET("todos")
     Call<List<ApiTask>> getTodos(@Header("Authorization") String authorization, @Query("updated_after") String updated_after);
 
+    @GET("boards")
+    Call<List<ApiBoard>> getBoards(@Header("Authorization") String authorization, @Query("updated_after") String updated_after);
+
     @Headers({
             "Content-Type: application/json"
     })
     @POST("todos")
     Call<ApiTask> addTask(@Header("Authorization") String authorization, @Body ApiTask task);
 
+    @POST("boards")
+    Call<ApiBoard> addBoard(@Header("Authorization") String authorization, @Body ApiBoard board);
+
     @Headers({
             "Content-Type: application/json"
     })
     @PUT("todos/{id}")
     Call<ApiTask> updateTask(@Header("Authorization") String authorization, @Path("id") long id, @Body ApiTask task);
+
+    @PUT("boards/{id}")
+    Call<ApiBoard> updateBoard(@Header("Authorization") String authorization, @Path("id") long id, @Body ApiBoard board);
 }
