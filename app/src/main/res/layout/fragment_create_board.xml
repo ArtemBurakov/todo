@@ -23,7 +23,8 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/boardNameView"
             android:layout_marginTop="10dp"
-            android:inputType="textVisiblePassword"/>
+            android:inputType="textVisiblePassword"
+            android:maxLength="55"/>
 
         <Button
             android:id="@+id/createBoardButton"

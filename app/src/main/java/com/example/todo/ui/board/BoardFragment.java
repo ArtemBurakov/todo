@@ -18,6 +18,7 @@ import com.example.todo.R;
 import com.example.todo.adapters.TasksAdapter;
 import com.example.todo.database.TasksDatabaseHelper;
 import com.example.todo.models.Task;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
 import java.util.ArrayList;
 
@@ -28,6 +29,8 @@ public class BoardFragment extends Fragment implements TasksAdapter.OnTaskListen
     private TasksAdapter tasksAdapter;
     private TasksDatabaseHelper tasksDatabaseHelper;
 
+    private ExtendedFloatingActionButton extendedFab;
+
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_board, container, false);
     }
@@ -35,13 +38,18 @@ public class BoardFragment extends Fragment implements TasksAdapter.OnTaskListen
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Button createTaskInBoard = requireView().findViewById(R.id.createTaskButton);
-        createTaskInBoard.setOnClickListener(new View.OnClickListener() {
+        extendedFab = getActivity().findViewById(R.id.extended_fab);
+        extendedFab.setText("Create Task");
+        extendedFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Navigation.findNavController(requireView()).navigate(R.id.navigation_task);
+                extendedFab.hide();
             }
         });
+
+        extendedFab.show();
+        extendedFab.extend();
 
         initRecyclerView();
     }
@@ -62,6 +70,18 @@ public class BoardFragment extends Fragment implements TasksAdapter.OnTaskListen
 
         // Attach the adapter to a RecyclerView
         recyclerView.setAdapter(tasksAdapter);
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+                if (!recyclerView.canScrollVertically(-1) && newState==RecyclerView.SCROLL_STATE_IDLE) {
+                    extendedFab.extend();
+                } else {
+                    extendedFab.shrink();
+                }
+            }
+        });
     }
 
     public void onTaskClick(int position) {

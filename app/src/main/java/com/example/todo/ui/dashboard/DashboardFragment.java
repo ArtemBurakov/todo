@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -122,17 +123,30 @@ public class DashboardFragment extends Fragment implements BoardsAdapter.OnBoard
 
         // Construct the data source
         tasksDatabaseHelper = TasksDatabaseHelper.getInstance(context);
-        ArrayList<Board> boardsArray = tasksDatabaseHelper.getBoards();
+        ArrayList<Board> boardsArray = tasksDatabaseHelper.getActiveBoards();
 
-        // Setting LayoutManager
+        // Setting GridLayoutManager
         boardRecyclerView.setHasFixedSize(true);
-        boardRecyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+        boardRecyclerView.setLayoutManager(new GridLayoutManager(context, 2));
 
         // Create the adapter to convert the array to views
         boardsAdapter = new BoardsAdapter(boardsArray, context, this);
 
         // Attach the adapter to a RecyclerView
         boardRecyclerView.setAdapter(boardsAdapter);
+
+        boardRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+                if (!recyclerView.canScrollVertically(-1) && newState==RecyclerView.SCROLL_STATE_IDLE) {
+                    extendedFab.extend();
+                } else {
+                    extendedFab.shrink();
+                }
+            }
+        });
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -187,6 +201,7 @@ public class DashboardFragment extends Fragment implements BoardsAdapter.OnBoard
                                 board.setServer_id(api_board.getId());
                                 board.setSync_status(0);
                                 board.setName(api_board.getName());
+                                board.setStatus(api_board.getStatus());
                                 board.setUpdated_at(api_board.getUpdated_at());
                                 tasksDatabaseHelper.updateBoard(board);
                             }
@@ -199,6 +214,7 @@ public class DashboardFragment extends Fragment implements BoardsAdapter.OnBoard
                             newBoard.setServer_id(api_board.getId());
                             newBoard.setSync_status(0);
                             newBoard.setName(api_board.getName());
+                            newBoard.setStatus(api_board.getStatus());
                             newBoard.setCreated_at(api_board.getCreated_at());
                             newBoard.setUpdated_at(api_board.getUpdated_at());
                             tasksDatabaseHelper.addBoard(newBoard);
@@ -253,6 +269,7 @@ public class DashboardFragment extends Fragment implements BoardsAdapter.OnBoard
             ApiBoard apiBoard = new ApiBoard();
             apiBoard.setId(board.getServer_id());
             apiBoard.setName(board.getName());
+            apiBoard.setStatus(board.getStatus());
             apiBoard.setCreated_at(board.getCreated_at());
             apiBoard.setUpdated_at(board.getUpdated_at());
 
@@ -278,6 +295,7 @@ public class DashboardFragment extends Fragment implements BoardsAdapter.OnBoard
                     ApiBoard api_board = response.body();
                     board.setSync_status(0);
                     board.setName(api_board.getName());
+                    board.setStatus(api_board.getStatus());
                     board.setCreated_at(api_board.getCreated_at());
                     board.setUpdated_at(api_board.getUpdated_at());
 
@@ -311,14 +329,14 @@ public class DashboardFragment extends Fragment implements BoardsAdapter.OnBoard
         Log.e(TAG, "Updating recycler view");
 
         // Get new tasks from DB, update adapter
-        ArrayList<Board> newBoardsArray = tasksDatabaseHelper.getBoards();
+        ArrayList<Board> newBoardsArray = tasksDatabaseHelper.getActiveBoards();
         boardsAdapter.updateBoardsArrayList(newBoardsArray);
     }
 
     public void onBoardClick(int position) {
         extendedFab.hide();
 
-        MainActivity.selectedBoard = tasksDatabaseHelper.getBoards().get(position);
+        MainActivity.selectedBoard = tasksDatabaseHelper.getActiveBoards().get(position);
         Navigation.findNavController(requireView()).navigate(R.id.navigation_board);
     }
 }

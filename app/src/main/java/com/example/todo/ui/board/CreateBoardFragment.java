@@ -56,6 +56,7 @@ public class CreateBoardFragment extends Fragment {
         if (validateInput()) {
             // Create new board
             newBoard.setName(name);
+            newBoard.setStatus(TasksDatabaseHelper.statusActive);
             newBoard.setSync_status(1);
             newBoard.setCreated_at(0);
             newBoard.setUpdated_at(0);

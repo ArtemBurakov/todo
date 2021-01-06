@@ -25,7 +25,8 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/taskNameView"
             android:layout_marginTop="10dp"
-            android:inputType="textVisiblePassword"/>
+            android:inputType="textVisiblePassword"
+            android:maxLength="55"/>
 
         <TextView
             android:id="@+id/taskTextView"
@@ -42,7 +43,8 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/taskTextView"
             android:layout_marginTop="10dp"
-            android:inputType="textMultiLine"/>
+            android:inputType="textMultiLine"
+            android:maxLength="255"/>
 
         <Button
             android:id="@+id/createTaskButton"
