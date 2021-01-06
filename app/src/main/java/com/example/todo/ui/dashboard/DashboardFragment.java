@@ -1,8 +1,10 @@
 package com.example.todo.ui.dashboard;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +15,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -59,6 +62,9 @@ public class DashboardFragment extends Fragment implements BoardsAdapter.OnBoard
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(context);
+        lbm.registerReceiver(receiver, new IntentFilter("fcmNotification"));
+
         View root = inflater.inflate(R.layout.fragment_dashboard, container, false);
         return root;
     }
@@ -83,6 +89,26 @@ public class DashboardFragment extends Fragment implements BoardsAdapter.OnBoard
         initBoardRecyclerView();
         startSync();
     }
+
+    @Override
+    public void onDestroyView()
+    {
+        super.onDestroyView();
+        LocalBroadcastManager.getInstance(context).unregisterReceiver(receiver);
+    }
+
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent != null) {
+                String modelName = intent.getStringExtra("modelName");
+                if (modelName.equals("board")) {
+                    Log.e(TAG, "Board === " + intent.getAction());
+                    startSync();
+                }
+            }
+        }
+    };
 
     public void startSync(){
         if (syncBoard == null) {
@@ -112,7 +138,7 @@ public class DashboardFragment extends Fragment implements BoardsAdapter.OnBoard
     @SuppressLint("StaticFieldLeak")
     public class ApiBoardSync extends AsyncTask<Void, Void, Boolean> {
 
-        String apiUrl = "http://192.168.88.106/todo/backend/web/v1/";
+        String apiUrl = "http://10.0.2.2/todo/backend/web/v1/";
         ApiService apiService = ApiUtils.getAPIService(apiUrl);
 
         @Override

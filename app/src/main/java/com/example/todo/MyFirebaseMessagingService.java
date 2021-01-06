@@ -62,8 +62,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // Also if you intend on generating your own notifications as a result of a received FCM
         // message, here is where that should be initiated. See sendNotification method below.
 
-        Intent intent = new Intent("fcmNotification");
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+//        Intent intent = new Intent("fcmNotification");
+//        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
     /**
@@ -74,9 +74,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         String modelName = remoteMessage.getData().get("model");
 
         if (modelName != null){
-
-            //communicate with Home fragment
-            Intent intent = new Intent("FcmNotification");
+            Intent intent = new Intent("fcmNotification");
             intent.putExtra("modelName", modelName);
             broadcaster.sendBroadcast(intent);
         }

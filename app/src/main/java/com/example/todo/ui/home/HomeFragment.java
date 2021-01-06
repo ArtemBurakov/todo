@@ -73,12 +73,15 @@ public class HomeFragment extends Fragment implements TasksAdapter.OnTaskListene
         LocalBroadcastManager.getInstance(context).unregisterReceiver(receiver);
     }
 
-    public BroadcastReceiver receiver = new BroadcastReceiver() {
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent != null) {
-                Log.e(TAG, "==="+intent.getAction());
-                startSync();
+                String modelName = intent.getStringExtra("modelName");
+                if (modelName.equals("todo")) {
+                    Log.e(TAG, "Todo === " + intent.getAction());
+                    startSync();
+                }
             }
         }
     };
