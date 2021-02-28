@@ -143,13 +143,12 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
     }
 
     // Add task
-    public void addTask(Task task) {
-        Log.e(TAG, "Adding task " + task.getName() + ", sync status which = " + task.getSync_status() + " server_id = " + task.getServer_id() + ", to table " + TABLE_TASKS);
+    public Task addTask(Task task) {
+        Log.e(TAG, "Adding task " + task.getName() + " board_id = " + task.getBoard_id() + ", to table " + TABLE_TASKS);
 
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(KEY_TASK_SYNC_STATUS, task.getSync_status());
-        values.put(KEY_TASK_BOARD_ID, task.getBoard_id());
         values.put(KEY_TASK_NAME, task.getName());
         values.put(KEY_TASK_TEXT, task.getText());
         values.put(KEY_TASK_STATUS, task.getStatus());
@@ -162,10 +161,15 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
         if (task.getServer_id() != null) {
             values.put(KEY_TASK_SERVER_ID, task.getServer_id());
         }
+        if (task.getBoard_id() != null) {
+            values.put(KEY_TASK_BOARD_ID, task.getBoard_id());
+        }
         long id = db.insert(TABLE_TASKS, null, values);
         if (id != -1) {
             task = getTask(id);
         }
+
+        return task;
     }
 
     // Add board
@@ -177,14 +181,12 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_BOARD_NAME, board.getName());
         values.put(KEY_BOARD_SYNC_STATUS, board.getSync_status());
         values.put(KEY_BOARD_STATUS, board.getStatus());
+        values.put(KEY_BOARD_SERVER_ID, board.getServer_id());
         if (board.getCreated_at() > 0) {
             values.put(KEY_BOARD_CREATED_AT, board.getCreated_at());
         }
         if (board.getUpdated_at() > 0) {
             values.put(KEY_BOARD_UPDATED_AT, board.getUpdated_at());
-        }
-        if (board.getServer_id() != null) {
-            values.put(KEY_TASK_SERVER_ID, board.getServer_id());
         }
         long id = db.insert(TABLE_BOARDS, null, values);
         if (id != -1) {
@@ -196,7 +198,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
 
     // Update task
     public void updateTask(Task task) {
-        Log.e(TAG, "Updating task " + task.getName() + ", sync status = " + task.getSync_status() + ", server_id = " + task.getServer_id() + ", status = " + task.getStatus() + " in table " + TABLE_TASKS);
+        Log.e(TAG, "Updating task " + task.getName() + ", board id = " + task.getBoard_id() + ", server_id = " + task.getServer_id() + ", status = " + task.getStatus() + " in table " + TABLE_TASKS);
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -213,7 +215,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
     }
 
     // Update board
-    public void updateBoard(Board board) {
+    public Board updateBoard(Board board) {
         Log.e(TAG, "Updating board " + board.getName() + ", sync status = " + board.getSync_status() + ", server_id = " + board.getServer_id() + " in table " + TABLE_BOARDS);
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -226,7 +228,13 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_BOARD_STATUS, board.getStatus());
         values.put(KEY_BOARD_CREATED_AT, board.getCreated_at());
         values.put(KEY_BOARD_UPDATED_AT, board.getUpdated_at());
-        long result = db.update(TABLE_BOARDS, values, KEY_BOARD_ID + " = ?", new String[] {String.valueOf(board.getId())});
+        long id = db.update(TABLE_BOARDS, values, KEY_BOARD_ID + " = ?", new String[] {String.valueOf(board.getId())});
+
+        if (id != -1) {
+            board = getBoard(id);
+        }
+
+        return board;
     }
 
     // Get task
@@ -264,6 +272,33 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
             if (cursor.moveToFirst()) {
                 Board board = new Board();
                 board.setId(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_ID)));
+                board.setServer_id(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_SERVER_ID)));
+                board.setName(cursor.getString(cursor.getColumnIndex(KEY_BOARD_NAME)));
+                board.setStatus(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_STATUS)));
+                board.setCreated_at(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_CREATED_AT)));
+                board.setUpdated_at(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_UPDATED_AT)));
+                return board;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error while trying to get board from database");
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
+        return null;
+    }
+
+    // Get board
+    public Board getBoardByServerId(Integer id) {
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor cursor = db.rawQuery("select * from " + TABLE_BOARDS + " where " + KEY_BOARD_SERVER_ID + " = ? ", new String[] {String.valueOf(id)});
+
+        try {
+            if (cursor.moveToFirst()) {
+                Board board = new Board();
+                board.setId(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_ID)));
+                board.setServer_id(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_SERVER_ID)));
                 board.setName(cursor.getString(cursor.getColumnIndex(KEY_BOARD_NAME)));
                 board.setStatus(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_STATUS)));
                 board.setCreated_at(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_CREATED_AT)));
@@ -285,12 +320,13 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
         ArrayList<Task> tasks = new ArrayList<>();
 
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery("select * from " + TABLE_TASKS + " where BOARD_ID = ?", new String[] {String.valueOf(board_id)});
+        Cursor cursor = db.rawQuery("select * from " + TABLE_TASKS + " where " + KEY_TASK_BOARD_ID + " = ? AND " + KEY_TASK_STATUS + " = ? ", new String[] {String.valueOf(board_id), String.valueOf(10)}, null);
         try {
             if (cursor.moveToFirst()) {
                 do {
                     Task task = new Task();
                     task.setId(cursor.getInt(cursor.getColumnIndex(KEY_TASK_ID)));
+                    task.setBoard_id(cursor.getInt(cursor.getColumnIndex(KEY_TASK_BOARD_ID)));
                     task.setName(cursor.getString(cursor.getColumnIndex(KEY_TASK_NAME)));
                     task.setText(cursor.getString(cursor.getColumnIndex(KEY_TASK_TEXT)));
                     task.setStatus(cursor.getInt(cursor.getColumnIndex(KEY_TASK_STATUS)));
@@ -414,6 +450,11 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
                     } else {
                         task.setServer_id(cursor.getInt(cursor.getColumnIndex(KEY_TASK_SERVER_ID)));
                     }
+                    if (cursor.isNull(cursor.getColumnIndex(KEY_TASK_BOARD_ID))) {
+                        task.setBoard_id(null);
+                    } else {
+                        task.setBoard_id(cursor.getInt(cursor.getColumnIndex(KEY_TASK_BOARD_ID)));
+                    }
                     task.setId(cursor.getInt(cursor.getColumnIndex(KEY_TASK_ID)));
                     task.setSync_status(cursor.getInt(cursor.getColumnIndex(KEY_TASK_SYNC_STATUS)));
                     task.setName(cursor.getString(cursor.getColumnIndex(KEY_TASK_NAME)));
@@ -509,6 +550,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
                 do {
                     Board board = new Board();
                     board.setId(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_ID)));
+                    board.setServer_id(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_SERVER_ID)));
                     board.setName(cursor.getString(cursor.getColumnIndex(KEY_BOARD_NAME)));
                     board.setStatus(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_STATUS)));
                     board.setCreated_at(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_CREATED_AT)));

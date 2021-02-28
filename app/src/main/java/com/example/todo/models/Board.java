@@ -2,7 +2,7 @@ package com.example.todo.models;
 
 public class Board {
     private long updated_at, created_at;
-    private Integer id, server_id, board_id, sync_status, status;
+    private Integer id, server_id, sync_status, status;
     private String name;
 
     // Getters
@@ -12,10 +12,6 @@ public class Board {
 
     public Integer getServer_id() {
         return server_id;
-    }
-
-    public Integer getBoard_id() {
-        return board_id;
     }
 
     public Integer getSync_status() {
@@ -45,10 +41,6 @@ public class Board {
 
     public void setServer_id(Integer server_id) {
         this.server_id = server_id;
-    }
-
-    public void setBoard_id(Integer board_id) {
-        this.board_id = board_id;
     }
 
     public void setSync_status(Integer sync_status) {

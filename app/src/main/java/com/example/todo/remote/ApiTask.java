@@ -1,13 +1,17 @@
 package com.example.todo.remote;
 
 public class ApiTask {
-    private Integer id, user_id, status;
+    private Integer id, user_id, status, board_id;
     private String name, text;
     private long created_at, updated_at;
 
     // Getters
     public Integer getUser_id() {
         return user_id;
+    }
+
+    public Integer getBoard_id() {
+        return board_id;
     }
 
     public Integer getStatus() {
@@ -37,6 +41,10 @@ public class ApiTask {
     // Setters
     public void setUser_id(Integer user_id) {
         this.user_id = user_id;
+    }
+
+    public void setBoard_id(Integer board_id) {
+        this.board_id = board_id;
     }
 
     public void setStatus(Integer status) {

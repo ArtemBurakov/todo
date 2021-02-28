@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static Task selectedTask;
     public static Board selectedBoard;
+    public static ApiSync apiSync;
     public ApiFcmTokenSendTask syncFcmToken;
 
     @Override
@@ -84,6 +85,13 @@ public class MainActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return super.onSupportNavigateUp();
+    }
+
+    public static void startSync() {
+        if (apiSync == null) {
+            apiSync = new ApiSync(context);
+            apiSync.execute();
+        }
     }
 
     public static Context getContextOfApplication() {
