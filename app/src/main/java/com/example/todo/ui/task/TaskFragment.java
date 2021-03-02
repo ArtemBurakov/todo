@@ -12,6 +12,7 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
@@ -19,12 +20,13 @@ import com.example.todo.MainActivity;
 import com.example.todo.R;
 import com.example.todo.database.TasksDatabaseHelper;
 import com.example.todo.models.Task;
+import com.google.android.material.textfield.TextInputLayout;
 
 public class TaskFragment extends Fragment {
 
     private static final String TAG = "TaskFragment";
 
-    private EditText taskNameView, taskTextView;
+    private TextInputLayout taskNameView, taskTextView;
     private View focusView;
 
     private String name;
@@ -41,6 +43,7 @@ public class TaskFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(MainActivity.selectedTask.getName());
         tasksDatabaseHelper = TasksDatabaseHelper.getInstance(context);
 
         taskNameView = requireView().findViewById(R.id.taskNameEditText);
@@ -76,8 +79,8 @@ public class TaskFragment extends Fragment {
         });
 
         if (MainActivity.selectedTask != null) {
-            taskNameView.setText(MainActivity.selectedTask.getName());
-            taskTextView.setText(MainActivity.selectedTask.getText());
+            taskNameView.getEditText().setText(MainActivity.selectedTask.getName());
+            taskTextView.getEditText().setText(MainActivity.selectedTask.getText());
             createTaskButton.setVisibility(View.GONE);
             updateTaskButton.setVisibility(View.VISIBLE);
             deleteTaskButton.setVisibility(View.VISIBLE);
@@ -137,8 +140,8 @@ public class TaskFragment extends Fragment {
         taskTextView.setError(null);
 
         // Store values at the time of the create attempt
-        name = taskNameView.getText().toString();
-        text = taskTextView.getText().toString();
+        name = taskNameView.getEditText().getText().toString();
+        text = taskTextView.getEditText().getText().toString();
 
         focusView = null;
 

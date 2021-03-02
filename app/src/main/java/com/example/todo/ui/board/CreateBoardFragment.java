@@ -20,10 +20,11 @@ import com.example.todo.MainActivity;
 import com.example.todo.R;
 import com.example.todo.database.TasksDatabaseHelper;
 import com.example.todo.models.Board;
+import com.google.android.material.textfield.TextInputLayout;
 
 public class CreateBoardFragment extends Fragment {
 
-    private EditText boardNameView;
+    private TextInputLayout boardNameView;
     private Button createBoard;
     private String name;
     private View focusView;
@@ -74,7 +75,7 @@ public class CreateBoardFragment extends Fragment {
         boardNameView.setError(null);
 
         // Store values at the time of the create attempt
-        name = boardNameView.getText().toString();
+        name = boardNameView.getEditText().getText().toString();
 
         focusView = null;
 

@@ -1,6 +1,7 @@
 package com.example.todo.ui.board;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,7 @@ import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -26,6 +28,8 @@ import static com.example.todo.MainActivity.context;
 
 public class BoardFragment extends Fragment implements TasksAdapter.OnTaskListener {
 
+    private static final String TAG = "BoardFragment";
+
     private TasksAdapter tasksAdapter;
     private TasksDatabaseHelper tasksDatabaseHelper;
 
@@ -38,6 +42,7 @@ public class BoardFragment extends Fragment implements TasksAdapter.OnTaskListen
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(MainActivity.selectedBoard.getName());
         extendedFab = getActivity().findViewById(R.id.extended_fab);
         extendedFab.setText("Create Task");
         extendedFab.setOnClickListener(new View.OnClickListener() {

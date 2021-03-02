@@ -1,13 +1,11 @@
 package com.example.todo.adapters;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -50,13 +48,9 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
 
         holder.taskName.setText(task.getName());
         holder.taskText.setText(task.getText());
-        holder.checkBox.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("RestrictedApi")
+        holder.doneTask.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-            if (((CompoundButton) view).isChecked()) {
-                ((CompoundButton) view).setChecked(false);
-
                 // Remove item from list
                 tasksArrayList.remove(position);
                 notifyItemRemoved(position);
@@ -67,19 +61,33 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
                 task.setSync_status(1);
                 tasksDatabaseHelper.updateTask(task);
             }
+        });
+        holder.deleteTask.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Remove item from list
+                tasksArrayList.remove(position);
+                notifyItemRemoved(position);
+                notifyItemRangeChanged(position, tasksArrayList.size());
+
+                // Update task
+                task.setStatus(TasksDatabaseHelper.statusDeleted);
+                task.setSync_status(1);
+                tasksDatabaseHelper.updateTask(task);
             }
         });
     }
 
     public static class TaskViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        CheckBox checkBox;
+        Button doneTask, deleteTask;
         TextView taskName, taskText;
         OnTaskListener onTaskListener;
 
         public TaskViewHolder(@NonNull View itemView, OnTaskListener onTaskListener) {
             super(itemView);
-            checkBox = itemView.findViewById(R.id.checkBox);
+            doneTask = itemView.findViewById(R.id.doneTaskButton);
+            deleteTask = itemView.findViewById(R.id.deleteTaskButton);
             taskName = itemView.findViewById(R.id.taskName);
             taskText = itemView.findViewById(R.id.taskText);
             this.onTaskListener = onTaskListener;

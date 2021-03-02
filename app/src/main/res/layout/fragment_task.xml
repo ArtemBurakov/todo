@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.todo.ui.task.TaskFragment"
@@ -11,40 +12,39 @@
         android:layout_height="wrap_content"
         android:padding="20dp">
 
-        <TextView
-            android:id="@+id/taskNameView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="Name"
-            android:textSize="20sp"/>
-
-        <EditText
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/taskNameEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/taskNameView"
-            android:layout_marginTop="10dp"
-            android:inputType="textVisiblePassword"
-            android:maxLength="55"/>
+            android:layout_marginBottom="20dp"
+            android:hint="Name"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-        <TextView
-            android:id="@+id/taskTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/taskNameEditText"
-            android:layout_marginTop="20dp"
-            android:text="Text"
-            android:textSize="20sp"/>
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLength="55"
+                />
 
-        <EditText
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            app:endIconMode="clear_text"
             android:id="@+id/taskTextEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/taskTextView"
-            android:layout_marginTop="10dp"
-            android:inputType="textMultiLine"
-            android:maxLength="255"/>
+            android:layout_below="@id/taskNameEditText"
+            android:hint="Text"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                android:maxLength="255"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Button
             android:id="@+id/createTaskButton"
