@@ -49,7 +49,7 @@ public class ApiFcmToken {
 
         final Context syncContext = MainActivity.getContextOfApplication();
 
-        String apiUrl = "http://10.0.2.2/todo/backend/web/v1/";
+        String apiUrl = "http://192.168.88.23/php-yii2-todo/backend/web/v1/";
 
         String auth_token_string = LoginActivity.getAuthToken(syncContext);
 

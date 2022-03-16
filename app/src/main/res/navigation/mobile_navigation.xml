@@ -34,8 +34,15 @@
     <fragment
         android:id="@+id/navigation_create_board"
         android:name="com.example.todo.ui.board.CreateBoardFragment"
-        android:label="Create Board"
-        tools:layout="@layout/fragment_board" >
+        android:label="Create board"
+        tools:layout="@layout/fragment_create_board" >
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_create_task"
+        android:name="com.example.todo.ui.task.CreateTaskFragment"
+        android:label="Create task"
+        tools:layout="@layout/fragment_create_task" >
     </fragment>
 
     <fragment

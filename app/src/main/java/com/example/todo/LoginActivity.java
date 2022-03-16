@@ -220,7 +220,7 @@ public class LoginActivity extends AppCompatActivity {
 
             // Attempt authentication against a network service.
             ApiUser response;
-            String apiUrl = "http://10.0.2.2/todo/backend/web/v1/";
+            String apiUrl = "http://192.168.88.23/php-yii2-todo/backend/web/v1/";
             apiService = ApiUtils.getAPIService(apiUrl);
             try {
                 Call<ApiUser> call = apiService.authUser(mUsername, mPassword);

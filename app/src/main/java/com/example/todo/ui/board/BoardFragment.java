@@ -48,7 +48,7 @@ public class BoardFragment extends Fragment implements TasksAdapter.OnTaskListen
         extendedFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Navigation.findNavController(requireView()).navigate(R.id.navigation_task);
+                Navigation.findNavController(requireView()).navigate(R.id.navigation_create_task);
                 extendedFab.hide();
             }
         });

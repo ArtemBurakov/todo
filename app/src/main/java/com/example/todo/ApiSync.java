@@ -33,7 +33,7 @@ public class ApiSync extends AsyncTask<Void, Void, Boolean> {
     private TasksDatabaseHelper tasksDatabaseHelper;
 
     private Boolean unauthorized = false;
-    private final String apiUrl = "http://192.168.88.106/todo/backend/web/v1/";
+    private final String apiUrl = "http://192.168.88.23/php-yii2-todo/backend/web/v1/";
     private final ApiService apiService = ApiUtils.getAPIService(apiUrl);
 
     public ApiSync(Context context) {
