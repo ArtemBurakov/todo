@@ -602,7 +602,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
         ArrayList<Task> tasks = new ArrayList<>();
 
         SQLiteDatabase db = getWritableDatabase();
-        Cursor cursor = db.rawQuery("select max(updated_at) as updated_at from tasks", null);
+        Cursor cursor = db.rawQuery("select max(updated_at) as updated_at from " + TABLE_TASKS + " where " + KEY_TASK_SYNC_STATUS + " = ?", new String[] {String.valueOf(1)});
 
         try {
             if (cursor.moveToFirst()) {
@@ -627,7 +627,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
         ArrayList<Board> boards = new ArrayList<>();
 
         SQLiteDatabase db = getWritableDatabase();
-        Cursor cursor = db.rawQuery("select max(updated_at) as updated_at from boards", null);
+        Cursor cursor = db.rawQuery("select max(updated_at) as updated_at from " + TABLE_BOARDS + " where " + KEY_BOARD_SYNC_STATUS + " = ?", new String[] {String.valueOf(1)});
 
         try {
             if (cursor.moveToFirst()) {

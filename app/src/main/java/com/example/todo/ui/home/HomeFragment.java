@@ -145,8 +145,6 @@ public class HomeFragment extends Fragment implements TasksAdapter.OnTaskListene
     public void onTaskClick(int position) {
         MainActivity.selectedTask = tasksDatabaseHelper.getActiveTasks().get(position);
         extendedFab.hide();
-
-        // Navigate to task fragment
         Navigation.findNavController(requireView()).navigate(R.id.navigation_task);
     }
 }

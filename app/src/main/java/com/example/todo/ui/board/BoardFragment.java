@@ -1,11 +1,9 @@
 package com.example.todo.ui.board;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -91,8 +89,7 @@ public class BoardFragment extends Fragment implements TasksAdapter.OnTaskListen
 
     public void onTaskClick(int position) {
         MainActivity.selectedTask = tasksDatabaseHelper.getBoardTasks(MainActivity.selectedBoard.getId()).get(position);
-
-        // Navigate to task fragment
+        extendedFab.hide();
         Navigation.findNavController(requireView()).navigate(R.id.navigation_task);
     }
 }
