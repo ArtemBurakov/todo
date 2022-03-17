@@ -568,6 +568,64 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
         return boards;
     }
 
+    // Get archive boards
+    public ArrayList<Board> getArchiveBoards() {
+        ArrayList<Board> boards = new ArrayList<>();
+
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("select * from " + TABLE_BOARDS + " where " + KEY_BOARD_STATUS + " = ?", new String[] {String.valueOf(0)});
+        try {
+            if (cursor.moveToFirst()) {
+                do {
+                    Board board = new Board();
+                    board.setId(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_ID)));
+                    board.setServer_id(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_SERVER_ID)));
+                    board.setName(cursor.getString(cursor.getColumnIndex(KEY_BOARD_NAME)));
+                    board.setStatus(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_STATUS)));
+                    board.setCreated_at(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_CREATED_AT)));
+                    board.setUpdated_at(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_UPDATED_AT)));
+                    boards.add(board);
+                } while(cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error while trying to get archive boards from database");
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
+        return boards;
+    }
+
+    // Get favourite boards
+    public ArrayList<Board> getFavouriteBoards() {
+        ArrayList<Board> boards = new ArrayList<>();
+
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("select * from " + TABLE_BOARDS + " where " + KEY_BOARD_STATUS + " = ?", new String[] {String.valueOf(20)});
+        try {
+            if (cursor.moveToFirst()) {
+                do {
+                    Board board = new Board();
+                    board.setId(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_ID)));
+                    board.setServer_id(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_SERVER_ID)));
+                    board.setName(cursor.getString(cursor.getColumnIndex(KEY_BOARD_NAME)));
+                    board.setStatus(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_STATUS)));
+                    board.setCreated_at(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_CREATED_AT)));
+                    board.setUpdated_at(cursor.getInt(cursor.getColumnIndex(KEY_BOARD_UPDATED_AT)));
+                    boards.add(board);
+                } while(cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error while trying to get favourite boards from database");
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
+        return boards;
+    }
+
     // Get boards by server_id
     public ArrayList<Board> getBoardsByServerId(Integer server_id) {
         ArrayList<Board> boards = new ArrayList<>();
