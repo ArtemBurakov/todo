@@ -1,11 +1,6 @@
 package com.example.todo.ui.home;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,138 +8,47 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 
-import com.example.todo.MainActivity;
 import com.example.todo.R;
-import com.example.todo.adapters.TasksAdapter;
-import com.example.todo.database.TasksDatabaseHelper;
-import com.example.todo.models.Task;
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.example.todo.ui.task.ActiveTasksFragment;
+import com.example.todo.ui.task.ArchiveTasksFragment;
+import com.example.todo.ui.task.CompletedTasksFragment;
+import com.example.todo.ui.task.FavouriteTasksFragment;
+import com.google.android.material.tabs.TabLayout;
 
-import java.util.ArrayList;
+public class HomeFragment extends Fragment {
 
-public class HomeFragment extends Fragment implements TasksAdapter.OnTaskListener {
-
-    private static final String TAG = "HomeFragment";
-
-    private Context context;
-
-    private Boolean unauthorized = false;
-
-    private TasksAdapter tasksAdapter;
-    private TasksDatabaseHelper tasksDatabaseHelper;
-
-    public ExtendedFloatingActionButton extendedFab;
-
-    @Override
-    public void onAttach(@NonNull Context context)
-    {
-        super.onAttach(context);
-        this.context = context;
-    }
+    TabLayout taskTabLayout;
+    ViewPager taskViewPager;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(context);
-        lbm.registerReceiver(receiver, new IntentFilter("fcmNotification"));
-        lbm.registerReceiver(receiver, new IntentFilter("updateRecyclerView"));
-        MainActivity.selectedBoard = null;
-
-        return inflater.inflate(R.layout.fragment_home, container, false);
+        View root = inflater.inflate(R.layout.fragment_home, container, false);
+        return root;
     }
-
-    @Override
-    public void onDestroyView()
-    {
-        super.onDestroyView();
-        LocalBroadcastManager.getInstance(context).unregisterReceiver(receiver);
-    }
-
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (action != null) {
-                if (action.equals("fcmNotification")) {
-                    String modelName = intent.getStringExtra("modelName");
-                    if (modelName.equals("todo")) {
-                        Log.e(TAG, "Todo === " + intent.getAction());
-                        MainActivity.startSync();
-                    }
-                } else if (action.equals("updateRecyclerView")) {
-                    if (intent.getBooleanExtra("updateStatus", true)) {
-                        updateRecyclerView();
-                    }
-                }
-            }
-        }
-    };
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        taskViewPager = view.findViewById(R.id.task_view_pager);
+        taskTabLayout = view.findViewById(R.id.task_tab_layout);
 
-        extendedFab = getActivity().findViewById(R.id.extended_fab);
-        extendedFab.setText("Create Task");
-        extendedFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Navigation.findNavController(requireView()).navigate(R.id.navigation_create_task);
-                extendedFab.hide();
-            }
-        });
+        ActiveTasksFragment activeTasksFragment = new ActiveTasksFragment();
+        ArchiveTasksFragment archiveTasksFragment = new ArchiveTasksFragment();
+        FavouriteTasksFragment favouriteTasksFragment = new FavouriteTasksFragment();
+        CompletedTasksFragment completedTasksFragment = new CompletedTasksFragment();
 
-        extendedFab.show();
-        extendedFab.extend();
+        taskTabLayout.setupWithViewPager(taskViewPager);
+        HomePagerAdapter homePagerAdapter = new HomePagerAdapter(getChildFragmentManager(), 0);
+        homePagerAdapter.addFragment(activeTasksFragment, "Active");
+        homePagerAdapter.addFragment(favouriteTasksFragment, "Favourite");
+        homePagerAdapter.addFragment(completedTasksFragment, "Completed");
+        homePagerAdapter.addFragment(archiveTasksFragment, "Archive");
+        taskViewPager.setAdapter(homePagerAdapter);
 
-        initRecyclerView();
-    }
-
-    private void initRecyclerView() {
-        RecyclerView recyclerView = requireView().findViewById(R.id.taskRecyclerView);
-
-        // Construct the data source
-        tasksDatabaseHelper = TasksDatabaseHelper.getInstance(context);
-        ArrayList<Task> tasksArray = tasksDatabaseHelper.getActiveTasks();
-
-        // Setting LayoutManager
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(context));
-
-        // Create the adapter to convert the array to views
-        tasksAdapter = new TasksAdapter(tasksArray, context, this);
-
-        // Attach the adapter to a RecyclerView
-        recyclerView.setAdapter(tasksAdapter);
-
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-
-                if (!recyclerView.canScrollVertically(-1) && newState==RecyclerView.SCROLL_STATE_IDLE) {
-                    extendedFab.extend();
-                } else {
-                    extendedFab.shrink();
-                }
-            }
-        });
-    }
-
-    public void updateRecyclerView() {
-        Log.e(TAG, "Updating recycler view");
-
-        // Get new tasks from DB, update adapter
-        ArrayList<Task> newTasksArray = tasksDatabaseHelper.getActiveTasks();
-        tasksAdapter.updateTasksArrayList(newTasksArray);
-    }
-
-    public void onTaskClick(int position) {
-        MainActivity.selectedTask = tasksDatabaseHelper.getActiveTasks().get(position);
-        extendedFab.hide();
-        Navigation.findNavController(requireView()).navigate(R.id.navigation_task);
+        taskTabLayout.getTabAt(0).setIcon(R.drawable.ic_baseline_emoji_objects_24);
+        taskTabLayout.getTabAt(1).setIcon(R.drawable.ic_baseline_favorite_24);
+        taskTabLayout.getTabAt(2).setIcon(R.drawable.ic_baseline_assignment_turned_in_24);
+        taskTabLayout.getTabAt(3).setIcon(R.drawable.ic_baseline_delete_24);
     }
 }

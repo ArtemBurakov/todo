@@ -315,7 +315,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
         return null;
     }
 
-    // Get Completed tasks
+    // Get board tasks
     public ArrayList<Task> getBoardTasks(Integer board_id) {
         ArrayList<Task> tasks = new ArrayList<>();
 
@@ -351,6 +351,38 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery("select * from " + TABLE_TASKS + " where " + KEY_TASK_STATUS + " = ? AND " + KEY_TASK_BOARD_ID + " IS NULL ", new String[] {String.valueOf(10)});
+        try {
+            if (cursor.moveToFirst()) {
+                do {
+                    Task task = new Task();
+                    if (!cursor.isNull(cursor.getColumnIndex(KEY_TASK_SERVER_ID))) {
+                        task.setServer_id(cursor.getInt(cursor.getColumnIndex(KEY_TASK_SERVER_ID)));
+                    }
+                    task.setId(cursor.getInt(cursor.getColumnIndex(KEY_TASK_ID)));
+                    task.setName(cursor.getString(cursor.getColumnIndex(KEY_TASK_NAME)));
+                    task.setText(cursor.getString(cursor.getColumnIndex(KEY_TASK_TEXT)));
+                    task.setStatus(cursor.getInt(cursor.getColumnIndex(KEY_TASK_STATUS)));
+                    task.setCreated_at(cursor.getInt(cursor.getColumnIndex(KEY_TASK_CREATED_AT)));
+                    task.setUpdated_at(cursor.getInt(cursor.getColumnIndex(KEY_TASK_UPDATED_AT)));
+                    tasks.add(task);
+                } while(cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error while trying to get tasks from database");
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
+        return tasks;
+    }
+
+    // Get Favourite tasks
+    public ArrayList<Task> getFavouriteTasks() {
+        ArrayList<Task> tasks = new ArrayList<>();
+
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("select * from " + TABLE_TASKS + " where " + KEY_TASK_STATUS + " = ? AND " + KEY_TASK_BOARD_ID + " IS NULL ", new String[] {String.valueOf(30)});
         try {
             if (cursor.moveToFirst()) {
                 do {

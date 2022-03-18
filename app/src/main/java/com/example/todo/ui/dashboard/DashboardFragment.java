@@ -18,10 +18,6 @@ import com.google.android.material.tabs.TabLayout;
 
 public class DashboardFragment extends Fragment {
 
-    private ActiveBoardsFragment activeBoardsFragment;
-    private ArchiveBoardsFragment archiveBoardsFragment;
-    private FavouriteBoardsFragment favouriteBoardsFragment;
-
     TabLayout tabLayout;
     ViewPager viewPager;
 
@@ -36,19 +32,18 @@ public class DashboardFragment extends Fragment {
         viewPager = view.findViewById(R.id.view_pager);
         tabLayout = view.findViewById(R.id.tab_layout);
 
-        activeBoardsFragment = new ActiveBoardsFragment();
-        archiveBoardsFragment = new ArchiveBoardsFragment();
-        favouriteBoardsFragment = new FavouriteBoardsFragment();
+        ActiveBoardsFragment activeBoardsFragment = new ActiveBoardsFragment();
+        ArchiveBoardsFragment archiveBoardsFragment = new ArchiveBoardsFragment();
+        FavouriteBoardsFragment favouriteBoardsFragment = new FavouriteBoardsFragment();
 
         tabLayout.setupWithViewPager(viewPager);
-        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getChildFragmentManager(), 0);
-        viewPagerAdapter.addFragment(activeBoardsFragment, "Active");
-        viewPagerAdapter.addFragment(favouriteBoardsFragment, "Favourite");
-        viewPagerAdapter.addFragment(archiveBoardsFragment, "Archive");
-        viewPager.setOffscreenPageLimit(3);
-        viewPager.setAdapter(viewPagerAdapter);
+        DashboardPagerAdapter dashboardPagerAdapter = new DashboardPagerAdapter(getChildFragmentManager(), 0);
+        dashboardPagerAdapter.addFragment(activeBoardsFragment, "Active");
+        dashboardPagerAdapter.addFragment(favouriteBoardsFragment, "Favourite");
+        dashboardPagerAdapter.addFragment(archiveBoardsFragment, "Archive");
+        viewPager.setAdapter(dashboardPagerAdapter);
 
-        tabLayout.getTabAt(0).setIcon(R.drawable.ic_baseline_bolt_24);
+        tabLayout.getTabAt(0).setIcon(R.drawable.ic_baseline_emoji_objects_24);
         tabLayout.getTabAt(1).setIcon(R.drawable.ic_baseline_favorite_24);
         tabLayout.getTabAt(2).setIcon(R.drawable.ic_baseline_delete_24);
     }

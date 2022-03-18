@@ -9,12 +9,12 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ViewPagerAdapter extends FragmentPagerAdapter {
+public class DashboardPagerAdapter extends FragmentPagerAdapter {
 
     private List<Fragment> fragments = new ArrayList<>();
     private List<String> fragmentsTitle = new ArrayList<>();
 
-    public ViewPagerAdapter(FragmentManager fm, int behavior) {
+    public DashboardPagerAdapter(FragmentManager fm, int behavior) {
         super(fm, behavior);
     }
 
