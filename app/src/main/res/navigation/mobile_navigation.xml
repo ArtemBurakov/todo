@@ -8,46 +8,39 @@
     <fragment
         android:id="@+id/navigation_home"
         android:name="com.example.todo.ui.home.HomeFragment"
-        android:label="@string/title_home"
         tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/navigation_dashboard"
         android:name="com.example.todo.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
         tools:layout="@layout/fragment_dashboard" />
 
     <fragment
         android:id="@+id/navigation_task"
         android:name="com.example.todo.ui.task.TaskFragment"
-        android:label="Task"
         tools:layout="@layout/fragment_task" >
     </fragment>
 
     <fragment
         android:id="@+id/navigation_board"
         android:name="com.example.todo.ui.board.BoardFragment"
-        android:label="Board"
         tools:layout="@layout/fragment_board" >
     </fragment>
 
     <fragment
         android:id="@+id/navigation_create_board"
         android:name="com.example.todo.ui.board.CreateBoardFragment"
-        android:label="Create board"
         tools:layout="@layout/fragment_create_board" >
     </fragment>
 
     <fragment
         android:id="@+id/navigation_create_task"
         android:name="com.example.todo.ui.task.CreateTaskFragment"
-        android:label="Create task"
         tools:layout="@layout/fragment_create_task" >
     </fragment>
 
     <fragment
         android:id="@+id/navigation_settings"
         android:name="com.example.todo.ui.settings.SettingsFragment"
-        android:label="Settings"
         tools:layout="@layout/fragment_settings" />
 </navigation>

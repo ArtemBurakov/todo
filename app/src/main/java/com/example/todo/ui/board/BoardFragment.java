@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -18,11 +18,17 @@ import com.example.todo.R;
 import com.example.todo.adapters.TasksAdapter;
 import com.example.todo.database.TasksDatabaseHelper;
 import com.example.todo.models.Task;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
 import java.util.ArrayList;
 
 import static com.example.todo.MainActivity.context;
+import static com.example.todo.MainActivity.createTaskToolbar;
+import static com.example.todo.MainActivity.mainToolbar;
+import static com.example.todo.MainActivity.selectedBoardToolbar;
+import static com.example.todo.MainActivity.selectedTaskToolbar;
 
 public class BoardFragment extends Fragment implements TasksAdapter.OnTaskListener {
 
@@ -40,7 +46,18 @@ public class BoardFragment extends Fragment implements TasksAdapter.OnTaskListen
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(MainActivity.selectedBoard.getName());
+        mainToolbar.setVisibility(View.GONE);
+        selectedTaskToolbar.setVisibility(View.GONE);
+        createTaskToolbar.setVisibility(View.GONE);
+        selectedBoardToolbar.setVisibility(View.VISIBLE);
+        selectedBoardToolbar.setTitle(MainActivity.selectedBoard.getName());
+        selectedBoardToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Navigation.findNavController(requireView()).navigate(R.id.navigation_dashboard);
+            }
+        });
+
         extendedFab = getActivity().findViewById(R.id.extended_fab);
         extendedFab.setText("Create Task");
         extendedFab.setOnClickListener(new View.OnClickListener() {

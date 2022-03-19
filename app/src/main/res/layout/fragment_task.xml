@@ -46,27 +46,6 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <Button
-            android:id="@+id/deleteTaskButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/rounded_corner_button"
-            android:layout_centerHorizontal="true"
-            android:layout_above="@+id/updateTaskButton"
-            android:layout_marginBottom="10dp"
-            android:text="Delete task"
-            android:textSize="20sp"/>
-
-        <Button
-            android:id="@+id/updateTaskButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/rounded_corner_button"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:text="Update task"
-            android:textSize="20sp"/>
-
     </RelativeLayout>
 
 </RelativeLayout>

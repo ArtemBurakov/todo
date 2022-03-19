@@ -8,6 +8,8 @@
         <entry key="app/src/main/res/layout/activity_login.xml" value="0.3229166666666667" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.3229166666666667" />
         <entry key="app/src/main/res/layout/content_main.xml" value="0.3229166666666667" />
+        <entry key="app/src/main/res/layout/create_task_toolbar.xml" value="0.264" />
+        <entry key="app/src/main/res/layout/dashboard_toolbar.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_active_board.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_active_boards.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/fragment_active_task.xml" value="0.2965708989805375" />
@@ -25,8 +27,19 @@
         <entry key="app/src/main/res/layout/fragment_favourite_task.xml" value="0.3229166666666667" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.29564411492122333" />
         <entry key="app/src/main/res/layout/fragment_task.xml" value="0.3532608695652174" />
+        <entry key="app/src/main/res/layout/home_toolbar.xml" value="0.3229166666666667" />
         <entry key="app/src/main/res/layout/item_task.xml" value="0.2866847826086957" />
+        <entry key="app/src/main/res/layout/main_toolbar.xml" value="0.3229166666666667" />
+        <entry key="app/src/main/res/layout/selected_board_toolbar.xml" value="0.264" />
+        <entry key="app/src/main/res/layout/selected_task_toolbar.xml" value="0.264" />
         <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.3229166666666667" />
+        <entry key="app/src/main/res/menu/create_board_app_bar.xml" value="0.35625" />
+        <entry key="app/src/main/res/menu/create_task_app_bar.xml" value="0.35625" />
+        <entry key="app/src/main/res/menu/dashboard_app_bar.xml" value="0.35625" />
+        <entry key="app/src/main/res/menu/home_app_bar.xml" value="0.35625" />
+        <entry key="app/src/main/res/menu/main_app_bar.xml" value="0.3229166666666667" />
+        <entry key="app/src/main/res/menu/selected_board_app_bar.xml" value="0.35625" />
+        <entry key="app/src/main/res/menu/selected_task_app_bar.xml" value="0.3229166666666667" />
       </map>
     </option>
   </component>

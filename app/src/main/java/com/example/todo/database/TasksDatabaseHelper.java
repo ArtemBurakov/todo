@@ -1,5 +1,6 @@
 package com.example.todo.database;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -238,6 +239,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
     }
 
     // Get task
+    @SuppressLint("Range")
     public Task getTask(long id) {
         SQLiteDatabase db = getWritableDatabase();
         Cursor cursor = db.rawQuery("select * from " + TABLE_TASKS + " where ID = ?", new String[] {String.valueOf(id)});
@@ -264,6 +266,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
     }
 
     // Get board
+    @SuppressLint("Range")
     public Board getBoard(long id) {
         SQLiteDatabase db = getWritableDatabase();
         Cursor cursor = db.rawQuery("select * from " + TABLE_BOARDS + " where ID = ?", new String[] {String.valueOf(id)});
@@ -290,6 +293,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
     }
 
     // Get board
+    @SuppressLint("Range")
     public Board getBoardByServerId(Integer id) {
         SQLiteDatabase db = getWritableDatabase();
         Cursor cursor = db.rawQuery("select * from " + TABLE_BOARDS + " where " + KEY_BOARD_SERVER_ID + " = ? ", new String[] {String.valueOf(id)});
@@ -316,6 +320,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
     }
 
     // Get board tasks
+    @SuppressLint("Range")
     public ArrayList<Task> getBoardTasks(Integer board_id) {
         ArrayList<Task> tasks = new ArrayList<>();
 
@@ -346,6 +351,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
     }
 
     // Get Active tasks
+    @SuppressLint("Range")
     public ArrayList<Task> getActiveTasks() {
         ArrayList<Task> tasks = new ArrayList<>();
 
@@ -378,6 +384,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
     }
 
     // Get Favourite tasks
+    @SuppressLint("Range")
     public ArrayList<Task> getFavouriteTasks() {
         ArrayList<Task> tasks = new ArrayList<>();
 
@@ -410,11 +417,12 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
     }
 
     // Get Completed tasks
+    @SuppressLint("Range")
     public ArrayList<Task> getCompletedTasks() {
         ArrayList<Task> tasks = new ArrayList<>();
 
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery("select * from " + TABLE_TASKS + " where STATUS = ?", new String[] {String.valueOf(20)});
+        Cursor cursor = db.rawQuery("select * from " + TABLE_TASKS + " where " + KEY_TASK_STATUS + " = ?", new String[] {String.valueOf(20)});
         try {
             if (cursor.moveToFirst()) {
                 do {
@@ -439,6 +447,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
     }
 
     // Get Archive tasks
+    @SuppressLint("Range")
     public ArrayList<Task> getArchiveTasks() {
         ArrayList<Task> tasks = new ArrayList<>();
 
@@ -468,6 +477,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
     }
 
     // Get not synced tasks
+    @SuppressLint("Range")
     public ArrayList<Task> getNotSyncedTasks() {
         ArrayList<Task> tasks = new ArrayList<>();
 
@@ -508,6 +518,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
     }
 
     // Get not synced boards
+    @SuppressLint("Range")
     public ArrayList<Board> getNotSyncedBoards() {
         ArrayList<Board> boards = new ArrayList<>();
 
@@ -542,6 +553,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
     }
 
     // Get tasks
+    @SuppressLint("Range")
     public ArrayList<Task> getTasks(Integer server_id) {
         ArrayList<Task> tasks = new ArrayList<>();
 
@@ -572,6 +584,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
     }
 
     // Get active boards
+    @SuppressLint("Range")
     public ArrayList<Board> getActiveBoards() {
         ArrayList<Board> boards = new ArrayList<>();
 
@@ -601,6 +614,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
     }
 
     // Get archive boards
+    @SuppressLint("Range")
     public ArrayList<Board> getArchiveBoards() {
         ArrayList<Board> boards = new ArrayList<>();
 
@@ -630,6 +644,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
     }
 
     // Get favourite boards
+    @SuppressLint("Range")
     public ArrayList<Board> getFavouriteBoards() {
         ArrayList<Board> boards = new ArrayList<>();
 
@@ -659,6 +674,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
     }
 
     // Get boards by server_id
+    @SuppressLint("Range")
     public ArrayList<Board> getBoardsByServerId(Integer server_id) {
         ArrayList<Board> boards = new ArrayList<>();
 
@@ -688,6 +704,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
     }
 
     // Get latest update_at timestamp for task
+    @SuppressLint("Range")
     public ArrayList<Task> getTasksUpdateAfter() {
         ArrayList<Task> tasks = new ArrayList<>();
 
@@ -713,6 +730,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
     }
 
     // Get latest update_at timestamp for board
+    @SuppressLint("Range")
     public ArrayList<Board> getBoardsUpdateAfter() {
         ArrayList<Board> boards = new ArrayList<>();
 

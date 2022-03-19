@@ -1,19 +1,22 @@
 package com.example.todo.ui.task;
 
+import static com.example.todo.MainActivity.createTaskToolbar;
+import static com.example.todo.MainActivity.mainToolbar;
+import static com.example.todo.MainActivity.selectedBoardToolbar;
+import static com.example.todo.MainActivity.selectedTaskToolbar;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
@@ -44,39 +47,43 @@ public class TaskFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(MainActivity.selectedTask.getName());
+        mainToolbar.setVisibility(View.GONE);
+        createTaskToolbar.setVisibility(View.GONE);
+        selectedBoardToolbar.setVisibility(View.GONE);
+        selectedTaskToolbar.setVisibility(View.VISIBLE);
+        selectedTaskToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Navigation.findNavController(requireView()).navigate(R.id.navigation_home);
+            }
+        });
+        selectedTaskToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                switch (menuItem.getItemId()) {
+                    case R.id.update:
+                        attemptUpdateTask();
+                        return true;
+                    case R.id.delete:
+                        Task task = MainActivity.selectedTask;
+                        task.setStatus(TasksDatabaseHelper.statusDeleted);
+                        task.setSync_status(1);
+                        tasksDatabaseHelper.updateTask(task);
+
+                        navigateHome();
+
+                        return true;
+                }
+                return false;
+            }
+        });
+
         tasksDatabaseHelper = TasksDatabaseHelper.getInstance(context);
 
         taskNameView = requireView().findViewById(R.id.taskNameEditText);
         taskTextView = requireView().findViewById(R.id.taskTextEditText);
-
-        Button updateTaskButton = requireView().findViewById(R.id.updateTaskButton);
-        updateTaskButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptUpdateTask();
-            }
-        });
-
-        Button deleteTaskButton = requireView().findViewById(R.id.deleteTaskButton);
-        deleteTaskButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            Task task = MainActivity.selectedTask;
-            task.setStatus(TasksDatabaseHelper.statusDeleted);
-            task.setSync_status(1);
-            tasksDatabaseHelper.updateTask(task);
-
-            navigateHome();
-            }
-        });
-
-        if (MainActivity.selectedTask != null) {
-            taskNameView.getEditText().setText(MainActivity.selectedTask.getName());
-            taskTextView.getEditText().setText(MainActivity.selectedTask.getText());
-            updateTaskButton.setVisibility(View.VISIBLE);
-            deleteTaskButton.setVisibility(View.VISIBLE);
-        }
+        taskNameView.getEditText().setText(MainActivity.selectedTask.getName());
+        taskTextView.getEditText().setText(MainActivity.selectedTask.getText());
     }
 
     @Override

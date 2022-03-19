@@ -6,11 +6,13 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import com.example.todo.models.Board;
 import com.example.todo.models.Task;
 import com.example.todo.remote.ApiFcmToken;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
@@ -27,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
     public static Context context;
+    public static MaterialToolbar mainToolbar, createTaskToolbar, selectedBoardToolbar, selectedTaskToolbar;
 
     public static Task selectedTask;
     public static Board selectedBoard;
@@ -37,6 +40,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getApplicationContext();
+        setContentView(R.layout.activity_main);
+
+        mainToolbar = findViewById(R.id.main_toolbar);
+        createTaskToolbar = findViewById(R.id.create_task_toolbar);
+        selectedTaskToolbar = findViewById(R.id.selected_task_toolbar);
+        selectedBoardToolbar = findViewById(R.id.selected_board_toolbar);
+
+        BottomNavigationView navView = findViewById(R.id.nav_view);
+
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        NavigationUI.setupWithNavController(navView, navController);
 
         if (LoginActivity.getAuthToken(this) == null){
             Intent intent = new Intent(this, LoginActivity.class);
@@ -44,41 +58,21 @@ public class MainActivity extends AppCompatActivity {
             finish();
         } else {
             FirebaseInstanceId.getInstance().getInstanceId()
-                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
-                    @Override
-                    public void onComplete(@NonNull com.google.android.gms.tasks.Task<InstanceIdResult> task) {
-                        if (!task.isSuccessful()) {
-                            Log.e(TAG, "getInstanceId failed", task.getException());
-                            return;
+                    .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                        @Override
+                        public void onComplete(@NonNull com.google.android.gms.tasks.Task<InstanceIdResult> task) {
+                            if (!task.isSuccessful()) {
+                                Log.e(TAG, "getInstanceId failed", task.getException());
+                                return;
+                            }
+                            // Get new Instance ID token
+                            String fcmToken = task.getResult().getToken();
+                            if (!fcmToken.equals(LoginActivity.getFcmToken(getApplicationContext()))) {
+                                startApiFcmTokenSendTask(fcmToken);
+                            }
                         }
-                        // Get new Instance ID token
-                        String fcmToken = task.getResult().getToken();
-                        if (!fcmToken.equals(LoginActivity.getFcmToken(getApplicationContext()))) {
-                            startApiFcmTokenSendTask(fcmToken);
-                        }
-                    }
-                });
+                    });
         }
-
-//        if (InitApplicationTheme.isNightModeEnabled(getApplicationContext())) {
-//            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-//            setTheme(R.style.DarkTheme);
-//        } else {
-//            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-//            setTheme(R.style.LightTheme);
-//        }
-
-        setContentView(R.layout.activity_main);
-        BottomNavigationView navView = findViewById(R.id.nav_view);
-
-        // Passing each menu ID as a set of Ids because each
-        // Menu should be considered as top level destinations
-        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_home, R.id.navigation_dashboard)
-                .build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-        NavigationUI.setupWithNavController(navView, navController);
     }
 
     @Override

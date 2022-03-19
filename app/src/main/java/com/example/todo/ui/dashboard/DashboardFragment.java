@@ -1,5 +1,10 @@
 package com.example.todo.ui.dashboard;
 
+import static com.example.todo.MainActivity.createTaskToolbar;
+import static com.example.todo.MainActivity.mainToolbar;
+import static com.example.todo.MainActivity.selectedBoardToolbar;
+import static com.example.todo.MainActivity.selectedTaskToolbar;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,8 +23,8 @@ import com.google.android.material.tabs.TabLayout;
 
 public class DashboardFragment extends Fragment {
 
-    TabLayout tabLayout;
-    ViewPager viewPager;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_dashboard, container, false);
@@ -31,6 +36,11 @@ public class DashboardFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         viewPager = view.findViewById(R.id.view_pager);
         tabLayout = view.findViewById(R.id.tab_layout);
+        selectedBoardToolbar.setVisibility(View.GONE);
+        selectedTaskToolbar.setVisibility(View.GONE);
+        createTaskToolbar.setVisibility(View.GONE);
+        mainToolbar.setVisibility(View.VISIBLE);
+        mainToolbar.setTitle("Boards");
 
         ActiveBoardsFragment activeBoardsFragment = new ActiveBoardsFragment();
         ArchiveBoardsFragment archiveBoardsFragment = new ArchiveBoardsFragment();
@@ -43,8 +53,8 @@ public class DashboardFragment extends Fragment {
         dashboardPagerAdapter.addFragment(archiveBoardsFragment, "Archive");
         viewPager.setAdapter(dashboardPagerAdapter);
 
-        tabLayout.getTabAt(0).setIcon(R.drawable.ic_baseline_emoji_objects_24);
-        tabLayout.getTabAt(1).setIcon(R.drawable.ic_baseline_favorite_24);
-        tabLayout.getTabAt(2).setIcon(R.drawable.ic_baseline_delete_24);
+//        tabLayout.getTabAt(0).setIcon(R.drawable.ic_baseline_emoji_objects_24);
+//        tabLayout.getTabAt(1).setIcon(R.drawable.ic_baseline_favorite_24);
+//        tabLayout.getTabAt(2).setIcon(R.drawable.ic_baseline_delete_24);
     }
 }

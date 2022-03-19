@@ -1,25 +1,27 @@
 package com.example.todo.ui.task;
 
+import static com.example.todo.MainActivity.createTaskToolbar;
+import static com.example.todo.MainActivity.mainToolbar;
+import static com.example.todo.MainActivity.selectedBoardToolbar;
+import static com.example.todo.MainActivity.selectedTaskToolbar;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.Navigation;
 
 import com.example.todo.MainActivity;
 import com.example.todo.R;
 import com.example.todo.database.TasksDatabaseHelper;
-import com.example.todo.models.Board;
 import com.example.todo.models.Task;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -39,18 +41,32 @@ public class CreateTaskFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mainToolbar.setVisibility(View.GONE);
+        selectedBoardToolbar.setVisibility(View.GONE);
+        selectedTaskToolbar.setVisibility(View.GONE);
+        createTaskToolbar.setVisibility(View.VISIBLE);
+        createTaskToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Navigation.findNavController(requireView()).navigate(R.id.navigation_home);
+            }
+        });
+        createTaskToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                switch (menuItem.getItemId()) {
+                    case R.id.save:
+                        attemptCreateTask();
+                        return true;
+                }
+                return false;
+            }
+        });
+
         tasksDatabaseHelper = TasksDatabaseHelper.getInstance(context);
 
         taskNameView = requireView().findViewById(R.id.taskNameEditText);
         taskTextView = requireView().findViewById(R.id.taskTextEditText);
-
-        Button createTaskButton = requireView().findViewById(R.id.createTaskButton);
-        createTaskButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptCreateTask();
-            }
-        });
     }
 
     private void attemptCreateTask() {

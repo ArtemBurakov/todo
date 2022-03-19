@@ -43,16 +43,6 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <Button
-            android:id="@+id/createTaskButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/rounded_corner_button"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:text="Create task"
-            android:textSize="20sp"/>
-
     </RelativeLayout>
 
 </RelativeLayout>
