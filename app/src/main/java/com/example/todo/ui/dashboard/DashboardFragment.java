@@ -1,6 +1,7 @@
 package com.example.todo.ui.dashboard;
 
 import static com.example.todo.MainActivity.createTaskToolbar;
+import static com.example.todo.MainActivity.floatingActionButton;
 import static com.example.todo.MainActivity.mainToolbar;
 import static com.example.todo.MainActivity.selectedBoardToolbar;
 import static com.example.todo.MainActivity.selectedTaskToolbar;
@@ -22,7 +23,6 @@ import com.example.todo.ui.board.FavouriteBoardsFragment;
 import com.google.android.material.tabs.TabLayout;
 
 public class DashboardFragment extends Fragment {
-
     private TabLayout tabLayout;
     private ViewPager viewPager;
 
@@ -52,9 +52,30 @@ public class DashboardFragment extends Fragment {
         dashboardPagerAdapter.addFragment(favouriteBoardsFragment, "Favourite");
         dashboardPagerAdapter.addFragment(archiveBoardsFragment, "Archive");
         viewPager.setAdapter(dashboardPagerAdapter);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
-//        tabLayout.getTabAt(0).setIcon(R.drawable.ic_baseline_emoji_objects_24);
-//        tabLayout.getTabAt(1).setIcon(R.drawable.ic_baseline_favorite_24);
-//        tabLayout.getTabAt(2).setIcon(R.drawable.ic_baseline_delete_24);
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                switch (position) {
+                    case 0:
+                        floatingActionButton.show();
+                        return;
+                    case 1:
+                        floatingActionButton.hide();
+                        return;
+                    case 2:
+                        floatingActionButton.hide();
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 }

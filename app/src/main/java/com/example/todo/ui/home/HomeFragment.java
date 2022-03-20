@@ -1,6 +1,7 @@
 package com.example.todo.ui.home;
 
 import static com.example.todo.MainActivity.createTaskToolbar;
+import static com.example.todo.MainActivity.floatingActionButton;
 import static com.example.todo.MainActivity.mainToolbar;
 import static com.example.todo.MainActivity.selectedBoardToolbar;
 import static com.example.todo.MainActivity.selectedTaskToolbar;
@@ -55,10 +56,32 @@ public class HomeFragment extends Fragment {
         homePagerAdapter.addFragment(completedTasksFragment, "Completed");
         homePagerAdapter.addFragment(archiveTasksFragment, "Archive");
         taskViewPager.setAdapter(homePagerAdapter);
+        taskViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
-//        taskTabLayout.getTabAt(0).setIcon(R.drawable.ic_baseline_emoji_objects_24);
-//        taskTabLayout.getTabAt(1).setIcon(R.drawable.ic_baseline_favorite_24);
-//        taskTabLayout.getTabAt(2).setIcon(R.drawable.ic_baseline_assignment_turned_in_24);
-//        taskTabLayout.getTabAt(3).setIcon(R.drawable.ic_baseline_delete_24);
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                switch (position) {
+                    case 0:
+                        floatingActionButton.show();
+                        return;
+                    case 1:
+                        floatingActionButton.hide();
+                        return;
+                    case 2:
+                        floatingActionButton.hide();
+                    case 3:
+                        floatingActionButton.hide();
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 }

@@ -1,5 +1,7 @@
 package com.example.todo.ui.task;
 
+import static com.example.todo.MainActivity.floatingActionButton;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -22,7 +24,6 @@ import com.example.todo.R;
 import com.example.todo.adapters.TasksAdapter;
 import com.example.todo.database.TasksDatabaseHelper;
 import com.example.todo.models.Task;
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
 import java.util.ArrayList;
 
@@ -30,12 +31,8 @@ public class ActiveTasksFragment extends Fragment implements TasksAdapter.OnTask
 
     private Context context;
 
-    private Boolean unauthorized = false;
-
     private TasksAdapter tasksAdapter;
     private TasksDatabaseHelper tasksDatabaseHelper;
-
-    public ExtendedFloatingActionButton extendedFab;
 
     @Override
     public void onAttach(@NonNull Context context)
@@ -82,18 +79,14 @@ public class ActiveTasksFragment extends Fragment implements TasksAdapter.OnTask
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        extendedFab = getActivity().findViewById(R.id.extended_fab);
-        extendedFab.setText("Create Task");
-        extendedFab.setOnClickListener(new View.OnClickListener() {
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Navigation.findNavController(requireView()).navigate(R.id.navigation_create_task);
-                extendedFab.hide();
+                floatingActionButton.hide();
             }
         });
-
-        extendedFab.show();
-        extendedFab.extend();
+        floatingActionButton.show();
 
         initRecyclerView();
     }
@@ -117,13 +110,17 @@ public class ActiveTasksFragment extends Fragment implements TasksAdapter.OnTask
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-
-                if (!recyclerView.canScrollVertically(-1) && newState==RecyclerView.SCROLL_STATE_IDLE) {
-                    extendedFab.extend();
-                } else {
-                    extendedFab.shrink();
+            public void onScrolled(RecyclerView recyclerView, int dx,int dy){
+                super.onScrolled(recyclerView, dx, dy);
+                if (dy >0) {
+                    if (floatingActionButton.isShown()) {
+                        floatingActionButton.hide();
+                    }
+                }
+                else if (dy <0) {
+                    if (!floatingActionButton.isShown()) {
+                        floatingActionButton.show();
+                    }
                 }
             }
         });
@@ -136,8 +133,7 @@ public class ActiveTasksFragment extends Fragment implements TasksAdapter.OnTask
     }
 
     public void onTaskClick(int position) {
-        extendedFab.hide();
-
+        floatingActionButton.hide();
         MainActivity.selectedTask = tasksDatabaseHelper.getActiveTasks().get(position);
         Navigation.findNavController(requireView()).navigate(R.id.navigation_task);
     }

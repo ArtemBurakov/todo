@@ -1,16 +1,23 @@
 package com.example.todo.ui.board;
 
+import static com.example.todo.MainActivity.floatingActionButton;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.Navigation;
@@ -22,7 +29,8 @@ import com.example.todo.R;
 import com.example.todo.adapters.BoardsAdapter;
 import com.example.todo.database.TasksDatabaseHelper;
 import com.example.todo.models.Board;
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
 
@@ -30,12 +38,9 @@ public class ActiveBoardsFragment extends Fragment implements BoardsAdapter.OnBo
 
     private Context context;
 
-    private Boolean unauthorized = false;
-
+    private TextInputLayout boardNameView;
     private BoardsAdapter boardsAdapter;
     private TasksDatabaseHelper tasksDatabaseHelper;
-
-    public ExtendedFloatingActionButton extendedFab;
 
     @Override
     public void onAttach(@NonNull Context context)
@@ -56,18 +61,50 @@ public class ActiveBoardsFragment extends Fragment implements BoardsAdapter.OnBo
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        extendedFab = getActivity().findViewById(R.id.extended_fab);
-        extendedFab.setText("Create Board");
-        extendedFab.setOnClickListener(new View.OnClickListener() {
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Navigation.findNavController(requireView()).navigate(R.id.navigation_create_board);
-                extendedFab.hide();
+                MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
+                builder.setTitle("New workspace");
+                View viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.board_create_text_input, (ViewGroup) getView(), false);
+                boardNameView = viewInflated.findViewById(R.id.boardNameEditText);
+                builder.setView(viewInflated);
+                builder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        attemptCreateBoard(dialogInterface);
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.cancel();
+                    }
+                });
+                final AlertDialog dialog = builder.create();
+                dialog.show();
+
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                boardNameView.getEditText().addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    }
+
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        if (TextUtils.isEmpty(s)) {
+                            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                        } else {
+                            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                        }
+                    }
+                });
             }
         });
-
-        extendedFab.show();
-        extendedFab.extend();
 
         initBoardRecyclerView();
         MainActivity.startSync();
@@ -114,33 +151,48 @@ public class ActiveBoardsFragment extends Fragment implements BoardsAdapter.OnBo
 
         // Create the adapter to convert the array to views
         boardsAdapter = new BoardsAdapter(boardsArray, context, this);
-
-        // Attach the adapter to a RecyclerView
         boardRecyclerView.setAdapter(boardsAdapter);
-
         boardRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-
-                if (!recyclerView.canScrollVertically(-1) && newState==RecyclerView.SCROLL_STATE_IDLE) {
-                    extendedFab.extend();
-                } else {
-                    extendedFab.shrink();
+            public void onScrolled(RecyclerView recyclerView, int dx,int dy){
+                super.onScrolled(recyclerView, dx, dy);
+                if (dy >0) {
+                    if (floatingActionButton.isShown()) {
+                        floatingActionButton.hide();
+                    }
+                }
+                else if (dy <0) {
+                    if (!floatingActionButton.isShown()) {
+                        floatingActionButton.show();
+                    }
                 }
             }
         });
     }
 
     public void updateRecyclerView() {
-        // Get new tasks from DB, update adapter
         ArrayList<Board> newBoardsArray = tasksDatabaseHelper.getActiveBoards();
         boardsAdapter.updateBoardsArrayList(newBoardsArray);
     }
 
-    public void onBoardClick(int position) {
-        extendedFab.hide();
+    private void attemptCreateBoard(DialogInterface dialogInterface) {
+        Board newBoard = new Board();
+        newBoard.setName(boardNameView.getEditText().getText().toString());
+        newBoard.setStatus(TasksDatabaseHelper.statusActive);
+        newBoard.setSync_status(1);
+        newBoard.setCreated_at(0);
+        newBoard.setUpdated_at(0);
+        MainActivity.selectedBoard = tasksDatabaseHelper.addBoard(newBoard);
 
+        navigateDashboard();
+    }
+
+    private void navigateDashboard() {
+        Navigation.findNavController(requireView()).navigate(R.id.navigation_dashboard);
+    }
+
+    public void onBoardClick(int position) {
+        floatingActionButton.hide();
         MainActivity.selectedBoard = tasksDatabaseHelper.getActiveBoards().get(position);
         Navigation.findNavController(requireView()).navigate(R.id.navigation_board);
     }

@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -18,14 +17,12 @@ import com.example.todo.R;
 import com.example.todo.adapters.TasksAdapter;
 import com.example.todo.database.TasksDatabaseHelper;
 import com.example.todo.models.Task;
-import com.google.android.material.appbar.CollapsingToolbarLayout;
-import com.google.android.material.appbar.MaterialToolbar;
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
 import java.util.ArrayList;
 
 import static com.example.todo.MainActivity.context;
 import static com.example.todo.MainActivity.createTaskToolbar;
+import static com.example.todo.MainActivity.floatingActionButton;
 import static com.example.todo.MainActivity.mainToolbar;
 import static com.example.todo.MainActivity.selectedBoardToolbar;
 import static com.example.todo.MainActivity.selectedTaskToolbar;
@@ -36,8 +33,6 @@ public class BoardFragment extends Fragment implements TasksAdapter.OnTaskListen
 
     private TasksAdapter tasksAdapter;
     private TasksDatabaseHelper tasksDatabaseHelper;
-
-    private ExtendedFloatingActionButton extendedFab;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_board, container, false);
@@ -58,18 +53,14 @@ public class BoardFragment extends Fragment implements TasksAdapter.OnTaskListen
             }
         });
 
-        extendedFab = getActivity().findViewById(R.id.extended_fab);
-        extendedFab.setText("Create Task");
-        extendedFab.setOnClickListener(new View.OnClickListener() {
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Navigation.findNavController(requireView()).navigate(R.id.navigation_create_task);
-                extendedFab.hide();
+                floatingActionButton.hide();
             }
         });
-
-        extendedFab.show();
-        extendedFab.extend();
+        floatingActionButton.show();
 
         initRecyclerView();
     }
@@ -92,21 +83,25 @@ public class BoardFragment extends Fragment implements TasksAdapter.OnTaskListen
         recyclerView.setAdapter(tasksAdapter);
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-
-                if (!recyclerView.canScrollVertically(-1) && newState==RecyclerView.SCROLL_STATE_IDLE) {
-                    extendedFab.extend();
-                } else {
-                    extendedFab.shrink();
+            public void onScrolled(RecyclerView recyclerView, int dx,int dy){
+                super.onScrolled(recyclerView, dx, dy);
+                if (dy >0) {
+                    if (floatingActionButton.isShown()) {
+                        floatingActionButton.hide();
+                    }
+                }
+                else if (dy <0) {
+                    if (!floatingActionButton.isShown()) {
+                        floatingActionButton.show();
+                    }
                 }
             }
         });
     }
 
     public void onTaskClick(int position) {
+        floatingActionButton.hide();
         MainActivity.selectedTask = tasksDatabaseHelper.getBoardTasks(MainActivity.selectedBoard.getId()).get(position);
-        extendedFab.hide();
         Navigation.findNavController(requireView()).navigate(R.id.navigation_task);
     }
 }

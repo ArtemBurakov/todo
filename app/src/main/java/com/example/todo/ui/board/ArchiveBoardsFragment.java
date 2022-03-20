@@ -22,7 +22,6 @@ import com.example.todo.R;
 import com.example.todo.adapters.BoardsAdapter;
 import com.example.todo.database.TasksDatabaseHelper;
 import com.example.todo.models.Board;
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
 import java.util.ArrayList;
 
@@ -30,12 +29,8 @@ public class ArchiveBoardsFragment extends Fragment implements BoardsAdapter.OnB
 
     private Context context;
 
-    private Boolean unauthorized = false;
-
     private BoardsAdapter boardsAdapter;
     private TasksDatabaseHelper tasksDatabaseHelper;
-
-    public ExtendedFloatingActionButton extendedFab;
 
     @Override
     public void onAttach(@NonNull Context context)
@@ -56,19 +51,6 @@ public class ArchiveBoardsFragment extends Fragment implements BoardsAdapter.OnB
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        extendedFab = getActivity().findViewById(R.id.extended_fab);
-        extendedFab.setText("Create Board");
-        extendedFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Navigation.findNavController(requireView()).navigate(R.id.navigation_create_board);
-                extendedFab.hide();
-            }
-        });
-
-        extendedFab.show();
-        extendedFab.extend();
-
         initBoardRecyclerView();
         MainActivity.startSync();
     }
@@ -117,30 +99,14 @@ public class ArchiveBoardsFragment extends Fragment implements BoardsAdapter.OnB
 
         // Attach the adapter to a RecyclerView
         boardRecyclerView.setAdapter(boardsAdapter);
-
-        boardRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-
-                if (!recyclerView.canScrollVertically(-1) && newState==RecyclerView.SCROLL_STATE_IDLE) {
-                    extendedFab.extend();
-                } else {
-                    extendedFab.shrink();
-                }
-            }
-        });
     }
 
     public void updateRecyclerView() {
-        // Get new tasks from DB, update adapter
         ArrayList<Board> newBoardsArray = tasksDatabaseHelper.getArchiveBoards();
         boardsAdapter.updateBoardsArrayList(newBoardsArray);
     }
 
     public void onBoardClick(int position) {
-        extendedFab.hide();
-
         MainActivity.selectedBoard = tasksDatabaseHelper.getArchiveBoards().get(position);
         Navigation.findNavController(requireView()).navigate(R.id.navigation_board);
     }

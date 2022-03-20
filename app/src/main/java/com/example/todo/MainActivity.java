@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 
 import com.example.todo.models.Board;
 import com.example.todo.models.Task;
@@ -14,6 +13,7 @@ import com.example.todo.remote.ApiFcmToken;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 
@@ -21,7 +21,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 public class MainActivity extends AppCompatActivity {
@@ -30,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static Context context;
     public static MaterialToolbar mainToolbar, createTaskToolbar, selectedBoardToolbar, selectedTaskToolbar;
+    public static FloatingActionButton floatingActionButton;
 
     public static Task selectedTask;
     public static Board selectedBoard;
@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
         createTaskToolbar = findViewById(R.id.create_task_toolbar);
         selectedTaskToolbar = findViewById(R.id.selected_task_toolbar);
         selectedBoardToolbar = findViewById(R.id.selected_board_toolbar);
+        floatingActionButton = findViewById(R.id.floating_action_button);
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
 
