@@ -79,15 +79,6 @@ public class CompletedTasksFragment extends Fragment implements TasksAdapter.OnT
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Navigation.findNavController(requireView()).navigate(R.id.navigation_create_task);
-                floatingActionButton.hide();
-            }
-        });
-        floatingActionButton.show();
-
         initRecyclerView();
     }
 
@@ -107,19 +98,6 @@ public class CompletedTasksFragment extends Fragment implements TasksAdapter.OnT
 
         // Attach the adapter to a RecyclerView
         recyclerView.setAdapter(tasksAdapter);
-
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-
-                if (!recyclerView.canScrollVertically(-1) && newState==RecyclerView.SCROLL_STATE_IDLE) {
-                    floatingActionButton.show();
-                } else {
-                    floatingActionButton.hide();
-                }
-            }
-        });
     }
 
     public void updateRecyclerView() {

@@ -73,6 +73,7 @@ public class HomeFragment extends Fragment {
                         return;
                     case 2:
                         floatingActionButton.hide();
+                        return;
                     case 3:
                         floatingActionButton.hide();
                 }
