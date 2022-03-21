@@ -1,12 +1,15 @@
 package com.example.todo.ui.board;
 
+import static com.example.todo.MainActivity.closeKeyboard;
 import static com.example.todo.MainActivity.floatingActionButton;
+import static com.example.todo.MainActivity.showKeyboard;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -14,6 +17,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -72,16 +76,26 @@ public class ActiveBoardsFragment extends Fragment implements BoardsAdapter.OnBo
                 builder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        attemptCreateBoard(dialogInterface);
+                        attemptCreateBoard();
+                        dialogInterface.dismiss();
+                        boardNameView.clearFocus();
+                        closeKeyboard();
                     }
                 });
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dialogInterface.cancel();
+                        closeKeyboard();
                     }
                 });
                 final AlertDialog dialog = builder.create();
+                dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialogInterface) {
+                        closeKeyboard();
+                    }
+                });
                 dialog.show();
 
                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
@@ -103,6 +117,8 @@ public class ActiveBoardsFragment extends Fragment implements BoardsAdapter.OnBo
                         }
                     }
                 });
+                boardNameView.requestFocus();
+                showKeyboard();
             }
         });
 
@@ -175,7 +191,7 @@ public class ActiveBoardsFragment extends Fragment implements BoardsAdapter.OnBo
         boardsAdapter.updateBoardsArrayList(newBoardsArray);
     }
 
-    private void attemptCreateBoard(DialogInterface dialogInterface) {
+    private void attemptCreateBoard() {
         Board newBoard = new Board();
         newBoard.setName(boardNameView.getEditText().getText().toString());
         newBoard.setStatus(TasksDatabaseHelper.statusActive);
@@ -184,11 +200,8 @@ public class ActiveBoardsFragment extends Fragment implements BoardsAdapter.OnBo
         newBoard.setUpdated_at(0);
         MainActivity.selectedBoard = tasksDatabaseHelper.addBoard(newBoard);
 
-        navigateDashboard();
-    }
-
-    private void navigateDashboard() {
-        Navigation.findNavController(requireView()).navigate(R.id.navigation_dashboard);
+        initBoardRecyclerView();
+        MainActivity.startSync();
     }
 
     public void onBoardClick(int position) {
