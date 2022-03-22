@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,7 +31,7 @@ public class TaskFragment extends Fragment {
 
     private static final String TAG = "TaskFragment";
 
-    private TextInputLayout taskNameView, taskTextView;
+    private EditText taskNameView, taskTextView;
     private View focusView;
 
     private String name;
@@ -82,8 +83,8 @@ public class TaskFragment extends Fragment {
 
         taskNameView = requireView().findViewById(R.id.taskNameEditText);
         taskTextView = requireView().findViewById(R.id.taskTextEditText);
-        taskNameView.getEditText().setText(MainActivity.selectedTask.getName());
-        taskTextView.getEditText().setText(MainActivity.selectedTask.getText());
+        taskNameView.setText(MainActivity.selectedTask.getName());
+        taskTextView.setText(MainActivity.selectedTask.getText());
     }
 
     @Override
@@ -116,8 +117,8 @@ public class TaskFragment extends Fragment {
         taskTextView.setError(null);
 
         // Store values at the time of the create attempt
-        name = taskNameView.getEditText().getText().toString();
-        text = taskTextView.getEditText().getText().toString();
+        name = taskNameView.getText().toString();
+        text = taskTextView.getText().toString();
 
         focusView = null;
 

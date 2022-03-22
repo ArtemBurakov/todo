@@ -7,11 +7,13 @@ import static com.example.todo.MainActivity.selectedTaskToolbar;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,7 +29,7 @@ import com.google.android.material.textfield.TextInputLayout;
 
 public class CreateTaskFragment extends Fragment {
 
-    private TextInputLayout taskNameView, taskTextView;
+    private EditText taskNameView, taskTextView;
     private String name, text;
     private View focusView;
 
@@ -98,8 +100,8 @@ public class CreateTaskFragment extends Fragment {
         taskTextView.setError(null);
 
         // Store values at the time of the create attempt
-        name = taskNameView.getEditText().getText().toString();
-        text = taskTextView.getEditText().getText().toString();
+        name = taskNameView.getText().toString();
+        text = taskTextView.getText().toString();
 
         focusView = null;
 
