@@ -17,6 +17,7 @@ import com.example.todo.R;
 import com.example.todo.adapters.TasksAdapter;
 import com.example.todo.database.TasksDatabaseHelper;
 import com.example.todo.models.Task;
+import com.google.android.material.appbar.AppBarLayout;
 
 import java.util.ArrayList;
 
@@ -42,6 +43,8 @@ public class BoardFragment extends Fragment implements TasksAdapter.OnTaskListen
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mainToolbar.setVisibility(View.GONE);
+        AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) mainToolbar.getLayoutParams();
+        params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL);
         selectedTaskToolbar.setVisibility(View.GONE);
         createTaskToolbar.setVisibility(View.GONE);
         selectedBoardToolbar.setVisibility(View.VISIBLE);

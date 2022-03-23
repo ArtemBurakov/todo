@@ -21,6 +21,7 @@ import com.example.todo.ui.task.ActiveTasksFragment;
 import com.example.todo.ui.task.ArchiveTasksFragment;
 import com.example.todo.ui.task.CompletedTasksFragment;
 import com.example.todo.ui.task.FavouriteTasksFragment;
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.tabs.TabLayout;
 
 public class HomeFragment extends Fragment {
@@ -42,6 +43,8 @@ public class HomeFragment extends Fragment {
         selectedTaskToolbar.setVisibility(View.GONE);
         createTaskToolbar.setVisibility(View.GONE);
         mainToolbar.setVisibility(View.VISIBLE);
+        AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) mainToolbar.getLayoutParams();
+        params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL);
         mainToolbar.setTitle("Tasks");
 
         ActiveTasksFragment activeTasksFragment = new ActiveTasksFragment();

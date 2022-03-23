@@ -25,6 +25,7 @@ import com.example.todo.MainActivity;
 import com.example.todo.R;
 import com.example.todo.database.TasksDatabaseHelper;
 import com.example.todo.models.Task;
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.textfield.TextInputLayout;
 
 public class CreateTaskFragment extends Fragment {
@@ -44,6 +45,8 @@ public class CreateTaskFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mainToolbar.setVisibility(View.GONE);
+        AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) mainToolbar.getLayoutParams();
+        params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL);
         selectedBoardToolbar.setVisibility(View.GONE);
         selectedTaskToolbar.setVisibility(View.GONE);
         createTaskToolbar.setVisibility(View.VISIBLE);

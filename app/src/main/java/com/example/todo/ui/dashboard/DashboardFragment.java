@@ -20,6 +20,7 @@ import com.example.todo.R;
 import com.example.todo.ui.board.ActiveBoardsFragment;
 import com.example.todo.ui.board.ArchiveBoardsFragment;
 import com.example.todo.ui.board.FavouriteBoardsFragment;
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.tabs.TabLayout;
 
 public class DashboardFragment extends Fragment {
@@ -40,6 +41,8 @@ public class DashboardFragment extends Fragment {
         selectedTaskToolbar.setVisibility(View.GONE);
         createTaskToolbar.setVisibility(View.GONE);
         mainToolbar.setVisibility(View.VISIBLE);
+        AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) mainToolbar.getLayoutParams();
+        params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL);
         mainToolbar.setTitle("Boards");
 
         ActiveBoardsFragment activeBoardsFragment = new ActiveBoardsFragment();
