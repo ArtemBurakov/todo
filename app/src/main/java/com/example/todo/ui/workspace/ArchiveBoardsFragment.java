@@ -1,6 +1,4 @@
-package com.example.todo.ui.task;
-
-import static com.example.todo.MainActivity.floatingActionButton;
+package com.example.todo.ui.workspace;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -16,22 +14,22 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.todo.MainActivity;
 import com.example.todo.R;
-import com.example.todo.adapters.TasksAdapter;
+import com.example.todo.adapters.BoardsAdapter;
 import com.example.todo.database.TasksDatabaseHelper;
-import com.example.todo.models.Task;
+import com.example.todo.models.Board;
 
 import java.util.ArrayList;
 
-public class FavouriteTasksFragment extends Fragment implements TasksAdapter.OnTaskListener {
+public class ArchiveBoardsFragment extends Fragment implements BoardsAdapter.OnBoardListener {
 
     private Context context;
 
-    private TasksAdapter tasksAdapter;
+    private BoardsAdapter boardsAdapter;
     private TasksDatabaseHelper tasksDatabaseHelper;
 
     @Override
@@ -45,9 +43,16 @@ public class FavouriteTasksFragment extends Fragment implements TasksAdapter.OnT
         LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(context);
         lbm.registerReceiver(receiver, new IntentFilter("fcmNotification"));
         lbm.registerReceiver(receiver, new IntentFilter("updateRecyclerView"));
-        MainActivity.selectedBoard = null;
 
-        return inflater.inflate(R.layout.fragment_favourite_task, container, false);
+        View root = inflater.inflate(R.layout.fragment_archive_board, container, false);
+        return root;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        initBoardRecyclerView();
+        MainActivity.startSync();
     }
 
     @Override
@@ -64,7 +69,9 @@ public class FavouriteTasksFragment extends Fragment implements TasksAdapter.OnT
             if (action != null) {
                 if (action.equals("fcmNotification")) {
                     String modelName = intent.getStringExtra("modelName");
-                    if (modelName.equals("todo")) {
+                    if (modelName.equals("board")) {
+                        MainActivity.startSync();
+                    } else if (modelName.equals("todo")) {
                         MainActivity.startSync();
                     }
                 } else if (action.equals("updateRecyclerView")) {
@@ -76,39 +83,31 @@ public class FavouriteTasksFragment extends Fragment implements TasksAdapter.OnT
         }
     };
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        initRecyclerView();
-    }
-
-    private void initRecyclerView() {
-        RecyclerView recyclerView = requireView().findViewById(R.id.favouriteTaskRecyclerView);
+    private void initBoardRecyclerView() {
+        RecyclerView boardRecyclerView = requireView().findViewById(R.id.archiveBoardRecyclerView);
 
         // Construct the data source
         tasksDatabaseHelper = TasksDatabaseHelper.getInstance(context);
-        ArrayList<Task> tasksArray = tasksDatabaseHelper.getFavouriteTasks();
+        ArrayList<Board> boardsArray = tasksDatabaseHelper.getArchiveBoards();
 
-        // Setting LayoutManager
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        // Setting GridLayoutManager
+        boardRecyclerView.setHasFixedSize(true);
+        boardRecyclerView.setLayoutManager(new GridLayoutManager(context, 2));
 
         // Create the adapter to convert the array to views
-        tasksAdapter = new TasksAdapter(tasksArray, context, this);
+        boardsAdapter = new BoardsAdapter(boardsArray, context, this);
 
         // Attach the adapter to a RecyclerView
-        recyclerView.setAdapter(tasksAdapter);
+        boardRecyclerView.setAdapter(boardsAdapter);
     }
 
     public void updateRecyclerView() {
-        // Get new tasks from DB, update adapter
-        ArrayList<Task> newTasksArray = tasksDatabaseHelper.getFavouriteTasks();
-        tasksAdapter.updateTasksArrayList(newTasksArray);
+        ArrayList<Board> newBoardsArray = tasksDatabaseHelper.getArchiveBoards();
+        boardsAdapter.updateBoardsArrayList(newBoardsArray);
     }
 
-    public void onTaskClick(int position) {
-        floatingActionButton.hide();
-        MainActivity.selectedTask = tasksDatabaseHelper.getFavouriteTasks().get(position);
-        Navigation.findNavController(requireView()).navigate(R.id.navigation_task);
+    public void onBoardClick(int position) {
+        MainActivity.selectedBoard = tasksDatabaseHelper.getArchiveBoards().get(position);
+        Navigation.findNavController(requireView()).navigate(R.id.navigation_board);
     }
 }

@@ -33,7 +33,7 @@ public class ApiSync extends AsyncTask<Void, Void, Boolean> {
     private TasksDatabaseHelper tasksDatabaseHelper;
 
     private Boolean unauthorized = false;
-    private final String apiUrl = "https://3d79-178-216-17-166.ngrok.io/v1/";
+    private final String apiUrl = "https://faf9-178-216-17-166.ngrok.io/v1/";
     private final ApiService apiService = ApiUtils.getAPIService(apiUrl);
 
     public ApiSync(Context context) {

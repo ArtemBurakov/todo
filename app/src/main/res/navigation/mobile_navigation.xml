@@ -3,44 +3,45 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_dashboard">
+    app:startDestination="@+id/navigation_tasks">
 
     <fragment
-        android:id="@+id/navigation_home"
-        android:name="com.example.todo.ui.home.HomeFragment"
+        android:id="@+id/navigation_tasks"
+        android:name="com.example.todo.ui.notes.NotesFragment"
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.example.todo.ui.dashboard.DashboardFragment"
+        android:id="@+id/navigation_workspaces"
+        android:name="com.example.todo.ui.workspaces.WorkspacesFragment"
         tools:layout="@layout/fragment_dashboard" />
 
     <fragment
-        android:id="@+id/navigation_task"
-        android:name="com.example.todo.ui.task.TaskFragment"
-        tools:layout="@layout/fragment_task" >
-    </fragment>
-
-    <fragment
-        android:id="@+id/navigation_board"
-        android:name="com.example.todo.ui.board.BoardFragment"
-        tools:layout="@layout/fragment_board" >
-    </fragment>
-
-    <fragment
-        android:id="@+id/navigation_create_board"
-        android:name="com.example.todo.ui.board.CreateBoardFragment"
-        tools:layout="@layout/fragment_create_board" >
-    </fragment>
-
-    <fragment
-        android:id="@+id/navigation_create_task"
-        android:name="com.example.todo.ui.task.CreateTaskFragment"
-        tools:layout="@layout/fragment_create_task" >
-    </fragment>
+        android:id="@+id/navigation_notes"
+        android:name="com.example.todo.ui.notes.NotesFragment"
+        tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/navigation_settings"
         android:name="com.example.todo.ui.settings.SettingsFragment"
         tools:layout="@layout/fragment_settings" />
+
+    <fragment
+        android:id="@+id/navigation_task"
+        android:name="com.example.todo.ui.note.NoteFragment"
+        tools:layout="@layout/fragment_task" />
+
+    <fragment
+        android:id="@+id/navigation_board"
+        android:name="com.example.todo.ui.workspace.WorkspaceFragment"
+        tools:layout="@layout/fragment_board" />
+
+    <fragment
+        android:id="@+id/navigation_create_board"
+        android:name="com.example.todo.ui.workspace.CreateBoardFragment"
+        tools:layout="@layout/fragment_create_board" />
+
+    <fragment
+        android:id="@+id/navigation_create_task"
+        android:name="com.example.todo.ui.note.CreateNoteFragment"
+        tools:layout="@layout/fragment_create_task" />
 </navigation>

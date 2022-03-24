@@ -1,15 +1,13 @@
-package com.example.todo.ui.board;
+package com.example.todo.ui.workspace;
 
-import static com.example.todo.MainActivity.closeKeyboard;
 import static com.example.todo.MainActivity.floatingActionButton;
-import static com.example.todo.MainActivity.showKeyboard;
+import static com.example.todo.MainActivity.hideKeyboard;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -17,7 +15,6 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -79,21 +76,21 @@ public class ActiveBoardsFragment extends Fragment implements BoardsAdapter.OnBo
                         attemptCreateBoard();
                         dialogInterface.dismiss();
                         boardNameView.clearFocus();
-                        closeKeyboard();
+                        hideKeyboard(context, getActivity().getCurrentFocus());
                     }
                 });
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dialogInterface.cancel();
-                        closeKeyboard();
+                        hideKeyboard(context, getActivity().getCurrentFocus());
                     }
                 });
                 final AlertDialog dialog = builder.create();
                 dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface dialogInterface) {
-                        closeKeyboard();
+                        hideKeyboard(context, getActivity().getCurrentFocus());
                     }
                 });
                 dialog.show();
@@ -118,7 +115,7 @@ public class ActiveBoardsFragment extends Fragment implements BoardsAdapter.OnBo
                     }
                 });
                 boardNameView.requestFocus();
-                showKeyboard();
+                //showKeyboard();
             }
         });
 

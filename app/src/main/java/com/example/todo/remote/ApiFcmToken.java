@@ -49,7 +49,7 @@ public class ApiFcmToken {
 
         final Context syncContext = MainActivity.getContextOfApplication();
 
-        String apiUrl = "https://3d79-178-216-17-166.ngrok.io/v1/";
+        String apiUrl = "https://faf9-178-216-17-166.ngrok.io/v1/";
 
         String auth_token_string = LoginActivity.getAuthToken(syncContext);
 

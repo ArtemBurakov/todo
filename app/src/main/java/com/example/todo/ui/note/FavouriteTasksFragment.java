@@ -1,4 +1,4 @@
-package com.example.todo.ui.task;
+package com.example.todo.ui.note;
 
 import static com.example.todo.MainActivity.floatingActionButton;
 
@@ -27,7 +27,7 @@ import com.example.todo.models.Task;
 
 import java.util.ArrayList;
 
-public class ActiveTasksFragment extends Fragment implements TasksAdapter.OnTaskListener {
+public class FavouriteTasksFragment extends Fragment implements TasksAdapter.OnTaskListener {
 
     private Context context;
 
@@ -47,7 +47,7 @@ public class ActiveTasksFragment extends Fragment implements TasksAdapter.OnTask
         lbm.registerReceiver(receiver, new IntentFilter("updateRecyclerView"));
         MainActivity.selectedBoard = null;
 
-        return inflater.inflate(R.layout.fragment_active_task, container, false);
+        return inflater.inflate(R.layout.fragment_favourite_task, container, false);
     }
 
     @Override
@@ -79,24 +79,15 @@ public class ActiveTasksFragment extends Fragment implements TasksAdapter.OnTask
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Navigation.findNavController(requireView()).navigate(R.id.navigation_create_task);
-                floatingActionButton.hide();
-            }
-        });
-        floatingActionButton.show();
-
         initRecyclerView();
     }
 
     private void initRecyclerView() {
-        RecyclerView recyclerView = requireView().findViewById(R.id.activeTaskRecyclerView);
+        RecyclerView recyclerView = requireView().findViewById(R.id.favouriteTaskRecyclerView);
 
         // Construct the data source
         tasksDatabaseHelper = TasksDatabaseHelper.getInstance(context);
-        ArrayList<Task> tasksArray = tasksDatabaseHelper.getActiveTasks();
+        ArrayList<Task> tasksArray = tasksDatabaseHelper.getFavouriteTasks();
 
         // Setting LayoutManager
         recyclerView.setHasFixedSize(true);
@@ -107,34 +98,17 @@ public class ActiveTasksFragment extends Fragment implements TasksAdapter.OnTask
 
         // Attach the adapter to a RecyclerView
         recyclerView.setAdapter(tasksAdapter);
-
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx,int dy){
-                super.onScrolled(recyclerView, dx, dy);
-                if (dy >0) {
-                    if (floatingActionButton.isShown()) {
-                        floatingActionButton.hide();
-                    }
-                }
-                else if (dy <0) {
-                    if (!floatingActionButton.isShown()) {
-                        floatingActionButton.show();
-                    }
-                }
-            }
-        });
     }
 
     public void updateRecyclerView() {
         // Get new tasks from DB, update adapter
-        ArrayList<Task> newTasksArray = tasksDatabaseHelper.getActiveTasks();
+        ArrayList<Task> newTasksArray = tasksDatabaseHelper.getFavouriteTasks();
         tasksAdapter.updateTasksArrayList(newTasksArray);
     }
 
     public void onTaskClick(int position) {
         floatingActionButton.hide();
-        MainActivity.selectedTask = tasksDatabaseHelper.getActiveTasks().get(position);
+        MainActivity.selectedTask = tasksDatabaseHelper.getFavouriteTasks().get(position);
         Navigation.findNavController(requireView()).navigate(R.id.navigation_task);
     }
 }

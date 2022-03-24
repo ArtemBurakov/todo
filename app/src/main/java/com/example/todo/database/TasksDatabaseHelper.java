@@ -50,6 +50,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
     public static int statusDeleted = 0;
     public static int statusActive = 10;
     public static int statusDone = 20;
+    public static int statusFavourite = 30;
 
     public static synchronized TasksDatabaseHelper getInstance(Context context) {
         if (sInstance == null) {
@@ -649,7 +650,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
         ArrayList<Board> boards = new ArrayList<>();
 
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery("select * from " + TABLE_BOARDS + " where " + KEY_BOARD_STATUS + " = ?", new String[] {String.valueOf(20)});
+        Cursor cursor = db.rawQuery("select * from " + TABLE_BOARDS + " where " + KEY_BOARD_STATUS + " = ?", new String[] {String.valueOf(30)});
         try {
             if (cursor.moveToFirst()) {
                 do {

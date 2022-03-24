@@ -5,13 +5,4 @@
         android:id="@+id/save"
         android:title="Save"
         app:showAsAction="ifRoom" />
-
-    <item
-        android:id="@+id/favorite"
-        android:icon="@drawable/ic_baseline_favorite_border_24"
-        android:title="Favourite"
-        app:showAsAction="ifRoom" />
-
-    <item android:title="Mark as done" />
-
 </menu>

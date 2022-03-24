@@ -1,12 +1,15 @@
 package com.example.todo;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 
 import com.example.todo.models.Board;
 import com.example.todo.models.Task;
@@ -14,7 +17,7 @@ import com.example.todo.remote.ApiFcmToken;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 
@@ -25,15 +28,18 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
 public class MainActivity extends AppCompatActivity {
-
     private static final String TAG = "MainActivity";
 
+    @SuppressLint("StaticFieldLeak")
     public static Context context;
-    public static MaterialToolbar mainToolbar, createTaskToolbar, selectedBoardToolbar, selectedTaskToolbar;
-    public static FloatingActionButton floatingActionButton;
+    @SuppressLint("StaticFieldLeak")
+    public static MaterialToolbar
+            tasksToolbar, workspacesToolbar, notesToolbar, settingsToolbar, createTaskToolbar, selectedBoardToolbar, selectedTaskToolbar;
+    public static ExtendedFloatingActionButton floatingActionButton;
 
     public static Task selectedTask;
     public static Board selectedBoard;
+    @SuppressLint("StaticFieldLeak")
     public static ApiSync apiSync;
     public ApiFcmTokenSendTask syncFcmToken;
 
@@ -43,11 +49,14 @@ public class MainActivity extends AppCompatActivity {
         context = getApplicationContext();
         setContentView(R.layout.activity_main);
 
-        mainToolbar = findViewById(R.id.main_toolbar);
+        tasksToolbar = findViewById(R.id.tasks_toolbar);
+        workspacesToolbar = findViewById(R.id.workspaces_toolbar);
+        notesToolbar = findViewById(R.id.notes_toolbar);
+        settingsToolbar = findViewById(R.id.settings_toolbar);
         createTaskToolbar = findViewById(R.id.create_task_toolbar);
         selectedTaskToolbar = findViewById(R.id.selected_task_toolbar);
         selectedBoardToolbar = findViewById(R.id.selected_board_toolbar);
-        floatingActionButton = findViewById(R.id.floating_action_button);
+        floatingActionButton = findViewById(R.id.extended_fab);
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
 
@@ -137,8 +146,10 @@ public class MainActivity extends AppCompatActivity {
         inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
     }
 
-    public static void closeKeyboard() {
-        InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+    public static void hideKeyboard(Context context, View view) {
+        if (view != null) {
+            InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 }

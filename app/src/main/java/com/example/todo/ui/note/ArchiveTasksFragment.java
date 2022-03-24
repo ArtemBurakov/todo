@@ -1,4 +1,4 @@
-package com.example.todo.ui.task;
+package com.example.todo.ui.note;
 
 import static com.example.todo.MainActivity.floatingActionButton;
 
@@ -27,7 +27,7 @@ import com.example.todo.models.Task;
 
 import java.util.ArrayList;
 
-public class CompletedTasksFragment extends Fragment implements TasksAdapter.OnTaskListener {
+public class ArchiveTasksFragment extends Fragment implements TasksAdapter.OnTaskListener {
 
     private Context context;
 
@@ -47,7 +47,7 @@ public class CompletedTasksFragment extends Fragment implements TasksAdapter.OnT
         lbm.registerReceiver(receiver, new IntentFilter("updateRecyclerView"));
         MainActivity.selectedBoard = null;
 
-        return inflater.inflate(R.layout.fragment_completed_task, container, false);
+        return inflater.inflate(R.layout.fragment_archive_task, container, false);
     }
 
     @Override
@@ -83,11 +83,11 @@ public class CompletedTasksFragment extends Fragment implements TasksAdapter.OnT
     }
 
     private void initRecyclerView() {
-        RecyclerView recyclerView = requireView().findViewById(R.id.completedTaskRecyclerView);
+        RecyclerView recyclerView = requireView().findViewById(R.id.archiveTaskRecyclerView);
 
         // Construct the data source
         tasksDatabaseHelper = TasksDatabaseHelper.getInstance(context);
-        ArrayList<Task> tasksArray = tasksDatabaseHelper.getCompletedTasks();
+        ArrayList<Task> tasksArray = tasksDatabaseHelper.getArchiveTasks();
 
         // Setting LayoutManager
         recyclerView.setHasFixedSize(true);
@@ -102,13 +102,13 @@ public class CompletedTasksFragment extends Fragment implements TasksAdapter.OnT
 
     public void updateRecyclerView() {
         // Get new tasks from DB, update adapter
-        ArrayList<Task> newTasksArray = tasksDatabaseHelper.getCompletedTasks();
+        ArrayList<Task> newTasksArray = tasksDatabaseHelper.getArchiveTasks();
         tasksAdapter.updateTasksArrayList(newTasksArray);
     }
 
     public void onTaskClick(int position) {
         floatingActionButton.hide();
-        MainActivity.selectedTask = tasksDatabaseHelper.getCompletedTasks().get(position);
+        MainActivity.selectedTask = tasksDatabaseHelper.getArchiveTasks().get(position);
         Navigation.findNavController(requireView()).navigate(R.id.navigation_task);
     }
 }

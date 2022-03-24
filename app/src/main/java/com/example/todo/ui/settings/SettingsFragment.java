@@ -1,5 +1,14 @@
 package com.example.todo.ui.settings;
 
+import static com.example.todo.MainActivity.createTaskToolbar;
+import static com.example.todo.MainActivity.floatingActionButton;
+import static com.example.todo.MainActivity.notesToolbar;
+import static com.example.todo.MainActivity.selectedBoardToolbar;
+import static com.example.todo.MainActivity.selectedTaskToolbar;
+import static com.example.todo.MainActivity.settingsToolbar;
+import static com.example.todo.MainActivity.tasksToolbar;
+import static com.example.todo.MainActivity.workspacesToolbar;
+
 import android.content.Intent;
 import android.content.Context;
 import android.os.Bundle;
@@ -34,6 +43,15 @@ public class SettingsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        tasksToolbar.setVisibility(View.GONE);
+        workspacesToolbar.setVisibility(View.GONE);
+        notesToolbar.setVisibility(View.GONE);
+        settingsToolbar.setVisibility(View.VISIBLE);
+        selectedBoardToolbar.setVisibility(View.GONE);
+        selectedTaskToolbar.setVisibility(View.GONE);
+        createTaskToolbar.setVisibility(View.GONE);
+
+        floatingActionButton.hide();
         TextView logout = requireView().findViewById(R.id.logoutTextView);
         logout.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -1,12 +1,20 @@
-package com.example.todo.ui.task;
+package com.example.todo.ui.notes;
 
+import static com.example.todo.MainActivity.createTaskToolbar;
 import static com.example.todo.MainActivity.floatingActionButton;
+import static com.example.todo.MainActivity.notesToolbar;
+import static com.example.todo.MainActivity.selectedBoardToolbar;
+import static com.example.todo.MainActivity.selectedTaskToolbar;
+import static com.example.todo.MainActivity.settingsToolbar;
+import static com.example.todo.MainActivity.tasksToolbar;
+import static com.example.todo.MainActivity.workspacesToolbar;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,10 +35,10 @@ import com.example.todo.models.Task;
 
 import java.util.ArrayList;
 
-public class ArchiveTasksFragment extends Fragment implements TasksAdapter.OnTaskListener {
+public class NotesFragment extends Fragment implements TasksAdapter.OnTaskListener {
+    private static final String TAG = "NotesFragment";
 
     private Context context;
-
     private TasksAdapter tasksAdapter;
     private TasksDatabaseHelper tasksDatabaseHelper;
 
@@ -47,7 +55,7 @@ public class ArchiveTasksFragment extends Fragment implements TasksAdapter.OnTas
         lbm.registerReceiver(receiver, new IntentFilter("updateRecyclerView"));
         MainActivity.selectedBoard = null;
 
-        return inflater.inflate(R.layout.fragment_archive_task, container, false);
+        return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
     @Override
@@ -65,6 +73,7 @@ public class ArchiveTasksFragment extends Fragment implements TasksAdapter.OnTas
                 if (action.equals("fcmNotification")) {
                     String modelName = intent.getStringExtra("modelName");
                     if (modelName.equals("todo")) {
+                        Log.e(TAG, "Todo === " + intent.getAction());
                         MainActivity.startSync();
                     }
                 } else if (action.equals("updateRecyclerView")) {
@@ -79,15 +88,35 @@ public class ArchiveTasksFragment extends Fragment implements TasksAdapter.OnTas
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        tasksToolbar.setVisibility(View.GONE);
+        workspacesToolbar.setVisibility(View.GONE);
+        notesToolbar.setVisibility(View.VISIBLE);
+        settingsToolbar.setVisibility(View.GONE);
+        selectedBoardToolbar.setVisibility(View.GONE);
+        selectedTaskToolbar.setVisibility(View.GONE);
+        createTaskToolbar.setVisibility(View.GONE);
+
+        floatingActionButton.setText("New note");
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                floatingActionButton.hide();
+                Navigation.findNavController(requireView()).navigate(R.id.navigation_create_task);
+            }
+        });
+
+        floatingActionButton.show();
+        floatingActionButton.extend();
+
         initRecyclerView();
     }
 
     private void initRecyclerView() {
-        RecyclerView recyclerView = requireView().findViewById(R.id.archiveTaskRecyclerView);
+        RecyclerView recyclerView = requireView().findViewById(R.id.taskRecyclerView);
 
         // Construct the data source
         tasksDatabaseHelper = TasksDatabaseHelper.getInstance(context);
-        ArrayList<Task> tasksArray = tasksDatabaseHelper.getArchiveTasks();
+        ArrayList<Task> tasksArray = tasksDatabaseHelper.getActiveTasks();
 
         // Setting LayoutManager
         recyclerView.setHasFixedSize(true);
@@ -98,17 +127,29 @@ public class ArchiveTasksFragment extends Fragment implements TasksAdapter.OnTas
 
         // Attach the adapter to a RecyclerView
         recyclerView.setAdapter(tasksAdapter);
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+                if (!recyclerView.canScrollVertically(-1) && newState==RecyclerView.SCROLL_STATE_IDLE) {
+                    floatingActionButton.extend();
+                } else {
+                    floatingActionButton.shrink();
+                }
+            }
+        });
     }
 
     public void updateRecyclerView() {
-        // Get new tasks from DB, update adapter
-        ArrayList<Task> newTasksArray = tasksDatabaseHelper.getArchiveTasks();
+        ArrayList<Task> newTasksArray = tasksDatabaseHelper.getActiveTasks();
         tasksAdapter.updateTasksArrayList(newTasksArray);
     }
 
     public void onTaskClick(int position) {
         floatingActionButton.hide();
-        MainActivity.selectedTask = tasksDatabaseHelper.getArchiveTasks().get(position);
+        MainActivity.selectedTask = tasksDatabaseHelper.getActiveTasks().get(position);
         Navigation.findNavController(requireView()).navigate(R.id.navigation_task);
     }
 }

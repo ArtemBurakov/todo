@@ -1,4 +1,4 @@
-package com.example.todo.ui.board;
+package com.example.todo.ui.workspace;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -25,7 +25,7 @@ import com.example.todo.models.Board;
 
 import java.util.ArrayList;
 
-public class ArchiveBoardsFragment extends Fragment implements BoardsAdapter.OnBoardListener {
+public class FavouriteBoardsFragment extends Fragment implements BoardsAdapter.OnBoardListener {
 
     private Context context;
 
@@ -44,7 +44,7 @@ public class ArchiveBoardsFragment extends Fragment implements BoardsAdapter.OnB
         lbm.registerReceiver(receiver, new IntentFilter("fcmNotification"));
         lbm.registerReceiver(receiver, new IntentFilter("updateRecyclerView"));
 
-        View root = inflater.inflate(R.layout.fragment_archive_board, container, false);
+        View root = inflater.inflate(R.layout.fragment_favourite_board, container, false);
         return root;
     }
 
@@ -84,11 +84,11 @@ public class ArchiveBoardsFragment extends Fragment implements BoardsAdapter.OnB
     };
 
     private void initBoardRecyclerView() {
-        RecyclerView boardRecyclerView = requireView().findViewById(R.id.archiveBoardRecyclerView);
+        RecyclerView boardRecyclerView = requireView().findViewById(R.id.favouriteBoardRecyclerView);
 
         // Construct the data source
         tasksDatabaseHelper = TasksDatabaseHelper.getInstance(context);
-        ArrayList<Board> boardsArray = tasksDatabaseHelper.getArchiveBoards();
+        ArrayList<Board> boardsArray = tasksDatabaseHelper.getFavouriteBoards();
 
         // Setting GridLayoutManager
         boardRecyclerView.setHasFixedSize(true);
@@ -102,12 +102,12 @@ public class ArchiveBoardsFragment extends Fragment implements BoardsAdapter.OnB
     }
 
     public void updateRecyclerView() {
-        ArrayList<Board> newBoardsArray = tasksDatabaseHelper.getArchiveBoards();
+        ArrayList<Board> newBoardsArray = tasksDatabaseHelper.getFavouriteBoards();
         boardsAdapter.updateBoardsArrayList(newBoardsArray);
     }
 
     public void onBoardClick(int position) {
-        MainActivity.selectedBoard = tasksDatabaseHelper.getArchiveBoards().get(position);
+        MainActivity.selectedBoard = tasksDatabaseHelper.getFavouriteBoards().get(position);
         Navigation.findNavController(requireView()).navigate(R.id.navigation_board);
     }
 }

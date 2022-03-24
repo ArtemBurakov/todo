@@ -1,4 +1,4 @@
-package com.example.todo.ui.board;
+package com.example.todo.ui.workspace;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -88,6 +88,6 @@ public class CreateBoardFragment extends Fragment {
 
     private void navigateDashboard() {
         // Navigate to dashboard fragment
-        Navigation.findNavController(requireView()).navigate(R.id.navigation_dashboard);
+        Navigation.findNavController(requireView()).navigate(R.id.navigation_workspaces);
     }
 }

@@ -237,7 +237,7 @@ public class SignUpActivity extends AppCompatActivity {
         protected Boolean doInBackground(Void... params) {
 
             // Attempt registration against a network service.
-            String apiUrl = "https://3d79-178-216-17-166.ngrok.io/v1/";
+            String apiUrl = "https://faf9-178-216-17-166.ngrok.io/v1/";
             apiService = ApiUtils.getAPIService(apiUrl);
             try {
                 Call<ResponseBody> call = apiService.signUpUser(mUsername, mEmail, mPassword);

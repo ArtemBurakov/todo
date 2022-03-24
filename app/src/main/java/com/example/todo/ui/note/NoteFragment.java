@@ -1,18 +1,21 @@
-package com.example.todo.ui.task;
+package com.example.todo.ui.note;
 
+import static com.example.todo.MainActivity.hideKeyboard;
+import static com.example.todo.MainActivity.selectedBoard;
+import static com.example.todo.MainActivity.tasksToolbar;
+import static com.example.todo.MainActivity.notesToolbar;
 import static com.example.todo.MainActivity.createTaskToolbar;
-import static com.example.todo.MainActivity.mainToolbar;
 import static com.example.todo.MainActivity.selectedBoardToolbar;
 import static com.example.todo.MainActivity.selectedTaskToolbar;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
@@ -25,12 +28,10 @@ import com.example.todo.MainActivity;
 import com.example.todo.R;
 import com.example.todo.database.TasksDatabaseHelper;
 import com.example.todo.models.Task;
-import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.textfield.TextInputLayout;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-public class TaskFragment extends Fragment {
-
-    private static final String TAG = "TaskFragment";
+public class NoteFragment extends Fragment {
+    private static final String TAG = "NoteFragment";
 
     private EditText taskNameView, taskTextView;
     private View focusView;
@@ -49,16 +50,15 @@ public class TaskFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mainToolbar.setVisibility(View.GONE);
-        AppBarLayout.LayoutParams paramsMain = (AppBarLayout.LayoutParams) mainToolbar.getLayoutParams();
-        paramsMain.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL);
+        tasksToolbar.setVisibility(View.GONE);
+        notesToolbar.setVisibility(View.GONE);
         createTaskToolbar.setVisibility(View.GONE);
         selectedBoardToolbar.setVisibility(View.GONE);
         selectedTaskToolbar.setVisibility(View.VISIBLE);
         selectedTaskToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Navigation.findNavController(requireView()).navigate(R.id.navigation_home);
+                navigateBack();
             }
         });
         selectedTaskToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
@@ -68,13 +68,36 @@ public class TaskFragment extends Fragment {
                     case R.id.update:
                         attemptUpdateTask();
                         return true;
-                    case R.id.delete:
+                    case R.id.done:
                         Task task = MainActivity.selectedTask;
-                        task.setStatus(TasksDatabaseHelper.statusDeleted);
+                        task.setStatus(TasksDatabaseHelper.statusDone);
                         task.setSync_status(1);
                         tasksDatabaseHelper.updateTask(task);
 
-                        navigateHome();
+                        return true;
+                    case R.id.delete:
+                        MaterialAlertDialogBuilder removeTaskBuilder = new MaterialAlertDialogBuilder(getActivity());
+                        removeTaskBuilder.setTitle("Remove task?");
+                        removeTaskBuilder.setMessage("This tasks will be permanently deleted, but it can be restored.");
+                        removeTaskBuilder.setPositiveButton("Remove", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Task task = MainActivity.selectedTask;
+                                task.setStatus(TasksDatabaseHelper.statusDeleted);
+                                task.setSync_status(1);
+                                tasksDatabaseHelper.updateTask(task);
+
+                                dialogInterface.dismiss();
+                                navigateBack();
+                            }
+                        });
+                        removeTaskBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.cancel();
+                            }
+                        });
+                        removeTaskBuilder.show();
 
                         return true;
                 }
@@ -94,7 +117,7 @@ public class TaskFragment extends Fragment {
     public void onStop() {
         super.onStop();
         MainActivity.selectedTask = null;
-        hideKeyboard();
+        hideKeyboard(context, getActivity().getCurrentFocus());
     }
 
     private void attemptUpdateTask() {
@@ -107,7 +130,7 @@ public class TaskFragment extends Fragment {
             task.setSync_status(1);
             tasksDatabaseHelper.updateTask(task);
 
-            navigateHome();
+            navigateBack();
         } else {
             // Error; don't attempt to update task
             focusView.requestFocus();
@@ -142,17 +165,11 @@ public class TaskFragment extends Fragment {
         return true;
     }
 
-    private void hideKeyboard() {
-        // Close keyboard
-        if (getActivity().getCurrentFocus() == null) {
-            return;
+    private void navigateBack() {
+        if (selectedBoard != null) {
+            Navigation.findNavController(requireView()).navigate(R.id.navigation_board);
+        } else {
+            Navigation.findNavController(requireView()).navigate(R.id.navigation_notes);
         }
-        InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
-    }
-
-    private void navigateHome() {
-        // Navigate to home fragment
-        Navigation.findNavController(requireView()).navigate(R.id.navigation_home);
     }
 }

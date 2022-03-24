@@ -11,8 +11,20 @@
         android:layout_height="wrap_content">
 
         <include
-            android:id="@+id/main_toolbar"
-            layout="@layout/main_toolbar"
+            android:id="@+id/tasks_toolbar"
+            layout="@layout/tasks_toolbar"
+            android:visibility="gone" />
+        <include
+            android:id="@+id/workspaces_toolbar"
+            layout="@layout/workspaces_toolbar"
+            android:visibility="gone" />
+        <include
+            android:id="@+id/notes_toolbar"
+            layout="@layout/notes_toolbar"
+            android:visibility="gone" />
+        <include
+            android:id="@+id/settings_toolbar"
+            layout="@layout/settings_toolbar"
             android:visibility="gone" />
         <include
             android:id="@+id/create_task_toolbar"
@@ -28,30 +40,31 @@
             android:visibility="gone" />
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.core.widget.NestedScrollView
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true"
-        android:layout_marginBottom="78dp"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-            <include layout="@layout/content_main" />
-    </androidx.core.widget.NestedScrollView>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floating_action_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
         android:layout_gravity="bottom|end"
-        android:layout_marginBottom="94dp"
-        app:srcCompat="@drawable/ic_baseline_add_24" />
+        android:layout_marginTop="?attr/actionBarSize"
+        android:layout_marginBottom="78dp">
+
+        <include layout="@layout/content_main" />
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/extended_fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:layout_gravity="bottom|end"
+            android:layout_marginBottom="78dp"
+            app:icon="@drawable/ic_baseline_add_24"/>
+    </FrameLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/nav_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
+        app:labelVisibilityMode="labeled"
         app:menu="@menu/bottom_nav_menu"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

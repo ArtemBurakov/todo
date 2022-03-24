@@ -1,13 +1,15 @@
-package com.example.todo.ui.task;
+package com.example.todo.ui.note;
 
 import static com.example.todo.MainActivity.createTaskToolbar;
-import static com.example.todo.MainActivity.mainToolbar;
+import static com.example.todo.MainActivity.hideKeyboard;
+import static com.example.todo.MainActivity.notesToolbar;
+import static com.example.todo.MainActivity.selectedBoard;
 import static com.example.todo.MainActivity.selectedBoardToolbar;
 import static com.example.todo.MainActivity.selectedTaskToolbar;
+import static com.example.todo.MainActivity.tasksToolbar;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -25,10 +27,8 @@ import com.example.todo.MainActivity;
 import com.example.todo.R;
 import com.example.todo.database.TasksDatabaseHelper;
 import com.example.todo.models.Task;
-import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.textfield.TextInputLayout;
 
-public class CreateTaskFragment extends Fragment {
+public class CreateNoteFragment extends Fragment {
 
     private EditText taskNameView, taskTextView;
     private String name, text;
@@ -44,16 +44,15 @@ public class CreateTaskFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mainToolbar.setVisibility(View.GONE);
-        AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) mainToolbar.getLayoutParams();
-        params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL);
+        tasksToolbar.setVisibility(View.GONE);
+        notesToolbar.setVisibility(View.GONE);
         selectedBoardToolbar.setVisibility(View.GONE);
         selectedTaskToolbar.setVisibility(View.GONE);
         createTaskToolbar.setVisibility(View.VISIBLE);
         createTaskToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Navigation.findNavController(requireView()).navigate(R.id.navigation_home);
+                navigateBack();
             }
         });
         createTaskToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
@@ -74,6 +73,12 @@ public class CreateTaskFragment extends Fragment {
         taskTextView = requireView().findViewById(R.id.taskTextEditText);
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        hideKeyboard(context, getActivity().getCurrentFocus());
+    }
+
     private void attemptCreateTask() {
         Task newTask = new Task();
 
@@ -90,7 +95,7 @@ public class CreateTaskFragment extends Fragment {
             newTask.setUpdated_at(0);
             tasksDatabaseHelper.addTask(newTask);
 
-            navigateHome();
+            navigateBack();
         } else {
             // Error; don't attempt to create task
             focusView.requestFocus();
@@ -125,8 +130,11 @@ public class CreateTaskFragment extends Fragment {
         return true;
     }
 
-    private void navigateHome() {
-        // Navigate to home fragment
-        Navigation.findNavController(requireView()).navigate(R.id.navigation_home);
+    private void navigateBack() {
+        if (selectedBoard != null) {
+            Navigation.findNavController(requireView()).navigate(R.id.navigation_board);
+        } else {
+            Navigation.findNavController(requireView()).navigate(R.id.navigation_notes);
+        }
     }
 }
