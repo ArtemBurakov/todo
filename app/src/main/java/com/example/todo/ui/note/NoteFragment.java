@@ -74,6 +74,7 @@ public class NoteFragment extends Fragment {
                         task.setSync_status(1);
                         tasksDatabaseHelper.updateTask(task);
 
+                        MainActivity.startSync();
                         return true;
                     case R.id.delete:
                         MaterialAlertDialogBuilder removeTaskBuilder = new MaterialAlertDialogBuilder(getActivity());
@@ -98,7 +99,6 @@ public class NoteFragment extends Fragment {
                             }
                         });
                         removeTaskBuilder.show();
-
                         return true;
                 }
                 return false;
@@ -166,6 +166,7 @@ public class NoteFragment extends Fragment {
     }
 
     private void navigateBack() {
+        MainActivity.startSync();
         if (selectedBoard != null) {
             Navigation.findNavController(requireView()).navigate(R.id.navigation_board);
         } else {

@@ -326,7 +326,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
         ArrayList<Task> tasks = new ArrayList<>();
 
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery("select * from " + TABLE_TASKS + " where " + KEY_TASK_BOARD_ID + " = ? AND " + KEY_TASK_STATUS + " = ? ", new String[] {String.valueOf(board_id), String.valueOf(10)}, null);
+        Cursor cursor = db.rawQuery("select * from " + TABLE_TASKS + " where " + KEY_TASK_BOARD_ID + " = ? AND " + KEY_TASK_STATUS + " = ? order by `updated_at` desc", new String[] {String.valueOf(board_id), String.valueOf(10)}, null);
         try {
             if (cursor.moveToFirst()) {
                 do {
@@ -357,7 +357,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
         ArrayList<Task> tasks = new ArrayList<>();
 
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery("select * from " + TABLE_TASKS + " where " + KEY_TASK_STATUS + " = ? AND " + KEY_TASK_BOARD_ID + " IS NULL ", new String[] {String.valueOf(10)});
+        Cursor cursor = db.rawQuery("select * from " + TABLE_TASKS + " where " + KEY_TASK_STATUS + " = ? and " + KEY_TASK_BOARD_ID + " is null order by `updated_at` desc", new String[] {String.valueOf(10)});
         try {
             if (cursor.moveToFirst()) {
                 do {
@@ -590,7 +590,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
         ArrayList<Board> boards = new ArrayList<>();
 
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery("select * from " + TABLE_BOARDS + " where " + KEY_BOARD_STATUS + " = ?", new String[] {String.valueOf(10)});
+        Cursor cursor = db.rawQuery("select * from " + TABLE_BOARDS + " where " + KEY_BOARD_STATUS + " = ? order by `updated_at` desc", new String[] {String.valueOf(10)});
         try {
             if (cursor.moveToFirst()) {
                 do {

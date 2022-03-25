@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.todo.MainActivity;
@@ -31,6 +32,7 @@ public class ArchiveBoardsFragment extends Fragment implements BoardsAdapter.OnB
 
     private BoardsAdapter boardsAdapter;
     private TasksDatabaseHelper tasksDatabaseHelper;
+    private RecyclerView boardRecyclerView;
 
     @Override
     public void onAttach(@NonNull Context context)
@@ -84,7 +86,7 @@ public class ArchiveBoardsFragment extends Fragment implements BoardsAdapter.OnB
     };
 
     private void initBoardRecyclerView() {
-        RecyclerView boardRecyclerView = requireView().findViewById(R.id.archiveBoardRecyclerView);
+        boardRecyclerView = requireView().findViewById(R.id.archiveBoardRecyclerView);
 
         // Construct the data source
         tasksDatabaseHelper = TasksDatabaseHelper.getInstance(context);
@@ -104,6 +106,10 @@ public class ArchiveBoardsFragment extends Fragment implements BoardsAdapter.OnB
     public void updateRecyclerView() {
         ArrayList<Board> newBoardsArray = tasksDatabaseHelper.getArchiveBoards();
         boardsAdapter.updateBoardsArrayList(newBoardsArray);
+        LinearLayoutManager layoutManager = (LinearLayoutManager) boardRecyclerView.getLayoutManager();
+        if (layoutManager != null) {
+            layoutManager.scrollToPositionWithOffset(0, 0);
+        }
     }
 
     public void onBoardClick(int position) {

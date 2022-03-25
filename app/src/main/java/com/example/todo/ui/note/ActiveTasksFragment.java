@@ -33,6 +33,7 @@ public class ActiveTasksFragment extends Fragment implements TasksAdapter.OnTask
 
     private TasksAdapter tasksAdapter;
     private TasksDatabaseHelper tasksDatabaseHelper;
+    private RecyclerView recyclerView;
 
     @Override
     public void onAttach(@NonNull Context context)
@@ -92,7 +93,7 @@ public class ActiveTasksFragment extends Fragment implements TasksAdapter.OnTask
     }
 
     private void initRecyclerView() {
-        RecyclerView recyclerView = requireView().findViewById(R.id.activeTaskRecyclerView);
+        recyclerView = requireView().findViewById(R.id.activeTaskRecyclerView);
 
         // Construct the data source
         tasksDatabaseHelper = TasksDatabaseHelper.getInstance(context);
@@ -127,7 +128,6 @@ public class ActiveTasksFragment extends Fragment implements TasksAdapter.OnTask
     }
 
     public void updateRecyclerView() {
-        // Get new tasks from DB, update adapter
         ArrayList<Task> newTasksArray = tasksDatabaseHelper.getActiveTasks();
         tasksAdapter.updateTasksArrayList(newTasksArray);
     }

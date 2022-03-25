@@ -8,6 +8,7 @@ import static com.example.todo.MainActivity.selectedBoardToolbar;
 import static com.example.todo.MainActivity.selectedTaskToolbar;
 import static com.example.todo.MainActivity.settingsToolbar;
 import static com.example.todo.MainActivity.showKeyboard;
+import static com.example.todo.MainActivity.startSync;
 import static com.example.todo.MainActivity.tasksToolbar;
 import static com.example.todo.MainActivity.workspacesToolbar;
 
@@ -35,6 +36,7 @@ import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.todo.MainActivity;
@@ -55,6 +57,8 @@ public class WorkspacesFragment extends Fragment implements BoardsAdapter.OnBoar
 
     private BoardsAdapter boardsAdapter;
     private TasksDatabaseHelper tasksDatabaseHelper;
+    private RecyclerView boardRecyclerView;
+    private ArrayList<Board> boardsArray;
 
     @Override
     public void onAttach(@NonNull Context context)
@@ -93,8 +97,8 @@ public class WorkspacesFragment extends Fragment implements BoardsAdapter.OnBoar
         floatingActionButton.show();
         floatingActionButton.extend();
 
-        initBoardRecyclerView();
         MainActivity.startSync();
+        initBoardRecyclerView();
     }
 
     @Override
@@ -128,11 +132,11 @@ public class WorkspacesFragment extends Fragment implements BoardsAdapter.OnBoar
     };
 
     private void initBoardRecyclerView() {
-        RecyclerView boardRecyclerView = requireView().findViewById(R.id.boardRecyclerView);
+        boardRecyclerView = requireView().findViewById(R.id.boardRecyclerView);
 
         // Construct the data source
         tasksDatabaseHelper = TasksDatabaseHelper.getInstance(context);
-        ArrayList<Board> boardsArray = tasksDatabaseHelper.getActiveBoards();
+        boardsArray = tasksDatabaseHelper.getActiveBoards();
 
         // Setting GridLayoutManager
         boardRecyclerView.setHasFixedSize(true);
@@ -161,6 +165,12 @@ public class WorkspacesFragment extends Fragment implements BoardsAdapter.OnBoar
     public void updateRecyclerView() {
         ArrayList<Board> newBoardsArray = tasksDatabaseHelper.getActiveBoards();
         boardsAdapter.updateBoardsArrayList(newBoardsArray);
+        if (!boardRecyclerView.canScrollVertically(-1)) {
+            LinearLayoutManager layoutManager = (LinearLayoutManager) boardRecyclerView.getLayoutManager();
+            if (layoutManager != null) {
+                layoutManager.scrollToPositionWithOffset(0, 0);
+            }
+        }
     }
 
     public void onBoardClick(int position) {
@@ -226,7 +236,7 @@ public class WorkspacesFragment extends Fragment implements BoardsAdapter.OnBoar
         newBoard.setUpdated_at(0);
         MainActivity.selectedBoard = tasksDatabaseHelper.addBoard(newBoard);
 
-        initBoardRecyclerView();
         MainActivity.startSync();
+        Navigation.findNavController(requireView()).navigate(R.id.navigation_board);
     }
 }

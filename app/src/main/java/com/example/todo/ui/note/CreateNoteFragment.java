@@ -93,9 +93,9 @@ public class CreateNoteFragment extends Fragment {
             }
             newTask.setCreated_at(0);
             newTask.setUpdated_at(0);
-            tasksDatabaseHelper.addTask(newTask);
+            MainActivity.selectedTask = tasksDatabaseHelper.addTask(newTask);
 
-            navigateBack();
+            navigateNote();
         } else {
             // Error; don't attempt to create task
             focusView.requestFocus();
@@ -131,10 +131,16 @@ public class CreateNoteFragment extends Fragment {
     }
 
     private void navigateBack() {
+        MainActivity.startSync();
         if (selectedBoard != null) {
             Navigation.findNavController(requireView()).navigate(R.id.navigation_board);
         } else {
             Navigation.findNavController(requireView()).navigate(R.id.navigation_notes);
         }
+    }
+
+    private void navigateNote() {
+        MainActivity.startSync();
+        Navigation.findNavController(requireView()).navigate(R.id.navigation_task);
     }
 }

@@ -23,6 +23,7 @@ import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.todo.MainActivity;
@@ -42,6 +43,7 @@ public class ActiveBoardsFragment extends Fragment implements BoardsAdapter.OnBo
     private TextInputLayout boardNameView;
     private BoardsAdapter boardsAdapter;
     private TasksDatabaseHelper tasksDatabaseHelper;
+    private RecyclerView boardRecyclerView;
 
     @Override
     public void onAttach(@NonNull Context context)
@@ -152,7 +154,7 @@ public class ActiveBoardsFragment extends Fragment implements BoardsAdapter.OnBo
     };
 
     private void initBoardRecyclerView() {
-        RecyclerView boardRecyclerView = requireView().findViewById(R.id.activeBoardRecyclerView);
+        boardRecyclerView = requireView().findViewById(R.id.activeBoardRecyclerView);
 
         // Construct the data source
         tasksDatabaseHelper = TasksDatabaseHelper.getInstance(context);
@@ -186,6 +188,10 @@ public class ActiveBoardsFragment extends Fragment implements BoardsAdapter.OnBo
     public void updateRecyclerView() {
         ArrayList<Board> newBoardsArray = tasksDatabaseHelper.getActiveBoards();
         boardsAdapter.updateBoardsArrayList(newBoardsArray);
+        LinearLayoutManager layoutManager = (LinearLayoutManager) boardRecyclerView.getLayoutManager();
+        if (layoutManager != null) {
+            layoutManager.scrollToPositionWithOffset(0, 0);
+        }
     }
 
     private void attemptCreateBoard() {

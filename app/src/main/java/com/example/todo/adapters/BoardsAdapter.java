@@ -35,7 +35,7 @@ public class BoardsAdapter extends RecyclerView.Adapter<BoardsAdapter.BoardViewH
     @NonNull
     @Override
     public BoardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_board, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_workspace, parent, false);
         return new BoardViewHolder(view, mOnBoardListener);
     }
 

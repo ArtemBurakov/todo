@@ -41,6 +41,7 @@ public class NotesFragment extends Fragment implements TasksAdapter.OnTaskListen
     private Context context;
     private TasksAdapter tasksAdapter;
     private TasksDatabaseHelper tasksDatabaseHelper;
+    private RecyclerView recyclerView;
 
     @Override
     public void onAttach(@NonNull Context context)
@@ -108,11 +109,12 @@ public class NotesFragment extends Fragment implements TasksAdapter.OnTaskListen
         floatingActionButton.show();
         floatingActionButton.extend();
 
+        MainActivity.startSync();
         initRecyclerView();
     }
 
     private void initRecyclerView() {
-        RecyclerView recyclerView = requireView().findViewById(R.id.taskRecyclerView);
+        recyclerView = requireView().findViewById(R.id.taskRecyclerView);
 
         // Construct the data source
         tasksDatabaseHelper = TasksDatabaseHelper.getInstance(context);
@@ -145,6 +147,12 @@ public class NotesFragment extends Fragment implements TasksAdapter.OnTaskListen
     public void updateRecyclerView() {
         ArrayList<Task> newTasksArray = tasksDatabaseHelper.getActiveTasks();
         tasksAdapter.updateTasksArrayList(newTasksArray);
+        if (!recyclerView.canScrollVertically(-1)) {
+            LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+            if (layoutManager != null) {
+                layoutManager.scrollToPositionWithOffset(0, 0);
+            }
+        }
     }
 
     public void onTaskClick(int position) {

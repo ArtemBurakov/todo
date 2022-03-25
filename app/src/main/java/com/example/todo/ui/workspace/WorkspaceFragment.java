@@ -1,11 +1,16 @@
 package com.example.todo.ui.workspace;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,6 +21,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,7 +37,6 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
 
-import static com.example.todo.MainActivity.context;
 import static com.example.todo.MainActivity.createTaskToolbar;
 import static com.example.todo.MainActivity.floatingActionButton;
 import static com.example.todo.MainActivity.hideKeyboard;
@@ -47,12 +52,53 @@ import static com.example.todo.MainActivity.workspacesToolbar;
 public class WorkspaceFragment extends Fragment implements TasksAdapter.OnTaskListener {
     private static final String TAG = "WorkspaceFragment";
 
+    private Context context;
     private TextInputLayout boardNameView;
     private TasksDatabaseHelper tasksDatabaseHelper;
+    private TasksAdapter tasksAdapter;
+    private RecyclerView recyclerView;
+
+    @Override
+    public void onAttach(@NonNull Context context)
+    {
+        super.onAttach(context);
+        this.context = context;
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(context);
+        lbm.registerReceiver(receiver, new IntentFilter("fcmNotification"));
+        lbm.registerReceiver(receiver, new IntentFilter("updateRecyclerView"));
+
         return inflater.inflate(R.layout.fragment_board, container, false);
     }
+
+    @Override
+    public void onDestroyView()
+    {
+        super.onDestroyView();
+        LocalBroadcastManager.getInstance(context).unregisterReceiver(receiver);
+    }
+
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action != null) {
+                if (action.equals("fcmNotification")) {
+                    String modelName = intent.getStringExtra("modelName");
+                    if (modelName.equals("todo")) {
+                        Log.e(TAG, "Todo === " + intent.getAction());
+                        MainActivity.startSync();
+                    }
+                } else if (action.equals("updateRecyclerView")) {
+                    if (intent.getBooleanExtra("updateStatus", true)) {
+                        updateRecyclerView();
+                    }
+                }
+            }
+        }
+    };
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -103,11 +149,12 @@ public class WorkspaceFragment extends Fragment implements TasksAdapter.OnTaskLi
         });
         floatingActionButton.show();
 
+        MainActivity.startSync();
         initRecyclerView();
     }
 
     private void initRecyclerView() {
-        RecyclerView recyclerView = requireView().findViewById(R.id.boardTasksRecyclerView);
+        recyclerView = requireView().findViewById(R.id.boardTasksRecyclerView);
 
         // Construct the data source
         tasksDatabaseHelper = TasksDatabaseHelper.getInstance(context);
@@ -118,7 +165,7 @@ public class WorkspaceFragment extends Fragment implements TasksAdapter.OnTaskLi
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
 
         // Create the adapter to convert the array to views
-        TasksAdapter tasksAdapter = new TasksAdapter(tasksArray, context, this);
+        tasksAdapter = new TasksAdapter(tasksArray, context, this);
 
         // Attach the adapter to a RecyclerView
         recyclerView.setAdapter(tasksAdapter);
@@ -134,6 +181,17 @@ public class WorkspaceFragment extends Fragment implements TasksAdapter.OnTaskLi
                 }
             }
         });
+    }
+
+    public void updateRecyclerView() {
+        ArrayList<Task> newTasksArray = tasksDatabaseHelper.getBoardTasks(MainActivity.selectedBoard.getId());
+        tasksAdapter.updateTasksArrayList(newTasksArray);
+        if (!recyclerView.canScrollVertically(-1)) {
+            LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+            if (layoutManager != null) {
+                layoutManager.scrollToPositionWithOffset(0, 0);
+            }
+        }
     }
 
     private void renameWorkspace() {
@@ -154,6 +212,7 @@ public class WorkspaceFragment extends Fragment implements TasksAdapter.OnTaskLi
 
                 hideKeyboard(context, boardNameView.getEditText());
                 dialogInterface.dismiss();
+                MainActivity.startSync();
                 Navigation.findNavController(requireView()).navigate(R.id.navigation_board);
             }
         });
@@ -205,6 +264,7 @@ public class WorkspaceFragment extends Fragment implements TasksAdapter.OnTaskLi
                 tasksDatabaseHelper.updateBoard(deleted_board);
 
                 dialogInterface.dismiss();
+                MainActivity.startSync();
                 Navigation.findNavController(requireView()).navigate(R.id.navigation_workspaces);
             }
         });
