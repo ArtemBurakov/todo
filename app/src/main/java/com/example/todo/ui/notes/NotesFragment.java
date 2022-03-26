@@ -26,6 +26,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.todo.MainActivity;
 import com.example.todo.R;
@@ -39,6 +40,8 @@ public class NotesFragment extends Fragment implements TasksAdapter.OnTaskListen
     private static final String TAG = "NotesFragment";
 
     private Context context;
+    private SwipeRefreshLayout swipeContainer;
+
     private TasksAdapter tasksAdapter;
     private TasksDatabaseHelper tasksDatabaseHelper;
     private RecyclerView recyclerView;
@@ -64,6 +67,7 @@ public class NotesFragment extends Fragment implements TasksAdapter.OnTaskListen
     {
         super.onDestroyView();
         LocalBroadcastManager.getInstance(context).unregisterReceiver(receiver);
+        swipeContainer.setRefreshing(false);
     }
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -80,6 +84,7 @@ public class NotesFragment extends Fragment implements TasksAdapter.OnTaskListen
                 } else if (action.equals("updateRecyclerView")) {
                     if (intent.getBooleanExtra("updateStatus", true)) {
                         updateRecyclerView();
+                        swipeContainer.setRefreshing(false);
                     }
                 }
             }
@@ -96,6 +101,14 @@ public class NotesFragment extends Fragment implements TasksAdapter.OnTaskListen
         selectedBoardToolbar.setVisibility(View.GONE);
         selectedTaskToolbar.setVisibility(View.GONE);
         createTaskToolbar.setVisibility(View.GONE);
+
+        swipeContainer = view.findViewById(R.id.swipeContainer);
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                MainActivity.startSync();
+            }
+        });
 
         floatingActionButton.setText("New note");
         floatingActionButton.setOnClickListener(new View.OnClickListener() {

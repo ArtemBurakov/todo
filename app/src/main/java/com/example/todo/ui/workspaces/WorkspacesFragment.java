@@ -38,6 +38,7 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.todo.MainActivity;
 import com.example.todo.R;
@@ -54,6 +55,7 @@ public class WorkspacesFragment extends Fragment implements BoardsAdapter.OnBoar
 
     private Context context;
     private TextInputLayout workspaceNameView;
+    private SwipeRefreshLayout swipeContainer;
 
     private BoardsAdapter boardsAdapter;
     private TasksDatabaseHelper tasksDatabaseHelper;
@@ -86,6 +88,14 @@ public class WorkspacesFragment extends Fragment implements BoardsAdapter.OnBoar
         selectedTaskToolbar.setVisibility(View.GONE);
         createTaskToolbar.setVisibility(View.GONE);
 
+        swipeContainer = view.findViewById(R.id.swipeContainer);
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                MainActivity.startSync();
+            }
+        });
+
         floatingActionButton.setText("New workspace");
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,6 +116,7 @@ public class WorkspacesFragment extends Fragment implements BoardsAdapter.OnBoar
     {
         super.onDestroyView();
         LocalBroadcastManager.getInstance(context).unregisterReceiver(receiver);
+        swipeContainer.setRefreshing(false);
     }
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -116,15 +127,14 @@ public class WorkspacesFragment extends Fragment implements BoardsAdapter.OnBoar
                 if (action.equals("fcmNotification")) {
                     String modelName = intent.getStringExtra("modelName");
                     if (modelName.equals("board")) {
-                        Log.e(TAG, "Board === " + intent.getAction());
                         MainActivity.startSync();
                     } else if (modelName.equals("todo")) {
-                        Log.e(TAG, "Todo === " + intent.getAction());
                         MainActivity.startSync();
                     }
                 } else if (action.equals("updateRecyclerView")) {
                     if (intent.getBooleanExtra("updateStatus", true)) {
                         updateRecyclerView();
+                        swipeContainer.setRefreshing(false);
                     }
                 }
             }

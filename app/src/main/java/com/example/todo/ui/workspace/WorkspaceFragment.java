@@ -25,6 +25,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.todo.MainActivity;
 import com.example.todo.R;
@@ -54,6 +55,8 @@ public class WorkspaceFragment extends Fragment implements TasksAdapter.OnTaskLi
 
     private Context context;
     private TextInputLayout boardNameView;
+    private SwipeRefreshLayout swipeContainer;
+
     private TasksDatabaseHelper tasksDatabaseHelper;
     private TasksAdapter tasksAdapter;
     private RecyclerView recyclerView;
@@ -78,6 +81,7 @@ public class WorkspaceFragment extends Fragment implements TasksAdapter.OnTaskLi
     {
         super.onDestroyView();
         LocalBroadcastManager.getInstance(context).unregisterReceiver(receiver);
+        swipeContainer.setRefreshing(false);
     }
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -94,6 +98,7 @@ public class WorkspaceFragment extends Fragment implements TasksAdapter.OnTaskLi
                 } else if (action.equals("updateRecyclerView")) {
                     if (intent.getBooleanExtra("updateStatus", true)) {
                         updateRecyclerView();
+                        swipeContainer.setRefreshing(false);
                     }
                 }
             }
@@ -110,6 +115,14 @@ public class WorkspaceFragment extends Fragment implements TasksAdapter.OnTaskLi
         selectedBoardToolbar.setVisibility(View.VISIBLE);
         selectedTaskToolbar.setVisibility(View.GONE);
         createTaskToolbar.setVisibility(View.GONE);
+
+        swipeContainer = view.findViewById(R.id.swipeContainer);
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                MainActivity.startSync();
+            }
+        });
 
         selectedBoardToolbar.setTitle(MainActivity.selectedBoard.getName());
         selectedBoardToolbar.setNavigationOnClickListener(new View.OnClickListener() {
