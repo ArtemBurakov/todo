@@ -48,46 +48,46 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
 
         holder.taskName.setText(task.getName());
         holder.taskText.setText(task.getText());
-        holder.doneTask.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Remove item from list
-                tasksArrayList.remove(position);
-                notifyItemRemoved(position);
-                notifyItemRangeChanged(position, tasksArrayList.size());
-
-                // Update task
-                task.setStatus(TasksDatabaseHelper.statusDone);
-                task.setSync_status(1);
-                tasksDatabaseHelper.updateTask(task);
-            }
-        });
-        holder.deleteTask.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Remove item from list
-                tasksArrayList.remove(position);
-                notifyItemRemoved(position);
-                notifyItemRangeChanged(position, tasksArrayList.size());
-
-                // Update task
-                task.setStatus(TasksDatabaseHelper.statusDeleted);
-                task.setSync_status(1);
-                tasksDatabaseHelper.updateTask(task);
-            }
-        });
+//        holder.doneTask.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                // Remove item from list
+//                tasksArrayList.remove(position);
+//                notifyItemRemoved(position);
+//                notifyItemRangeChanged(position, tasksArrayList.size());
+//
+//                // Update task
+//                task.setStatus(TasksDatabaseHelper.statusDone);
+//                task.setSync_status(1);
+//                tasksDatabaseHelper.updateTask(task);
+//            }
+//        });
+//        holder.deleteTask.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                // Remove item from list
+//                tasksArrayList.remove(position);
+//                notifyItemRemoved(position);
+//                notifyItemRangeChanged(position, tasksArrayList.size());
+//
+//                // Update task
+//                task.setStatus(TasksDatabaseHelper.statusDeleted);
+//                task.setSync_status(1);
+//                tasksDatabaseHelper.updateTask(task);
+//            }
+//        });
     }
 
     public static class TaskViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        Button doneTask, deleteTask;
+        //Button doneTask, deleteTask;
         TextView taskName, taskText;
         OnTaskListener onTaskListener;
 
         public TaskViewHolder(@NonNull View itemView, OnTaskListener onTaskListener) {
             super(itemView);
-            doneTask = itemView.findViewById(R.id.doneTaskButton);
-            deleteTask = itemView.findViewById(R.id.deleteTaskButton);
+//            doneTask = itemView.findViewById(R.id.doneTaskButton);
+//            deleteTask = itemView.findViewById(R.id.deleteTaskButton);
             taskName = itemView.findViewById(R.id.taskName);
             taskText = itemView.findViewById(R.id.taskText);
             this.onTaskListener = onTaskListener;

@@ -24,8 +24,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.todo.MainActivity;
@@ -70,7 +71,7 @@ public class NotesFragment extends Fragment implements TasksAdapter.OnTaskListen
         swipeContainer.setRefreshing(false);
     }
 
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
@@ -135,7 +136,7 @@ public class NotesFragment extends Fragment implements TasksAdapter.OnTaskListen
 
         // Setting LayoutManager
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
 
         // Create the adapter to convert the array to views
         tasksAdapter = new TasksAdapter(tasksArray, context, this);
@@ -161,7 +162,7 @@ public class NotesFragment extends Fragment implements TasksAdapter.OnTaskListen
         ArrayList<Task> newTasksArray = tasksDatabaseHelper.getActiveTasks();
         tasksAdapter.updateTasksArrayList(newTasksArray);
         if (!recyclerView.canScrollVertically(-1)) {
-            LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+            StaggeredGridLayoutManager layoutManager = (StaggeredGridLayoutManager) recyclerView.getLayoutManager();
             if (layoutManager != null) {
                 layoutManager.scrollToPositionWithOffset(0, 0);
             }

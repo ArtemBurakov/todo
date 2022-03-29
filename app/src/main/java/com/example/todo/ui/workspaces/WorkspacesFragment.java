@@ -8,7 +8,6 @@ import static com.example.todo.MainActivity.selectedBoardToolbar;
 import static com.example.todo.MainActivity.selectedTaskToolbar;
 import static com.example.todo.MainActivity.settingsToolbar;
 import static com.example.todo.MainActivity.showKeyboard;
-import static com.example.todo.MainActivity.startSync;
 import static com.example.todo.MainActivity.tasksToolbar;
 import static com.example.todo.MainActivity.workspacesToolbar;
 
@@ -21,21 +20,16 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -150,7 +144,7 @@ public class WorkspacesFragment extends Fragment implements BoardsAdapter.OnBoar
 
         // Setting GridLayoutManager
         boardRecyclerView.setHasFixedSize(true);
-        boardRecyclerView.setLayoutManager(new GridLayoutManager(context, 2));
+        boardRecyclerView.setLayoutManager(new LinearLayoutManager(context));
 
         // Create the adapter to convert the array to views
         boardsAdapter = new BoardsAdapter(boardsArray, context, this);

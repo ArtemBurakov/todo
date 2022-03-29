@@ -25,6 +25,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.todo.MainActivity;
@@ -175,7 +176,7 @@ public class WorkspaceFragment extends Fragment implements TasksAdapter.OnTaskLi
 
         // Setting LayoutManager
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
 
         // Create the adapter to convert the array to views
         tasksAdapter = new TasksAdapter(tasksArray, context, this);
@@ -200,7 +201,7 @@ public class WorkspaceFragment extends Fragment implements TasksAdapter.OnTaskLi
         ArrayList<Task> newTasksArray = tasksDatabaseHelper.getBoardTasks(MainActivity.selectedBoard.getId());
         tasksAdapter.updateTasksArrayList(newTasksArray);
         if (!recyclerView.canScrollVertically(-1)) {
-            LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+            StaggeredGridLayoutManager layoutManager = (StaggeredGridLayoutManager) recyclerView.getLayoutManager();
             if (layoutManager != null) {
                 layoutManager.scrollToPositionWithOffset(0, 0);
             }
