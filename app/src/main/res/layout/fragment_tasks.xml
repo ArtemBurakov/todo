@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/boardTasksRecyclerView"
+        android:id="@+id/tasksRecyclerView"
         android:layout_height="match_parent"
         android:layout_width="match_parent">
     </androidx.recyclerview.widget.RecyclerView>

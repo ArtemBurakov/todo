@@ -3,7 +3,7 @@ package com.example.todo.ui.note;
 import static com.example.todo.MainActivity.createTaskToolbar;
 import static com.example.todo.MainActivity.hideKeyboard;
 import static com.example.todo.MainActivity.notesToolbar;
-import static com.example.todo.MainActivity.selectedBoard;
+import static com.example.todo.MainActivity.selectedWorkspace;
 import static com.example.todo.MainActivity.selectedBoardToolbar;
 import static com.example.todo.MainActivity.selectedTaskToolbar;
 import static com.example.todo.MainActivity.tasksToolbar;
@@ -25,8 +25,8 @@ import androidx.navigation.Navigation;
 
 import com.example.todo.MainActivity;
 import com.example.todo.R;
-import com.example.todo.database.TasksDatabaseHelper;
-import com.example.todo.models.Task;
+import com.example.todo.database.TodoDatabaseHelper;
+import com.example.todo.models.Note;
 
 public class CreateNoteFragment extends Fragment {
 
@@ -35,7 +35,7 @@ public class CreateNoteFragment extends Fragment {
     private View focusView;
 
     private Context context;
-    private TasksDatabaseHelper tasksDatabaseHelper;
+    private TodoDatabaseHelper todoDatabaseHelper;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         context = container.getContext();
@@ -67,7 +67,7 @@ public class CreateNoteFragment extends Fragment {
             }
         });
 
-        tasksDatabaseHelper = TasksDatabaseHelper.getInstance(context);
+        todoDatabaseHelper = TodoDatabaseHelper.getInstance(context);
 
         taskNameView = requireView().findViewById(R.id.taskNameEditText);
         taskTextView = requireView().findViewById(R.id.taskTextEditText);
@@ -80,20 +80,20 @@ public class CreateNoteFragment extends Fragment {
     }
 
     private void attemptCreateTask() {
-        Task newTask = new Task();
+        Note newNote = new Note();
 
         if (validateInput()) {
             // Create new task
-            newTask.setName(name);
-            newTask.setText(text);
-            newTask.setStatus(TasksDatabaseHelper.statusActive);
-            newTask.setSync_status(1);
-            if (MainActivity.selectedBoard != null) {
-                newTask.setBoard_id(MainActivity.selectedBoard.getId());
+            newNote.setName(name);
+            newNote.setText(text);
+            newNote.setStatus(TodoDatabaseHelper.statusActive);
+            newNote.setSync_status(1);
+            if (MainActivity.selectedWorkspace != null) {
+                newNote.setBoard_id(MainActivity.selectedWorkspace.getId());
             }
-            newTask.setCreated_at(0);
-            newTask.setUpdated_at(0);
-            MainActivity.selectedTask = tasksDatabaseHelper.addTask(newTask);
+            newNote.setCreated_at(0);
+            newNote.setUpdated_at(0);
+            MainActivity.selectedNote = todoDatabaseHelper.addNote(newNote);
 
             navigateNote();
         } else {
@@ -132,7 +132,7 @@ public class CreateNoteFragment extends Fragment {
 
     private void navigateBack() {
         MainActivity.startSync();
-        if (selectedBoard != null) {
+        if (selectedWorkspace != null) {
             Navigation.findNavController(requireView()).navigate(R.id.navigation_board);
         } else {
             Navigation.findNavController(requireView()).navigate(R.id.navigation_notes);

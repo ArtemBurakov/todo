@@ -3,7 +3,6 @@ package com.example.todo.ui.workspace;
 import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -12,38 +11,36 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.todo.MainActivity;
 import com.example.todo.R;
-import com.example.todo.adapters.TasksAdapter;
-import com.example.todo.database.TasksDatabaseHelper;
-import com.example.todo.models.Board;
-import com.example.todo.models.Task;
+import com.example.todo.adapters.NotesAdapter;
+import com.example.todo.database.TodoDatabaseHelper;
+import com.example.todo.models.Workspace;
+import com.example.todo.models.Note;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import static com.example.todo.MainActivity.createTaskToolbar;
 import static com.example.todo.MainActivity.floatingActionButton;
 import static com.example.todo.MainActivity.hideKeyboard;
 import static com.example.todo.MainActivity.notesToolbar;
-import static com.example.todo.MainActivity.selectedBoard;
+import static com.example.todo.MainActivity.selectedWorkspace;
 import static com.example.todo.MainActivity.selectedBoardToolbar;
 import static com.example.todo.MainActivity.selectedTaskToolbar;
 import static com.example.todo.MainActivity.settingsToolbar;
@@ -51,15 +48,15 @@ import static com.example.todo.MainActivity.showKeyboard;
 import static com.example.todo.MainActivity.tasksToolbar;
 import static com.example.todo.MainActivity.workspacesToolbar;
 
-public class WorkspaceFragment extends Fragment implements TasksAdapter.OnTaskListener {
+public class WorkspaceFragment extends Fragment implements NotesAdapter.OnNoteListener {
     private static final String TAG = "WorkspaceFragment";
 
     private Context context;
     private TextInputLayout boardNameView;
     private SwipeRefreshLayout swipeContainer;
 
-    private TasksDatabaseHelper tasksDatabaseHelper;
-    private TasksAdapter tasksAdapter;
+    private TodoDatabaseHelper todoDatabaseHelper;
+    private NotesAdapter notesAdapter;
     private RecyclerView recyclerView;
 
     @Override
@@ -74,7 +71,7 @@ public class WorkspaceFragment extends Fragment implements TasksAdapter.OnTaskLi
         lbm.registerReceiver(receiver, new IntentFilter("fcmNotification"));
         lbm.registerReceiver(receiver, new IntentFilter("updateRecyclerView"));
 
-        return inflater.inflate(R.layout.fragment_board, container, false);
+        return inflater.inflate(R.layout.fragment_workspace, container, false);
     }
 
     @Override
@@ -85,15 +82,15 @@ public class WorkspaceFragment extends Fragment implements TasksAdapter.OnTaskLi
         swipeContainer.setRefreshing(false);
     }
 
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (action != null) {
                 if (action.equals("fcmNotification")) {
                     String modelName = intent.getStringExtra("modelName");
-                    if (modelName.equals("todo")) {
-                        Log.e(TAG, "Todo === " + intent.getAction());
+                    if (modelName.equals("note")) {
+                        Log.d(TAG, "Note FCM push in workspace " + intent.getAction());
                         MainActivity.startSync();
                     }
                 } else if (action.equals("updateRecyclerView")) {
@@ -106,6 +103,7 @@ public class WorkspaceFragment extends Fragment implements TasksAdapter.OnTaskLi
         }
     };
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -118,48 +116,31 @@ public class WorkspaceFragment extends Fragment implements TasksAdapter.OnTaskLi
         createTaskToolbar.setVisibility(View.GONE);
 
         swipeContainer = view.findViewById(R.id.swipeContainer);
-        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                MainActivity.startSync();
-            }
-        });
+        swipeContainer.setOnRefreshListener(MainActivity::startSync);
 
-        selectedBoardToolbar.setTitle(MainActivity.selectedBoard.getName());
-        selectedBoardToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Navigation.findNavController(requireView()).navigate(R.id.navigation_workspaces);
-            }
-        });
-        selectedBoardToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @SuppressLint("NonConstantResourceId")
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                switch (menuItem.getItemId()) {
-                    case R.id.rename:
-                        renameWorkspace();
-                        return true;
-                    case R.id.favourite:
+        selectedBoardToolbar.setTitle(MainActivity.selectedWorkspace.getName());
+        selectedBoardToolbar.setNavigationOnClickListener(view1 -> Navigation.findNavController(requireView()).navigate(R.id.navigation_workspaces));
+        selectedBoardToolbar.setOnMenuItemClickListener(menuItem -> {
+            switch (menuItem.getItemId()) {
+                case R.id.rename:
+                    renameWorkspace();
+                    return true;
+                case R.id.favourite:
 //                        Board board = MainActivity.selectedBoard;
 //                        board.setStatus(TasksDatabaseHelper.statusFavourite);
 //                        board.setSync_status(1);
 //                        tasksDatabaseHelper.updateBoard(board);
-                        return true;
-                    case R.id.delete:
-                       deleteWorkspace();
-                }
-                return false;
+                    return true;
+                case R.id.delete:
+                   deleteWorkspace();
             }
+            return false;
         });
 
         floatingActionButton.setText("New note");
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                floatingActionButton.hide();
-                Navigation.findNavController(requireView()).navigate(R.id.navigation_create_task);
-            }
+        floatingActionButton.setOnClickListener(v -> {
+            floatingActionButton.hide();
+            Navigation.findNavController(requireView()).navigate(R.id.navigation_create_task);
         });
         floatingActionButton.show();
 
@@ -168,21 +149,21 @@ public class WorkspaceFragment extends Fragment implements TasksAdapter.OnTaskLi
     }
 
     private void initRecyclerView() {
-        recyclerView = requireView().findViewById(R.id.boardTasksRecyclerView);
+        recyclerView = requireView().findViewById(R.id.boardNotesRecyclerView);
 
         // Construct the data source
-        tasksDatabaseHelper = TasksDatabaseHelper.getInstance(context);
-        ArrayList<Task> tasksArray = tasksDatabaseHelper.getBoardTasks(MainActivity.selectedBoard.getId());
+        todoDatabaseHelper = TodoDatabaseHelper.getInstance(context);
+        ArrayList<Note> notesArray = todoDatabaseHelper.getBoardNotes(MainActivity.selectedWorkspace.getId());
 
         // Setting LayoutManager
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
 
         // Create the adapter to convert the array to views
-        tasksAdapter = new TasksAdapter(tasksArray, context, this);
+        notesAdapter = new NotesAdapter(notesArray, context, this);
 
         // Attach the adapter to a RecyclerView
-        recyclerView.setAdapter(tasksAdapter);
+        recyclerView.setAdapter(notesAdapter);
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
@@ -198,8 +179,8 @@ public class WorkspaceFragment extends Fragment implements TasksAdapter.OnTaskLi
     }
 
     public void updateRecyclerView() {
-        ArrayList<Task> newTasksArray = tasksDatabaseHelper.getBoardTasks(MainActivity.selectedBoard.getId());
-        tasksAdapter.updateTasksArrayList(newTasksArray);
+        ArrayList<Note> newNotesArray = todoDatabaseHelper.getBoardNotes(MainActivity.selectedWorkspace.getId());
+        notesAdapter.updateNotesArrayList(newNotesArray);
         if (!recyclerView.canScrollVertically(-1)) {
             StaggeredGridLayoutManager layoutManager = (StaggeredGridLayoutManager) recyclerView.getLayoutManager();
             if (layoutManager != null) {
@@ -211,31 +192,25 @@ public class WorkspaceFragment extends Fragment implements TasksAdapter.OnTaskLi
     private void renameWorkspace() {
         MaterialAlertDialogBuilder updateWorkspaceBuilder = new MaterialAlertDialogBuilder(getActivity());
         updateWorkspaceBuilder.setTitle("Rename workspace");
-        View viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.board_create_text_input, (ViewGroup) getView(), false);
+        View viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.workspace_create_text_input, (ViewGroup) getView(), false);
         boardNameView = viewInflated.findViewById(R.id.boardNameEditText);
-        boardNameView.getEditText().setText(selectedBoard.getName());
+        boardNameView.getEditText().setText(selectedWorkspace.getName());
         boardNameView.getEditText().setSelectAllOnFocus(true);
         updateWorkspaceBuilder.setView(viewInflated);
-        updateWorkspaceBuilder.setPositiveButton("Rename", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                Board board = MainActivity.selectedBoard;
-                board.setName(boardNameView.getEditText().getText().toString());
-                board.setSync_status(1);
-                tasksDatabaseHelper.updateBoard(board);
+        updateWorkspaceBuilder.setPositiveButton("Rename", (dialogInterface, i) -> {
+            Workspace workspace = MainActivity.selectedWorkspace;
+            workspace.setName(boardNameView.getEditText().getText().toString());
+            workspace.setSync_status(1);
+            todoDatabaseHelper.updateBoard(workspace);
 
-                hideKeyboard(context, boardNameView.getEditText());
-                dialogInterface.dismiss();
-                MainActivity.startSync();
-                Navigation.findNavController(requireView()).navigate(R.id.navigation_board);
-            }
+            hideKeyboard(context, boardNameView.getEditText());
+            dialogInterface.dismiss();
+            MainActivity.startSync();
+            Navigation.findNavController(requireView()).navigate(R.id.navigation_board);
         });
-        updateWorkspaceBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                hideKeyboard(context, boardNameView.getEditText());
-                dialogInterface.cancel();
-            }
+        updateWorkspaceBuilder.setNegativeButton("Cancel", (dialogInterface, i) -> {
+            hideKeyboard(context, boardNameView.getEditText());
+            dialogInterface.cancel();
         });
 
         final AlertDialog updateWorkspaceDialog = updateWorkspaceBuilder.create();
@@ -254,11 +229,7 @@ public class WorkspaceFragment extends Fragment implements TasksAdapter.OnTaskLi
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (TextUtils.isEmpty(s)) {
-                    updateWorkspaceDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
-                } else {
-                    updateWorkspaceDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
-                }
+                updateWorkspaceDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(!TextUtils.isEmpty(s));
             }
         });
         boardNameView.requestFocus();
@@ -269,31 +240,23 @@ public class WorkspaceFragment extends Fragment implements TasksAdapter.OnTaskLi
         MaterialAlertDialogBuilder removeWorkspaceBuilder = new MaterialAlertDialogBuilder(getActivity());
         removeWorkspaceBuilder.setTitle("Remove workspace?");
         removeWorkspaceBuilder.setMessage("This workspace will be temporarily deleted, but it can be restored with all related tasks.");
-        removeWorkspaceBuilder.setPositiveButton("Remove", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                Board deleted_board = MainActivity.selectedBoard;
-                deleted_board.setStatus(TasksDatabaseHelper.statusDeleted);
-                deleted_board.setSync_status(1);
-                tasksDatabaseHelper.updateBoard(deleted_board);
+        removeWorkspaceBuilder.setPositiveButton("Remove", (dialogInterface, i) -> {
+            Workspace deleted_workspace = MainActivity.selectedWorkspace;
+            deleted_workspace.setStatus(TodoDatabaseHelper.statusDeleted);
+            deleted_workspace.setSync_status(1);
+            todoDatabaseHelper.updateBoard(deleted_workspace);
 
-                dialogInterface.dismiss();
-                MainActivity.startSync();
-                Navigation.findNavController(requireView()).navigate(R.id.navigation_workspaces);
-            }
+            dialogInterface.dismiss();
+            MainActivity.startSync();
+            Navigation.findNavController(requireView()).navigate(R.id.navigation_workspaces);
         });
-        removeWorkspaceBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.cancel();
-            }
-        });
+        removeWorkspaceBuilder.setNegativeButton("Cancel", (dialogInterface, i) -> dialogInterface.cancel());
         removeWorkspaceBuilder.show();
     }
 
-    public void onTaskClick(int position) {
+    public void onNoteClick(int position) {
         floatingActionButton.hide();
-        MainActivity.selectedTask = tasksDatabaseHelper.getBoardTasks(MainActivity.selectedBoard.getId()).get(position);
+        MainActivity.selectedNote = todoDatabaseHelper.getBoardNotes(MainActivity.selectedWorkspace.getId()).get(position);
         Navigation.findNavController(requireView()).navigate(R.id.navigation_task);
     }
 }

@@ -1,18 +1,17 @@
-package com.example.todo;
+package com.example.todo.diffUtilCallback;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DiffUtil;
 
-import com.example.todo.models.Task;
+import com.example.todo.models.Note;
 
 import java.util.ArrayList;
 
-public class TaskDiffUtilCallback extends DiffUtil.Callback {
+public class NoteDiffUtilCallback extends DiffUtil.Callback {
+    ArrayList<Note> newList;
+    ArrayList<Note> oldList;
 
-    ArrayList<Task> newList;
-    ArrayList<Task> oldList;
-
-    public TaskDiffUtilCallback(ArrayList<Task> newList, ArrayList<Task> oldList) {
+    public NoteDiffUtilCallback(ArrayList<Note> newList, ArrayList<Note> oldList) {
         this.newList = newList;
         this.oldList = oldList;
     }
@@ -34,11 +33,11 @@ public class TaskDiffUtilCallback extends DiffUtil.Callback {
 
     @Override
     public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-        Task oldTask = oldList.get(oldItemPosition);
-        Task newTask = newList.get(newItemPosition);
+        Note oldNote = oldList.get(oldItemPosition);
+        Note newNote = newList.get(newItemPosition);
 
-        return oldTask.getName().equals(newTask.getName())
-                && oldTask.getText().equals(newTask.getText());
+        return oldNote.getName().equals(newNote.getName())
+                && oldNote.getText().equals(newNote.getText());
                 //&& oldTask.getServer_id().equals(newTask.getServer_id());
     }
 

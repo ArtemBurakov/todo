@@ -15,8 +15,8 @@ import androidx.navigation.Navigation;
 
 import com.example.todo.MainActivity;
 import com.example.todo.R;
-import com.example.todo.database.TasksDatabaseHelper;
-import com.example.todo.models.Board;
+import com.example.todo.database.TodoDatabaseHelper;
+import com.example.todo.models.Workspace;
 import com.google.android.material.textfield.TextInputLayout;
 
 public class CreateBoardFragment extends Fragment {
@@ -27,7 +27,7 @@ public class CreateBoardFragment extends Fragment {
     private View focusView;
 
     private Context context;
-    private TasksDatabaseHelper tasksDatabaseHelper;
+    private TodoDatabaseHelper todoDatabaseHelper;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         context = container.getContext();
@@ -36,7 +36,7 @@ public class CreateBoardFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        tasksDatabaseHelper = TasksDatabaseHelper.getInstance(context);
+        todoDatabaseHelper = TodoDatabaseHelper.getInstance(context);
 
         boardNameView = requireView().findViewById(R.id.boardNameEditText);
         createBoard = requireView().findViewById(R.id.createBoardButton);
@@ -49,16 +49,16 @@ public class CreateBoardFragment extends Fragment {
     }
 
     private void attemptCreateBoard() {
-        Board newBoard = new Board();
+        Workspace newWorkspace = new Workspace();
 
         if (validateInput()) {
             // Create new board
-            newBoard.setName(name);
-            newBoard.setStatus(TasksDatabaseHelper.statusActive);
-            newBoard.setSync_status(1);
-            newBoard.setCreated_at(0);
-            newBoard.setUpdated_at(0);
-            MainActivity.selectedBoard = tasksDatabaseHelper.addBoard(newBoard);
+            newWorkspace.setName(name);
+            newWorkspace.setStatus(TodoDatabaseHelper.statusActive);
+            newWorkspace.setSync_status(1);
+            newWorkspace.setCreated_at(0);
+            newWorkspace.setUpdated_at(0);
+            MainActivity.selectedWorkspace = todoDatabaseHelper.addBoard(newWorkspace);
 
             navigateDashboard();
         } else {

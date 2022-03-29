@@ -1,6 +1,6 @@
 package com.example.todo.remote;
 
-public class ApiBoard {
+public class ApiWorkspace {
     private Integer id, user_id, status;
     private String name;
     private long updated_at, created_at;

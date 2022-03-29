@@ -1,6 +1,6 @@
 package com.example.todo.models;
 
-public class Board {
+public class Workspace {
     private long updated_at, created_at;
     private Integer id, server_id, sync_status, status;
     private String name;

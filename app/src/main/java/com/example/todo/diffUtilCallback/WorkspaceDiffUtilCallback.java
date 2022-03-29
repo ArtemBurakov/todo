@@ -1,18 +1,17 @@
-package com.example.todo;
+package com.example.todo.diffUtilCallback;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DiffUtil;
 
-import com.example.todo.models.Board;
+import com.example.todo.models.Workspace;
 
 import java.util.ArrayList;
 
-public class BoardDiffUtilCallback extends DiffUtil.Callback {
+public class WorkspaceDiffUtilCallback extends DiffUtil.Callback {
+    ArrayList<Workspace> newList;
+    ArrayList<Workspace> oldList;
 
-    ArrayList<Board> newList;
-    ArrayList<Board> oldList;
-
-    public BoardDiffUtilCallback(ArrayList<Board> newList, ArrayList<Board> oldList) {
+    public WorkspaceDiffUtilCallback(ArrayList<Workspace> newList, ArrayList<Workspace> oldList) {
         this.newList = newList;
         this.oldList = oldList;
     }
@@ -34,10 +33,10 @@ public class BoardDiffUtilCallback extends DiffUtil.Callback {
 
     @Override
     public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-        Board oldBoard = oldList.get(oldItemPosition);
-        Board newBoard = newList.get(newItemPosition);
+        Workspace oldWorkspace = oldList.get(oldItemPosition);
+        Workspace newWorkspace = newList.get(newItemPosition);
 
-        return oldBoard.getName().equals(newBoard.getName());
+        return oldWorkspace.getName().equals(newWorkspace.getName());
                 //&& oldBoard.getServer_id().equals(newBoard.getServer_id());
     }
 

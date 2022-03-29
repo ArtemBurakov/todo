@@ -29,27 +29,36 @@ public interface ApiService {
     @POST("user-fcm-tokens")
     Call<ApiFcmToken> addToken(@Header("Authorization") String authorization, @Field("registration_token") String fcmToken);
 
-    @GET("todos")
-    Call<List<ApiTask>> getTodos(@Header("Authorization") String authorization, @Query("updated_after") String updated_after);
+    @GET("tasks")
+    Call<List<ApiTask>> getTasks(@Header("Authorization") String authorization, @Query("updated_after") String updated_after);
+
+    @GET("notes")
+    Call<List<ApiNote>> getNotes(@Header("Authorization") String authorization, @Query("updated_after") String updated_after);
 
     @GET("boards")
-    Call<List<ApiBoard>> getBoards(@Header("Authorization") String authorization, @Query("updated_after") String updated_after);
+    Call<List<ApiWorkspace>> getBoards(@Header("Authorization") String authorization, @Query("updated_after") String updated_after);
 
     @Headers({
             "Content-Type: application/json"
     })
-    @POST("todos")
+    @POST("tasks")
     Call<ApiTask> addTask(@Header("Authorization") String authorization, @Body ApiTask task);
 
+    @POST("notes")
+    Call<ApiNote> addNote(@Header("Authorization") String authorization, @Body ApiNote note);
+
     @POST("boards")
-    Call<ApiBoard> addBoard(@Header("Authorization") String authorization, @Body ApiBoard board);
+    Call<ApiWorkspace> addBoard(@Header("Authorization") String authorization, @Body ApiWorkspace board);
 
     @Headers({
             "Content-Type: application/json"
     })
-    @PUT("todos/{id}")
+    @PUT("tasks/{id}")
     Call<ApiTask> updateTask(@Header("Authorization") String authorization, @Path("id") long id, @Body ApiTask task);
 
+    @PUT("notes/{id}")
+    Call<ApiNote> updateNote(@Header("Authorization") String authorization, @Path("id") long id, @Body ApiNote note);
+
     @PUT("boards/{id}")
-    Call<ApiBoard> updateBoard(@Header("Authorization") String authorization, @Path("id") long id, @Body ApiBoard board);
+    Call<ApiWorkspace> updateBoard(@Header("Authorization") String authorization, @Path("id") long id, @Body ApiWorkspace board);
 }

@@ -13,13 +13,13 @@ import static com.example.todo.MainActivity.workspacesToolbar;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,25 +36,25 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.todo.MainActivity;
 import com.example.todo.R;
-import com.example.todo.adapters.BoardsAdapter;
-import com.example.todo.database.TasksDatabaseHelper;
-import com.example.todo.models.Board;
+import com.example.todo.adapters.WorkspacesAdapter;
+import com.example.todo.database.TodoDatabaseHelper;
+import com.example.todo.models.Workspace;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
-public class WorkspacesFragment extends Fragment implements BoardsAdapter.OnBoardListener {
+public class WorkspacesFragment extends Fragment implements WorkspacesAdapter.OnWorkspaceListener {
     private static final String TAG = "WorkspacesFragment";
 
     private Context context;
     private TextInputLayout workspaceNameView;
     private SwipeRefreshLayout swipeContainer;
 
-    private BoardsAdapter boardsAdapter;
-    private TasksDatabaseHelper tasksDatabaseHelper;
+    private WorkspacesAdapter workspacesAdapter;
+    private TodoDatabaseHelper todoDatabaseHelper;
     private RecyclerView boardRecyclerView;
-    private ArrayList<Board> boardsArray;
 
     @Override
     public void onAttach(@NonNull Context context)
@@ -68,7 +68,7 @@ public class WorkspacesFragment extends Fragment implements BoardsAdapter.OnBoar
         lbm.registerReceiver(receiver, new IntentFilter("fcmNotification"));
         lbm.registerReceiver(receiver, new IntentFilter("updateRecyclerView"));
 
-        return inflater.inflate(R.layout.fragment_dashboard, container, false);
+        return inflater.inflate(R.layout.fragment_workspaces, container, false);
     }
 
     @Override
@@ -83,20 +83,10 @@ public class WorkspacesFragment extends Fragment implements BoardsAdapter.OnBoar
         createTaskToolbar.setVisibility(View.GONE);
 
         swipeContainer = view.findViewById(R.id.swipeContainer);
-        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                MainActivity.startSync();
-            }
-        });
+        swipeContainer.setOnRefreshListener(MainActivity::startSync);
 
         floatingActionButton.setText("New workspace");
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                newWorkspace();
-            }
-        });
+        floatingActionButton.setOnClickListener(v -> newWorkspace());
 
         floatingActionButton.show();
         floatingActionButton.extend();
@@ -113,7 +103,7 @@ public class WorkspacesFragment extends Fragment implements BoardsAdapter.OnBoar
         swipeContainer.setRefreshing(false);
     }
 
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
@@ -121,8 +111,7 @@ public class WorkspacesFragment extends Fragment implements BoardsAdapter.OnBoar
                 if (action.equals("fcmNotification")) {
                     String modelName = intent.getStringExtra("modelName");
                     if (modelName.equals("board")) {
-                        MainActivity.startSync();
-                    } else if (modelName.equals("todo")) {
+                        Log.d(TAG, "Board FCM push " + intent.getAction());
                         MainActivity.startSync();
                     }
                 } else if (action.equals("updateRecyclerView")) {
@@ -139,22 +128,22 @@ public class WorkspacesFragment extends Fragment implements BoardsAdapter.OnBoar
         boardRecyclerView = requireView().findViewById(R.id.boardRecyclerView);
 
         // Construct the data source
-        tasksDatabaseHelper = TasksDatabaseHelper.getInstance(context);
-        boardsArray = tasksDatabaseHelper.getActiveBoards();
+        todoDatabaseHelper = TodoDatabaseHelper.getInstance(context);
+        ArrayList<Workspace> boardsArray = todoDatabaseHelper.getActiveBoards();
 
         // Setting GridLayoutManager
         boardRecyclerView.setHasFixedSize(true);
         boardRecyclerView.setLayoutManager(new LinearLayoutManager(context));
 
         // Create the adapter to convert the array to views
-        boardsAdapter = new BoardsAdapter(boardsArray, context, this);
+        workspacesAdapter = new WorkspacesAdapter(boardsArray, context, this);
 
         // Attach the adapter to a RecyclerView
-        boardRecyclerView.setAdapter(boardsAdapter);
+        boardRecyclerView.setAdapter(workspacesAdapter);
 
         boardRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
 
                 if (!recyclerView.canScrollVertically(-1) && newState==RecyclerView.SCROLL_STATE_IDLE) {
@@ -167,8 +156,8 @@ public class WorkspacesFragment extends Fragment implements BoardsAdapter.OnBoar
     }
 
     public void updateRecyclerView() {
-        ArrayList<Board> newBoardsArray = tasksDatabaseHelper.getActiveBoards();
-        boardsAdapter.updateBoardsArrayList(newBoardsArray);
+        ArrayList<Workspace> newBoardsArray = todoDatabaseHelper.getActiveBoards();
+        workspacesAdapter.updateBoardsArrayList(newBoardsArray);
         if (!boardRecyclerView.canScrollVertically(-1)) {
             LinearLayoutManager layoutManager = (LinearLayoutManager) boardRecyclerView.getLayoutManager();
             if (layoutManager != null) {
@@ -177,32 +166,26 @@ public class WorkspacesFragment extends Fragment implements BoardsAdapter.OnBoar
         }
     }
 
-    public void onBoardClick(int position) {
+    public void onWorkspaceClick(int position) {
         floatingActionButton.hide();
-        MainActivity.selectedBoard = tasksDatabaseHelper.getActiveBoards().get(position);
+        MainActivity.selectedWorkspace = todoDatabaseHelper.getActiveBoards().get(position);
         Navigation.findNavController(requireView()).navigate(R.id.navigation_board);
     }
 
     private void newWorkspace() {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
         builder.setTitle("New workspace");
-        View viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.board_create_text_input, (ViewGroup) getView(), false);
+        View viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.workspace_create_text_input, (ViewGroup) getView(), false);
         workspaceNameView = viewInflated.findViewById(R.id.boardNameEditText);
         builder.setView(viewInflated);
-        builder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                attemptCreateWorkspace();
-                hideKeyboard(context, workspaceNameView.getEditText());
-                dialogInterface.dismiss();
-            }
+        builder.setPositiveButton("Create", (dialogInterface, i) -> {
+            attemptCreateWorkspace();
+            hideKeyboard(context, workspaceNameView.getEditText());
+            dialogInterface.dismiss();
         });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                hideKeyboard(context, workspaceNameView.getEditText());
-                dialogInterface.cancel();
-            }
+        builder.setNegativeButton("Cancel", (dialogInterface, i) -> {
+            hideKeyboard(context, workspaceNameView.getEditText());
+            dialogInterface.cancel();
         });
         final AlertDialog dialog = builder.create();
         dialog.setCanceledOnTouchOutside(false);
@@ -220,11 +203,7 @@ public class WorkspacesFragment extends Fragment implements BoardsAdapter.OnBoar
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (TextUtils.isEmpty(s)) {
-                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
-                } else {
-                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
-                }
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(!TextUtils.isEmpty(s));
             }
         });
         workspaceNameView.requestFocus();
@@ -232,13 +211,13 @@ public class WorkspacesFragment extends Fragment implements BoardsAdapter.OnBoar
     }
 
     private void attemptCreateWorkspace() {
-        Board newBoard = new Board();
-        newBoard.setName(workspaceNameView.getEditText().getText().toString());
-        newBoard.setStatus(TasksDatabaseHelper.statusActive);
-        newBoard.setSync_status(1);
-        newBoard.setCreated_at(0);
-        newBoard.setUpdated_at(0);
-        MainActivity.selectedBoard = tasksDatabaseHelper.addBoard(newBoard);
+        Workspace newWorkspace = new Workspace();
+        newWorkspace.setName(workspaceNameView.getEditText().getText().toString());
+        newWorkspace.setStatus(TodoDatabaseHelper.statusActive);
+        newWorkspace.setSync_status(1);
+        newWorkspace.setCreated_at(0);
+        newWorkspace.setUpdated_at(0);
+        MainActivity.selectedWorkspace = todoDatabaseHelper.addBoard(newWorkspace);
 
         MainActivity.startSync();
         Navigation.findNavController(requireView()).navigate(R.id.navigation_board);

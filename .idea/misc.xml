@@ -11,6 +11,7 @@
         <entry key="app/src/main/res/drawable/workspaces_selector.xml" value="0.1995" />
         <entry key="app/src/main/res/layout/activity_login.xml" value="0.3229166666666667" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.3229166666666667" />
+        <entry key="app/src/main/res/layout/activity_signup.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/board_create_text_input.xml" value="0.3229166666666667" />
         <entry key="app/src/main/res/layout/content_main.xml" value="0.3229166666666667" />
         <entry key="app/src/main/res/layout/create_task_toolbar.xml" value="0.264" />
@@ -32,17 +33,22 @@
         <entry key="app/src/main/res/layout/fragment_favourite_boards.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/fragment_favourite_task.xml" value="0.3229166666666667" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.29564411492122333" />
+        <entry key="app/src/main/res/layout/fragment_notes.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/fragment_settings.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/fragment_task.xml" value="0.3532608695652174" />
+        <entry key="app/src/main/res/layout/fragment_tasks.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/home_toolbar.xml" value="0.3229166666666667" />
         <entry key="app/src/main/res/layout/item_board.xml" value="0.3229166666666667" />
+        <entry key="app/src/main/res/layout/item_note.xml" value="0.34074074074074073" />
         <entry key="app/src/main/res/layout/item_task.xml" value="0.2866847826086957" />
-        <entry key="app/src/main/res/layout/item_workspace.xml" value="0.4" />
+        <entry key="app/src/main/res/layout/item_tasks.xml" value="0.3229166666666667" />
+        <entry key="app/src/main/res/layout/item_workspace.xml" value="0.33" />
         <entry key="app/src/main/res/layout/main_toolbar.xml" value="0.3229166666666667" />
         <entry key="app/src/main/res/layout/notes_toolbar.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/selected_board_toolbar.xml" value="0.264" />
         <entry key="app/src/main/res/layout/selected_task_toolbar.xml" value="0.264" />
         <entry key="app/src/main/res/layout/settings_toolbar.xml" value="0.35625" />
+        <entry key="app/src/main/res/layout/task_create_text_input.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/tasks_toolbar.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/workspaces_toolbar.xml" value="0.35625" />
         <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.3229166666666667" />

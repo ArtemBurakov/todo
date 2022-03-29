@@ -24,27 +24,26 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.todo.MainActivity;
 import com.example.todo.R;
-import com.example.todo.adapters.TasksAdapter;
-import com.example.todo.database.TasksDatabaseHelper;
-import com.example.todo.models.Task;
+import com.example.todo.adapters.NotesAdapter;
+import com.example.todo.database.TodoDatabaseHelper;
+import com.example.todo.models.Note;
 
 import java.util.ArrayList;
 
-public class NotesFragment extends Fragment implements TasksAdapter.OnTaskListener {
+public class NotesFragment extends Fragment implements NotesAdapter.OnNoteListener {
     private static final String TAG = "NotesFragment";
 
     private Context context;
     private SwipeRefreshLayout swipeContainer;
 
-    private TasksAdapter tasksAdapter;
-    private TasksDatabaseHelper tasksDatabaseHelper;
+    private NotesAdapter notesAdapter;
+    private TodoDatabaseHelper todoDatabaseHelper;
     private RecyclerView recyclerView;
 
     @Override
@@ -58,9 +57,9 @@ public class NotesFragment extends Fragment implements TasksAdapter.OnTaskListen
         LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(context);
         lbm.registerReceiver(receiver, new IntentFilter("fcmNotification"));
         lbm.registerReceiver(receiver, new IntentFilter("updateRecyclerView"));
-        MainActivity.selectedBoard = null;
+        MainActivity.selectedWorkspace = null;
 
-        return inflater.inflate(R.layout.fragment_home, container, false);
+        return inflater.inflate(R.layout.fragment_notes, container, false);
     }
 
     @Override
@@ -78,8 +77,8 @@ public class NotesFragment extends Fragment implements TasksAdapter.OnTaskListen
             if (action != null) {
                 if (action.equals("fcmNotification")) {
                     String modelName = intent.getStringExtra("modelName");
-                    if (modelName.equals("todo")) {
-                        Log.e(TAG, "Todo === " + intent.getAction());
+                    if (modelName.equals("note")) {
+                        Log.d(TAG, "Note FCM push " + intent.getAction());
                         MainActivity.startSync();
                     }
                 } else if (action.equals("updateRecyclerView")) {
@@ -128,21 +127,21 @@ public class NotesFragment extends Fragment implements TasksAdapter.OnTaskListen
     }
 
     private void initRecyclerView() {
-        recyclerView = requireView().findViewById(R.id.taskRecyclerView);
+        recyclerView = requireView().findViewById(R.id.notesRecyclerView);
 
         // Construct the data source
-        tasksDatabaseHelper = TasksDatabaseHelper.getInstance(context);
-        ArrayList<Task> tasksArray = tasksDatabaseHelper.getActiveTasks();
+        todoDatabaseHelper = TodoDatabaseHelper.getInstance(context);
+        ArrayList<Note> notesArray = todoDatabaseHelper.getActiveNotes();
 
         // Setting LayoutManager
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
 
         // Create the adapter to convert the array to views
-        tasksAdapter = new TasksAdapter(tasksArray, context, this);
+        notesAdapter = new NotesAdapter(notesArray, context, this);
 
         // Attach the adapter to a RecyclerView
-        recyclerView.setAdapter(tasksAdapter);
+        recyclerView.setAdapter(notesAdapter);
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -159,8 +158,8 @@ public class NotesFragment extends Fragment implements TasksAdapter.OnTaskListen
     }
 
     public void updateRecyclerView() {
-        ArrayList<Task> newTasksArray = tasksDatabaseHelper.getActiveTasks();
-        tasksAdapter.updateTasksArrayList(newTasksArray);
+        ArrayList<Note> newNotesArray = todoDatabaseHelper.getActiveNotes();
+        notesAdapter.updateNotesArrayList(newNotesArray);
         if (!recyclerView.canScrollVertically(-1)) {
             StaggeredGridLayoutManager layoutManager = (StaggeredGridLayoutManager) recyclerView.getLayoutManager();
             if (layoutManager != null) {
@@ -169,9 +168,9 @@ public class NotesFragment extends Fragment implements TasksAdapter.OnTaskListen
         }
     }
 
-    public void onTaskClick(int position) {
+    public void onNoteClick(int position) {
         floatingActionButton.hide();
-        MainActivity.selectedTask = tasksDatabaseHelper.getActiveTasks().get(position);
+        MainActivity.selectedNote = todoDatabaseHelper.getActiveNotes().get(position);
         Navigation.findNavController(requireView()).navigate(R.id.navigation_task);
     }
 }

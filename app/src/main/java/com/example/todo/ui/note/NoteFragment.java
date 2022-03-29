@@ -1,7 +1,7 @@
 package com.example.todo.ui.note;
 
 import static com.example.todo.MainActivity.hideKeyboard;
-import static com.example.todo.MainActivity.selectedBoard;
+import static com.example.todo.MainActivity.selectedWorkspace;
 import static com.example.todo.MainActivity.tasksToolbar;
 import static com.example.todo.MainActivity.notesToolbar;
 import static com.example.todo.MainActivity.createTaskToolbar;
@@ -26,8 +26,8 @@ import androidx.navigation.Navigation;
 
 import com.example.todo.MainActivity;
 import com.example.todo.R;
-import com.example.todo.database.TasksDatabaseHelper;
-import com.example.todo.models.Task;
+import com.example.todo.database.TodoDatabaseHelper;
+import com.example.todo.models.Note;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 public class NoteFragment extends Fragment {
@@ -40,7 +40,7 @@ public class NoteFragment extends Fragment {
     private String text;
 
     private Context context;
-    private TasksDatabaseHelper tasksDatabaseHelper;
+    private TodoDatabaseHelper todoDatabaseHelper;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         context = container.getContext();
@@ -69,10 +69,10 @@ public class NoteFragment extends Fragment {
                         attemptUpdateTask();
                         return true;
                     case R.id.done:
-                        Task task = MainActivity.selectedTask;
-                        task.setStatus(TasksDatabaseHelper.statusDone);
-                        task.setSync_status(1);
-                        tasksDatabaseHelper.updateTask(task);
+                        Note note = MainActivity.selectedNote;
+                        note.setStatus(TodoDatabaseHelper.statusDone);
+                        note.setSync_status(1);
+                        todoDatabaseHelper.updateNote(note);
 
                         MainActivity.startSync();
                         return true;
@@ -83,10 +83,10 @@ public class NoteFragment extends Fragment {
                         removeTaskBuilder.setPositiveButton("Remove", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                Task task = MainActivity.selectedTask;
-                                task.setStatus(TasksDatabaseHelper.statusDeleted);
-                                task.setSync_status(1);
-                                tasksDatabaseHelper.updateTask(task);
+                                Note note = MainActivity.selectedNote;
+                                note.setStatus(TodoDatabaseHelper.statusDeleted);
+                                note.setSync_status(1);
+                                todoDatabaseHelper.updateNote(note);
 
                                 dialogInterface.dismiss();
                                 navigateBack();
@@ -105,30 +105,30 @@ public class NoteFragment extends Fragment {
             }
         });
 
-        tasksDatabaseHelper = TasksDatabaseHelper.getInstance(context);
+        todoDatabaseHelper = TodoDatabaseHelper.getInstance(context);
 
         taskNameView = requireView().findViewById(R.id.taskNameEditText);
         taskTextView = requireView().findViewById(R.id.taskTextEditText);
-        taskNameView.setText(MainActivity.selectedTask.getName());
-        taskTextView.setText(MainActivity.selectedTask.getText());
+        taskNameView.setText(MainActivity.selectedNote.getName());
+        taskTextView.setText(MainActivity.selectedNote.getText());
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        MainActivity.selectedTask = null;
+        MainActivity.selectedNote = null;
         hideKeyboard(context, getActivity().getCurrentFocus());
     }
 
     private void attemptUpdateTask() {
-        Task task = MainActivity.selectedTask;
+        Note note = MainActivity.selectedNote;
 
         if (validateInput()) {
             // Update task
-            task.setName(name);
-            task.setText(text);
-            task.setSync_status(1);
-            tasksDatabaseHelper.updateTask(task);
+            note.setName(name);
+            note.setText(text);
+            note.setSync_status(1);
+            todoDatabaseHelper.updateNote(note);
 
             navigateBack();
         } else {
@@ -167,7 +167,7 @@ public class NoteFragment extends Fragment {
 
     private void navigateBack() {
         MainActivity.startSync();
-        if (selectedBoard != null) {
+        if (selectedWorkspace != null) {
             Navigation.findNavController(requireView()).navigate(R.id.navigation_board);
         } else {
             Navigation.findNavController(requireView()).navigate(R.id.navigation_notes);

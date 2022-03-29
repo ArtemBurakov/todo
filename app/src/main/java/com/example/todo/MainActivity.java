@@ -9,9 +9,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 
-import com.example.todo.models.Board;
+import com.example.todo.models.Workspace;
+import com.example.todo.models.Note;
 import com.example.todo.models.Task;
 import com.example.todo.remote.ApiFcmToken;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -38,7 +38,8 @@ public class MainActivity extends AppCompatActivity {
     public static ExtendedFloatingActionButton floatingActionButton;
 
     public static Task selectedTask;
-    public static Board selectedBoard;
+    public static Note selectedNote;
+    public static Workspace selectedWorkspace;
     @SuppressLint("StaticFieldLeak")
     public static ApiSync apiSync;
     public ApiFcmTokenSendTask syncFcmToken;

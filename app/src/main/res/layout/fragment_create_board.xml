@@ -31,7 +31,7 @@
             android:background="@drawable/rounded_corner_button"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:text="Create board"
+            android:text="Create workspace"
             android:textSize="20sp"/>
 
     </RelativeLayout>

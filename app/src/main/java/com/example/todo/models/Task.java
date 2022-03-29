@@ -2,8 +2,8 @@ package com.example.todo.models;
 
 public class Task {
     private long updated_at, created_at;
-    private Integer id, status, server_id, board_id, sync_status;
-    private String name, text;
+    private Integer id, status, server_id, sync_status;
+    private String name;
 
     // Getters
     public Integer getId() {
@@ -12,10 +12,6 @@ public class Task {
 
     public Integer getServer_id() {
         return server_id;
-    }
-
-    public Integer getBoard_id() {
-        return board_id;
     }
 
     public Integer getSync_status() {
@@ -38,10 +34,6 @@ public class Task {
         return name;
     }
 
-    public String getText() {
-        return text;
-    }
-
     // Setters
     public void setId(Integer id) {
         this.id = id;
@@ -49,10 +41,6 @@ public class Task {
 
     public void setServer_id(Integer server_id) {
         this.server_id = server_id;
-    }
-
-    public void setBoard_id(Integer board_id) {
-        this.board_id = board_id;
     }
 
     public void setSync_status(Integer sync_status) {
@@ -73,9 +61,5 @@ public class Task {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public void setText(String text) {
-        this.text = text;
     }
 }

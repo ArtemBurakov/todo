@@ -24,7 +24,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 
-import com.example.todo.database.TasksDatabaseHelper;
+import com.example.todo.database.TodoDatabaseHelper;
 import com.example.todo.remote.ApiService;
 import com.example.todo.remote.ApiUser;
 import com.example.todo.remote.ApiUtils;
@@ -220,7 +220,7 @@ public class LoginActivity extends AppCompatActivity {
 
             // Attempt authentication against a network service.
             ApiUser response;
-            String apiUrl = "https://faf9-178-216-17-166.ngrok.io/v1/";
+            String apiUrl = "http://192.168.88.23/php-yii2-todo/backend/web/v1/";
             apiService = ApiUtils.getAPIService(apiUrl);
             try {
                 Call<ApiUser> call = apiService.authUser(mUsername, mPassword);
@@ -269,7 +269,7 @@ public class LoginActivity extends AppCompatActivity {
                     Log.e("LoginActivity", "New user====");
 
                     // Delete all tasks from db
-                    TasksDatabaseHelper.deleteAllTasks(getApplicationContext());
+                    TodoDatabaseHelper.deleteAllTasks(getApplicationContext());
                 }
 
                 // Save username
