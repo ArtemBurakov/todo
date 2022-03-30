@@ -36,8 +36,8 @@ public class TaskDiffUtilCallback extends DiffUtil.Callback {
         Task oldTask = oldList.get(oldItemPosition);
         Task newTask = newList.get(newItemPosition);
 
-        return oldTask.getName().equals(newTask.getName());
-                //&& oldTask.getServer_id().equals(newTask.getServer_id());
+        return oldTask.getName().equals(newTask.getName())
+                && oldTask.getStatus().equals(newTask.getStatus());
     }
 
     @Nullable

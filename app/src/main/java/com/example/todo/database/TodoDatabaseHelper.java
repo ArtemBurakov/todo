@@ -268,7 +268,7 @@ public class TodoDatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_TASK_STATUS, task.getStatus());
         values.put(KEY_TASK_CREATED_AT, task.getCreated_at());
         values.put(KEY_TASK_UPDATED_AT, task.getUpdated_at());
-        db.update(TABLE_TASKS, values, KEY_TASK_ID + " = ?", new String[] {String.valueOf(task.getId())});
+        long result = db.update(TABLE_TASKS, values, KEY_TASK_ID + " = ?", new String[] {String.valueOf(task.getId())});
     }
 
     // Update note
@@ -448,11 +448,11 @@ public class TodoDatabaseHelper extends SQLiteOpenHelper {
 
     // Get Active tasks
     @SuppressLint("Range")
-    public ArrayList<Task> getActiveTasks() {
+    public ArrayList<Task> getActiveAndDoneTasks() {
         ArrayList<Task> tasks = new ArrayList<>();
 
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery("select * from " + TABLE_TASKS + " where " + KEY_TASK_STATUS + " = ? order by `updated_at` desc", new String[] {String.valueOf(10)});
+        Cursor cursor = db.rawQuery("select * from " + TABLE_TASKS + " where " + KEY_TASK_STATUS + " in (" + statusActive + ", " + statusDone + ") order by `status` ASC, `updated_at` desc", null);
         try {
             if (cursor.moveToFirst()) {
                 do {

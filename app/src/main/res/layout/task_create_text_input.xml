@@ -17,6 +17,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Untitled task" />
+            android:hint="Untitled task"
+            android:maxLength="55"/>
     </com.google.android.material.textfield.TextInputLayout>
 </FrameLayout>

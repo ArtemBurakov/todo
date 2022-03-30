@@ -4,8 +4,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
@@ -13,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.todo.MainActivity;
 import com.example.todo.R;
 import com.example.todo.diffUtilCallback.TaskDiffUtilCallback;
 import com.example.todo.database.TodoDatabaseHelper;
@@ -42,28 +41,32 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
     public void onBindViewHolder(@NonNull TaskViewHolder holder, final int position) {
         final Task task = tasksArrayList.get(position);
         holder.taskName.setText(task.getName());
-//        holder.doneTask.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                // Remove item from list
-//                tasksArrayList.remove(position);
-//                notifyItemRemoved(position);
-//                notifyItemRangeChanged(position, tasksArrayList.size());
-//
-//                // Update task
-//                task.setStatus(TodoDatabaseHelper.statusDone);
-//                task.setSync_status(1);
-//                todoDatabaseHelper.updateTask(task);
-//            }
-//        });
+        if (task.getStatus() == 10)
+            holder.radioButton.setChecked(false);
+        else if (task.getStatus() == 20)
+            holder.radioButton.setChecked(true);
+
+        holder.radioButton.setOnClickListener(v -> {
+            if (task.getStatus() == 10) {
+                holder.radioButton.setChecked(true);
+                holder.radioButton.setSelected(true);
+                doneTask(task);
+            } else {
+                holder.radioButton.setChecked(false);
+                holder.radioButton.setSelected(false);
+                unDoneTask(task);
+            }
+        });
     }
 
     public static class TaskViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView taskName;
-        OnTaskListener onTaskListener;
+        private final RadioButton radioButton;
+        private final TextView taskName;
+        private final OnTaskListener onTaskListener;
 
         public TaskViewHolder(@NonNull View itemView, OnTaskListener onTaskListener) {
             super(itemView);
+            radioButton = itemView.findViewById(R.id.radioButton);
             taskName = itemView.findViewById(R.id.taskName);
             this.onTaskListener = onTaskListener;
             itemView.setOnClickListener(this);
@@ -90,5 +93,19 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
                 new TaskDiffUtilCallback(newTasksArrayList, tasksArrayList));
         tasksArrayList = newTasksArrayList;
         result.dispatchUpdatesTo(TasksAdapter.this);
+    }
+
+    private void doneTask(Task task) {
+        task.setStatus(TodoDatabaseHelper.statusDone);
+        task.setSync_status(1);
+        todoDatabaseHelper.updateTask(task);
+        MainActivity.startSync();
+    }
+
+    private void unDoneTask(Task task) {
+        task.setStatus(TodoDatabaseHelper.statusActive);
+        task.setSync_status(1);
+        todoDatabaseHelper.updateTask(task);
+        MainActivity.startSync();
     }
 }

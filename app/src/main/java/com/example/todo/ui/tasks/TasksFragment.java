@@ -30,6 +30,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -130,11 +131,15 @@ public class TasksFragment extends Fragment implements TasksAdapter.OnTaskListen
 
         // Construct the data source
         todoDatabaseHelper = TodoDatabaseHelper.getInstance(context);
-        ArrayList<Task> tasksArray = todoDatabaseHelper.getActiveTasks();
+        ArrayList<Task> tasksArray = todoDatabaseHelper.getActiveAndDoneTasks();
 
         // Setting LayoutManager
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
+                layoutManager.getOrientation());
+        recyclerView.addItemDecoration(dividerItemDecoration);
 
         // Create the adapter to convert the array to views
         tasksAdapter = new TasksAdapter(tasksArray, context, this);
@@ -157,7 +162,7 @@ public class TasksFragment extends Fragment implements TasksAdapter.OnTaskListen
     }
 
     public void updateRecyclerView() {
-        ArrayList<Task> newTasksArray = todoDatabaseHelper.getActiveTasks();
+        ArrayList<Task> newTasksArray = todoDatabaseHelper.getActiveAndDoneTasks();
         tasksAdapter.updateTasksArrayList(newTasksArray);
         if (!recyclerView.canScrollVertically(-1)) {
             LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
@@ -270,7 +275,7 @@ public class TasksFragment extends Fragment implements TasksAdapter.OnTaskListen
     }
 
     public void onTaskClick(int position) {
-        MainActivity.selectedTask = todoDatabaseHelper.getActiveTasks().get(position);
+        MainActivity.selectedTask = todoDatabaseHelper.getActiveAndDoneTasks().get(position);
         renameTask();
     }
 }
