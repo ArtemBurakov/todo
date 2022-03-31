@@ -417,11 +417,11 @@ public class TodoDatabaseHelper extends SQLiteOpenHelper {
 
     // Get board notes
     @SuppressLint("Range")
-    public ArrayList<Note> getBoardNotes(Integer board_id) {
+    public ArrayList<Note> getWorkspaceNotes(Integer board_id) {
         ArrayList<Note> notes = new ArrayList<>();
 
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery("select * from " + TABLE_NOTES + " where " + KEY_NOTE_BOARD_ID + " = ? AND " + KEY_NOTE_STATUS + " = ? order by `updated_at` desc", new String[] {String.valueOf(board_id), String.valueOf(10)}, null);
+        Cursor cursor = db.rawQuery("select * from " + TABLE_NOTES + " where " + KEY_NOTE_BOARD_ID + " = ? AND " + KEY_NOTE_STATUS + " = ? order by `name` asc", new String[] {String.valueOf(board_id), String.valueOf(10)}, null);
         try {
             if (cursor.moveToFirst()) {
                 do {
@@ -452,7 +452,7 @@ public class TodoDatabaseHelper extends SQLiteOpenHelper {
         ArrayList<Task> tasks = new ArrayList<>();
 
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery("select * from " + TABLE_TASKS + " where " + KEY_TASK_STATUS + " in (" + statusActive + ", " + statusDone + ") order by `status` ASC, `updated_at` desc", null);
+        Cursor cursor = db.rawQuery("select * from " + TABLE_TASKS + " where " + KEY_TASK_STATUS + " in (" + statusActive + ", " + statusDone + ") order by `status` ASC, `name` asc", null);
         try {
             if (cursor.moveToFirst()) {
                 do {
@@ -484,7 +484,7 @@ public class TodoDatabaseHelper extends SQLiteOpenHelper {
         ArrayList<Note> notes = new ArrayList<>();
 
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery("select * from " + TABLE_NOTES + " where " + KEY_NOTE_STATUS + " = ? and " + KEY_NOTE_BOARD_ID + " is null order by `updated_at` desc", new String[] {String.valueOf(10)});
+        Cursor cursor = db.rawQuery("select * from " + TABLE_NOTES + " where " + KEY_NOTE_STATUS + " = ? and " + KEY_NOTE_BOARD_ID + " is null order by `name` asc", new String[] {String.valueOf(10)});
         try {
             if (cursor.moveToFirst()) {
                 do {
@@ -782,7 +782,7 @@ public class TodoDatabaseHelper extends SQLiteOpenHelper {
         ArrayList<Workspace> workspaces = new ArrayList<>();
 
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery("select * from " + TABLE_BOARDS + " where " + KEY_BOARD_STATUS + " = ? order by `updated_at` desc", new String[] {String.valueOf(10)});
+        Cursor cursor = db.rawQuery("select * from " + TABLE_BOARDS + " where " + KEY_BOARD_STATUS + " = ? order by `name` asc", new String[] {String.valueOf(10)});
         try {
             if (cursor.moveToFirst()) {
                 do {

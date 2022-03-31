@@ -26,18 +26,6 @@
             android:id="@+id/settings_toolbar"
             layout="@layout/settings_toolbar"
             android:visibility="gone" />
-        <include
-            android:id="@+id/create_task_toolbar"
-            layout="@layout/create_task_toolbar"
-            android:visibility="gone" />
-        <include
-            android:id="@+id/selected_task_toolbar"
-            layout="@layout/selected_task_toolbar"
-            android:visibility="gone" />
-        <include
-            android:id="@+id/selected_board_toolbar"
-            layout="@layout/selected_board_toolbar"
-            android:visibility="gone" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <FrameLayout

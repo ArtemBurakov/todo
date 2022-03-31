@@ -1,11 +1,8 @@
 package com.example.todo.ui.tasks;
 
-import static com.example.todo.MainActivity.createTaskToolbar;
 import static com.example.todo.MainActivity.floatingActionButton;
 import static com.example.todo.MainActivity.hideKeyboard;
 import static com.example.todo.MainActivity.notesToolbar;
-import static com.example.todo.MainActivity.selectedBoardToolbar;
-import static com.example.todo.MainActivity.selectedTaskToolbar;
 import static com.example.todo.MainActivity.settingsToolbar;
 import static com.example.todo.MainActivity.showKeyboard;
 import static com.example.todo.MainActivity.tasksToolbar;
@@ -74,11 +71,36 @@ public class TasksFragment extends Fragment implements TasksAdapter.OnTaskListen
     }
 
     @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        tasksToolbar.setVisibility(View.VISIBLE);
+        workspacesToolbar.setVisibility(View.GONE);
+        notesToolbar.setVisibility(View.GONE);
+        settingsToolbar.setVisibility(View.GONE);
+
+        swipeContainer = view.findViewById(R.id.swipeContainer);
+        swipeContainer.setOnRefreshListener(MainActivity::startSync);
+
+        floatingActionButton.setText("New task");
+        floatingActionButton.setOnClickListener(v -> newTask());
+
+        floatingActionButton.show();
+        floatingActionButton.extend();
+    }
+
+    @Override
     public void onDestroyView()
     {
         super.onDestroyView();
         LocalBroadcastManager.getInstance(context).unregisterReceiver(receiver);
         swipeContainer.setRefreshing(false);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        initRecyclerView();
+        MainActivity.startSync();
     }
 
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -101,30 +123,6 @@ public class TasksFragment extends Fragment implements TasksAdapter.OnTaskListen
             }
         }
     };
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        tasksToolbar.setVisibility(View.VISIBLE);
-        workspacesToolbar.setVisibility(View.GONE);
-        notesToolbar.setVisibility(View.GONE);
-        settingsToolbar.setVisibility(View.GONE);
-        selectedBoardToolbar.setVisibility(View.GONE);
-        selectedTaskToolbar.setVisibility(View.GONE);
-        createTaskToolbar.setVisibility(View.GONE);
-
-        swipeContainer = view.findViewById(R.id.swipeContainer);
-        swipeContainer.setOnRefreshListener(MainActivity::startSync);
-
-        floatingActionButton.setText("New task");
-        floatingActionButton.setOnClickListener(v -> newTask());
-
-        floatingActionButton.show();
-        floatingActionButton.extend();
-
-        MainActivity.startSync();
-        initRecyclerView();
-    }
 
     private void initRecyclerView() {
         recyclerView = requireView().findViewById(R.id.tasksRecyclerView);

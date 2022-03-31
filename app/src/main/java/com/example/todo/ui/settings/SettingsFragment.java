@@ -1,10 +1,7 @@
 package com.example.todo.ui.settings;
 
-import static com.example.todo.MainActivity.createTaskToolbar;
 import static com.example.todo.MainActivity.floatingActionButton;
 import static com.example.todo.MainActivity.notesToolbar;
-import static com.example.todo.MainActivity.selectedBoardToolbar;
-import static com.example.todo.MainActivity.selectedTaskToolbar;
 import static com.example.todo.MainActivity.settingsToolbar;
 import static com.example.todo.MainActivity.tasksToolbar;
 import static com.example.todo.MainActivity.workspacesToolbar;
@@ -30,7 +27,6 @@ import com.example.todo.R;
 import com.kyleduo.switchbutton.SwitchButton;
 
 public class SettingsFragment extends Fragment {
-
     private Context context;
     private LayoutInflater inflater;
 
@@ -47,9 +43,6 @@ public class SettingsFragment extends Fragment {
         workspacesToolbar.setVisibility(View.GONE);
         notesToolbar.setVisibility(View.GONE);
         settingsToolbar.setVisibility(View.VISIBLE);
-        selectedBoardToolbar.setVisibility(View.GONE);
-        selectedTaskToolbar.setVisibility(View.GONE);
-        createTaskToolbar.setVisibility(View.GONE);
 
         floatingActionButton.hide();
         TextView logout = requireView().findViewById(R.id.logoutTextView);

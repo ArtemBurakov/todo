@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     public static Context context;
     @SuppressLint("StaticFieldLeak")
     public static MaterialToolbar
-            tasksToolbar, workspacesToolbar, notesToolbar, settingsToolbar, createTaskToolbar, selectedBoardToolbar, selectedTaskToolbar;
+            tasksToolbar, workspacesToolbar, notesToolbar, settingsToolbar;
     public static ExtendedFloatingActionButton floatingActionButton;
 
     public static Task selectedTask;
@@ -54,9 +54,6 @@ public class MainActivity extends AppCompatActivity {
         workspacesToolbar = findViewById(R.id.workspaces_toolbar);
         notesToolbar = findViewById(R.id.notes_toolbar);
         settingsToolbar = findViewById(R.id.settings_toolbar);
-        createTaskToolbar = findViewById(R.id.create_task_toolbar);
-        selectedTaskToolbar = findViewById(R.id.selected_task_toolbar);
-        selectedBoardToolbar = findViewById(R.id.selected_board_toolbar);
         floatingActionButton = findViewById(R.id.extended_fab);
 
         BottomNavigationView navView = findViewById(R.id.nav_view);

@@ -24,19 +24,4 @@
         android:id="@+id/navigation_settings"
         android:name="com.example.todo.ui.settings.SettingsFragment"
         tools:layout="@layout/fragment_settings" />
-
-    <fragment
-        android:id="@+id/navigation_task"
-        android:name="com.example.todo.ui.note.NoteFragment"
-        tools:layout="@layout/fragment_task" />
-
-    <fragment
-        android:id="@+id/navigation_board"
-        android:name="com.example.todo.ui.workspace.WorkspaceFragment"
-        tools:layout="@layout/fragment_workspace" />
-
-    <fragment
-        android:id="@+id/navigation_create_task"
-        android:name="com.example.todo.ui.note.CreateNoteFragment"
-        tools:layout="@layout/fragment_create_task" />
 </navigation>

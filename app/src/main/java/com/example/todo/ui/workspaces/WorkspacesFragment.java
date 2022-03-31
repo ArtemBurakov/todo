@@ -1,11 +1,8 @@
 package com.example.todo.ui.workspaces;
 
-import static com.example.todo.MainActivity.createTaskToolbar;
 import static com.example.todo.MainActivity.floatingActionButton;
 import static com.example.todo.MainActivity.hideKeyboard;
 import static com.example.todo.MainActivity.notesToolbar;
-import static com.example.todo.MainActivity.selectedBoardToolbar;
-import static com.example.todo.MainActivity.selectedTaskToolbar;
 import static com.example.todo.MainActivity.settingsToolbar;
 import static com.example.todo.MainActivity.showKeyboard;
 import static com.example.todo.MainActivity.tasksToolbar;
@@ -29,7 +26,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -39,11 +35,11 @@ import com.example.todo.R;
 import com.example.todo.adapters.WorkspacesAdapter;
 import com.example.todo.database.TodoDatabaseHelper;
 import com.example.todo.models.Workspace;
+import com.example.todo.ui.workspace.WorkspaceActivity;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class WorkspacesFragment extends Fragment implements WorkspacesAdapter.OnWorkspaceListener {
     private static final String TAG = "WorkspacesFragment";
@@ -78,9 +74,6 @@ public class WorkspacesFragment extends Fragment implements WorkspacesAdapter.On
         workspacesToolbar.setVisibility(View.VISIBLE);
         notesToolbar.setVisibility(View.GONE);
         settingsToolbar.setVisibility(View.GONE);
-        selectedBoardToolbar.setVisibility(View.GONE);
-        selectedTaskToolbar.setVisibility(View.GONE);
-        createTaskToolbar.setVisibility(View.GONE);
 
         swipeContainer = view.findViewById(R.id.swipeContainer);
         swipeContainer.setOnRefreshListener(MainActivity::startSync);
@@ -90,9 +83,6 @@ public class WorkspacesFragment extends Fragment implements WorkspacesAdapter.On
 
         floatingActionButton.show();
         floatingActionButton.extend();
-
-        MainActivity.startSync();
-        initBoardRecyclerView();
     }
 
     @Override
@@ -101,6 +91,13 @@ public class WorkspacesFragment extends Fragment implements WorkspacesAdapter.On
         super.onDestroyView();
         LocalBroadcastManager.getInstance(context).unregisterReceiver(receiver);
         swipeContainer.setRefreshing(false);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        initBoardRecyclerView();
+        MainActivity.startSync();
     }
 
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -167,16 +164,16 @@ public class WorkspacesFragment extends Fragment implements WorkspacesAdapter.On
     }
 
     public void onWorkspaceClick(int position) {
-        floatingActionButton.hide();
         MainActivity.selectedWorkspace = todoDatabaseHelper.getActiveBoards().get(position);
-        Navigation.findNavController(requireView()).navigate(R.id.navigation_board);
+        Intent intent = new Intent(getActivity(), WorkspaceActivity.class);
+        startActivity(intent);
     }
 
     private void newWorkspace() {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
         builder.setTitle("New workspace");
         View viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.workspace_create_text_input, (ViewGroup) getView(), false);
-        workspaceNameView = viewInflated.findViewById(R.id.boardNameEditText);
+        workspaceNameView = viewInflated.findViewById(R.id.workspaceNameEditText);
         builder.setView(viewInflated);
         builder.setPositiveButton("Create", (dialogInterface, i) -> {
             attemptCreateWorkspace();
@@ -220,6 +217,7 @@ public class WorkspacesFragment extends Fragment implements WorkspacesAdapter.On
         MainActivity.selectedWorkspace = todoDatabaseHelper.addBoard(newWorkspace);
 
         MainActivity.startSync();
-        Navigation.findNavController(requireView()).navigate(R.id.navigation_board);
+        Intent intent = new Intent(getActivity(), WorkspaceActivity.class);
+        startActivity(intent);
     }
 }

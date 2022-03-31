@@ -237,7 +237,7 @@ public class SignUpActivity extends AppCompatActivity {
         protected Boolean doInBackground(Void... params) {
 
             // Attempt registration against a network service.
-            String apiUrl = "http://192.168.88.23/php-yii2-todo/backend/web/v1/";
+            String apiUrl = "https://0aca-91-211-138-182.ngrok.io/v1/";
             apiService = ApiUtils.getAPIService(apiUrl);
             try {
                 Call<ResponseBody> call = apiService.signUpUser(mUsername, mEmail, mPassword);

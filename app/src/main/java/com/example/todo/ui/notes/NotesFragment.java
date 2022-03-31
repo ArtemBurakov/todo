@@ -1,10 +1,7 @@
 package com.example.todo.ui.notes;
 
-import static com.example.todo.MainActivity.createTaskToolbar;
 import static com.example.todo.MainActivity.floatingActionButton;
 import static com.example.todo.MainActivity.notesToolbar;
-import static com.example.todo.MainActivity.selectedBoardToolbar;
-import static com.example.todo.MainActivity.selectedTaskToolbar;
 import static com.example.todo.MainActivity.settingsToolbar;
 import static com.example.todo.MainActivity.tasksToolbar;
 import static com.example.todo.MainActivity.workspacesToolbar;
@@ -23,7 +20,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -33,6 +29,8 @@ import com.example.todo.R;
 import com.example.todo.adapters.NotesAdapter;
 import com.example.todo.database.TodoDatabaseHelper;
 import com.example.todo.models.Note;
+import com.example.todo.ui.note.CreateNoteActivity;
+import com.example.todo.ui.note.NoteActivity;
 
 import java.util.ArrayList;
 
@@ -63,11 +61,47 @@ public class NotesFragment extends Fragment implements NotesAdapter.OnNoteListen
     }
 
     @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        tasksToolbar.setVisibility(View.GONE);
+        workspacesToolbar.setVisibility(View.GONE);
+        notesToolbar.setVisibility(View.VISIBLE);
+        settingsToolbar.setVisibility(View.GONE);
+
+        swipeContainer = view.findViewById(R.id.swipeContainer);
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                MainActivity.startSync();
+            }
+        });
+
+        floatingActionButton.setText("New note");
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), CreateNoteActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        floatingActionButton.show();
+        floatingActionButton.extend();
+    }
+
+    @Override
     public void onDestroyView()
     {
         super.onDestroyView();
         LocalBroadcastManager.getInstance(context).unregisterReceiver(receiver);
         swipeContainer.setRefreshing(false);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        initRecyclerView();
+        MainActivity.startSync();
     }
 
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -91,41 +125,6 @@ public class NotesFragment extends Fragment implements NotesAdapter.OnNoteListen
         }
     };
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        tasksToolbar.setVisibility(View.GONE);
-        workspacesToolbar.setVisibility(View.GONE);
-        notesToolbar.setVisibility(View.VISIBLE);
-        settingsToolbar.setVisibility(View.GONE);
-        selectedBoardToolbar.setVisibility(View.GONE);
-        selectedTaskToolbar.setVisibility(View.GONE);
-        createTaskToolbar.setVisibility(View.GONE);
-
-        swipeContainer = view.findViewById(R.id.swipeContainer);
-        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                MainActivity.startSync();
-            }
-        });
-
-        floatingActionButton.setText("New note");
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                floatingActionButton.hide();
-                Navigation.findNavController(requireView()).navigate(R.id.navigation_create_task);
-            }
-        });
-
-        floatingActionButton.show();
-        floatingActionButton.extend();
-
-        MainActivity.startSync();
-        initRecyclerView();
-    }
-
     private void initRecyclerView() {
         recyclerView = requireView().findViewById(R.id.notesRecyclerView);
 
@@ -145,7 +144,7 @@ public class NotesFragment extends Fragment implements NotesAdapter.OnNoteListen
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
 
                 if (!recyclerView.canScrollVertically(-1) && newState==RecyclerView.SCROLL_STATE_IDLE) {
@@ -169,8 +168,8 @@ public class NotesFragment extends Fragment implements NotesAdapter.OnNoteListen
     }
 
     public void onNoteClick(int position) {
-        floatingActionButton.hide();
         MainActivity.selectedNote = todoDatabaseHelper.getActiveNotes().get(position);
-        Navigation.findNavController(requireView()).navigate(R.id.navigation_task);
+        Intent intent = new Intent(getActivity(), NoteActivity.class);
+        startActivity(intent);
     }
 }

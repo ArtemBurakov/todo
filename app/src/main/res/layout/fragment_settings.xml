@@ -25,7 +25,6 @@
                                     android:src="@drawable/ic_user_db"
                                     android:layout_centerVertical="true"
                                     android:layout_alignParentStart="true"/>
-
                                 <TextView
                                     android:id="@+id/username"
                                     android:layout_width="wrap_content"
@@ -37,7 +36,6 @@
                                     android:textSize="18dp"
                                     android:textStyle="bold"
                                     android:textColor="#000000"/>
-
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
@@ -48,7 +46,6 @@
                                     android:text="artem000.burakov@gmail.com"
                                     android:textSize="15dp"
                                     android:textColor="#000000"/>
-
                         </RelativeLayout>
 
                         <RelativeLayout
@@ -59,10 +56,8 @@
                                 <TextView
                                     style="@style/SettingTitle"
                                     android:text="Edit profile"/>
-
                                 <ImageView
                                     style="@style/MoreImageView"/>
-
                         </RelativeLayout>
 
                         <RelativeLayout
@@ -72,12 +67,9 @@
                                 <TextView
                                     style="@style/SettingTitle"
                                     android:text="Change password"/>
-
                                 <ImageView
                                     style="@style/MoreImageView"/>
-
                         </RelativeLayout>
-
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -100,15 +92,11 @@
                                         <TextView
                                             style="@style/SettingTitle"
                                             android:text="Use dark mode"/>
-
                                         <com.kyleduo.switchbutton.SwitchButton
                                             style="@style/SwitchButton"
                                             android:id="@+id/day_night_switch"/>
-
                                 </RelativeLayout>
-
                         </RelativeLayout>
-
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -119,7 +107,7 @@
                         <TextView
                             style="@style/SettingHeader"
                             android:id="@+id/preferencesHeader"
-                            android:text="Preferences"/>
+                            android:text="Archive"/>
 
                         <RelativeLayout
                             style="@style/SettingGroup"
@@ -127,33 +115,38 @@
 
                                 <RelativeLayout
                                     style="@style/SettingParentItem"
-                                    android:id="@+id/notifications">
+                                    android:id="@+id/archiveTask">
 
                                         <TextView
                                             style="@style/SettingTitle"
-                                            android:text="Notifications" />
-
-                                        <com.kyleduo.switchbutton.SwitchButton
-                                            style="@style/SwitchButton"
-                                            android:id="@+id/notifications_switch"/>
-
+                                            android:text="Archive tasks" />
+                                        <ImageView
+                                            style="@style/MoreImageView"/>
                                 </RelativeLayout>
 
                                 <RelativeLayout
                                     style="@style/SettingParentItem"
-                                    android:layout_below="@+id/notifications">
+                                    android:id="@+id/archiveBoards"
+                                    android:layout_below="@+id/archiveTask">
 
                                         <TextView
                                             style="@style/SettingTitle"
-                                            android:text="Language" />
-
+                                            android:text="Archive boards" />
                                         <ImageView
                                             style="@style/MoreImageView"/>
-
                                 </RelativeLayout>
 
-                        </RelativeLayout>
+                                <RelativeLayout
+                                    style="@style/SettingParentItem"
+                                    android:layout_below="@+id/archiveBoards">
 
+                                        <TextView
+                                            style="@style/SettingTitle"
+                                            android:text="Archive notes" />
+                                        <ImageView
+                                            style="@style/MoreImageView"/>
+                                </RelativeLayout>
+                        </RelativeLayout>
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -177,10 +170,8 @@
                                         <TextView
                                             style="@style/SettingTitle"
                                             android:text="Privacy &amp; Security" />
-
                                         <ImageView
                                             style="@style/MoreImageView"/>
-
                                 </RelativeLayout>
 
                                 <RelativeLayout
@@ -191,10 +182,8 @@
                                         <TextView
                                             style="@style/SettingTitle"
                                             android:text="Terms of Service"/>
-
                                         <ImageView
                                             style="@style/MoreImageView"/>
-
                                 </RelativeLayout>
 
                                 <RelativeLayout
@@ -205,14 +194,10 @@
                                         <TextView
                                             style="@style/SettingTitle"
                                             android:text="About"/>
-
                                         <ImageView
                                             style="@style/MoreImageView"/>
-
                                 </RelativeLayout>
-
                         </RelativeLayout>
-
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -224,9 +209,6 @@
                             android:id="@+id/logoutTextView"
                             android:text="Logout"
                             android:textColor="#FF0000"/>
-
                 </RelativeLayout>
-
         </RelativeLayout>
-
 </ScrollView>

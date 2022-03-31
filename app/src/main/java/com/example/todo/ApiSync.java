@@ -34,7 +34,7 @@ public class ApiSync extends AsyncTask<Void, Void, Boolean> {
     private TodoDatabaseHelper todoDatabaseHelper;
 
     private Boolean unauthorized = false;
-    private final String apiUrl = "http://192.168.88.23/php-yii2-todo/backend/web/v1/";
+    private final String apiUrl = "https://0aca-91-211-138-182.ngrok.io/v1/";
     private final ApiService apiService = ApiUtils.getAPIService(apiUrl);
 
     public ApiSync(Context context) {
