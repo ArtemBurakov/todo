@@ -2,9 +2,7 @@ package com.example.todo.remote;
 
 public class ApiUser {
     public Integer userId;
-    public String username;
-    public String password;
-    public String access_token;
+    public String username, email, password, access_token;
 
     public Integer getUserId() {
         return userId;
@@ -18,8 +16,16 @@ public class ApiUser {
         return username;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public void setEmail(String userEmail) {
+        this.email = userEmail;
     }
 
     public String getPassword() {

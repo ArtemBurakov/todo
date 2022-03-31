@@ -22,6 +22,5 @@
 
     <fragment
         android:id="@+id/navigation_settings"
-        android:name="com.example.todo.ui.settings.SettingsFragment"
-        tools:layout="@layout/fragment_settings" />
+        android:name="com.example.todo.ui.settings.SettingsFragment" />
 </navigation>

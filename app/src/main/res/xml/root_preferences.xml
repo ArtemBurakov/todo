@@ -1,0 +1,64 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory app:title="@string/account_header">
+
+        <Preference
+            android:selectable="false"
+            android:enabled="true"
+            android:key="username"
+            android:title="@string/username_title" />
+
+        <Preference
+            android:selectable="false"
+            android:enabled="true"
+            android:key="email"
+            android:title="@string/email_title" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/theme_header">
+
+        <ListPreference
+            app:entries="@array/theme_entries"
+            app:entryValues="@array/theme_values"
+            app:defaultValue="SYSTEM_DEFAULT_MODE"
+            app:key="theme"
+            app:title="@string/theme_title"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/archive_header">
+
+        <Preference
+            android:selectable="true"
+            android:enabled="true"
+            android:key="archive_tasks"
+            android:title="@string/tasks_title" />
+
+        <Preference
+            android:selectable="true"
+            android:enabled="true"
+            android:key="archive_workspaces"
+            android:title="@string/workspaces_title" />
+
+        <Preference
+            android:selectable="true"
+            android:enabled="true"
+            android:key="archive_notes"
+            android:title="@string/notes_title" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/more_header">
+
+        <Preference
+            android:selectable="true"
+            android:enabled="true"
+            android:key="logout"
+            android:title="@string/logout_title" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

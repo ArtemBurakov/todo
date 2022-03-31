@@ -11,4 +11,25 @@
     <string name="error_incorrect_password">Incorrect password</string>
     <string name="error_invalid_taskName">Invalid name</string>
     <string name="error_invalid_taskText">Incorrect text</string>
+
+    <!-- Preference Titles -->
+    <string name="account_header">Account</string>
+    <string name="theme_header">Theme</string>
+    <string name="archive_header">Archive</string>
+    <string name="more_header">More</string>
+
+    <!-- Account Preferences -->
+    <string name="username_title">Username</string>
+    <string name="email_title">Email</string>
+
+    <!-- Theme Preferences -->
+    <string name="theme_title">Choose theme</string>
+
+    <!-- Archive Preferences -->
+    <string name="tasks_title">Archive tasks</string>
+    <string name="workspaces_title">Archive workspaces</string>
+    <string name="notes_title">Archive notes</string>
+
+    <!-- More Preferences -->
+    <string name="logout_title">Logout</string>
 </resources>

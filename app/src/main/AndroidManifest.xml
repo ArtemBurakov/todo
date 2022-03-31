@@ -52,5 +52,21 @@
             android:name=".ui.note.NoteActivity"
             android:windowSoftInputMode="adjustResize">
         </activity>
+
+        <activity
+            android:name=".ui.workspaces.ArchiveWorkspacesActivity"
+            android:windowSoftInputMode="adjustResize"
+            android:parentActivityName=".MainActivity">
+        </activity>
+        <activity
+            android:name=".ui.notes.ArchiveNotesActivity"
+            android:windowSoftInputMode="adjustResize"
+            android:parentActivityName=".MainActivity">
+        </activity>
+        <activity
+            android:name=".ui.tasks.ArchiveTasksActivity"
+            android:windowSoftInputMode="adjustResize"
+            android:parentActivityName=".MainActivity">
+        </activity>
     </application>
 </manifest>

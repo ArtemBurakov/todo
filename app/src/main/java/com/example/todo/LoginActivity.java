@@ -41,6 +41,7 @@ public class LoginActivity extends AppCompatActivity {
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
+    private String email;
     private UserLoginTask authTask = null;
 
     // UI references.
@@ -227,9 +228,8 @@ public class LoginActivity extends AppCompatActivity {
                 response = call.execute().body();
 
                 if (response != null){
-
-                    Log.d("responce_success===== ", response.toString());
                     String access_token = response.getAccessToken();
+                    email = response.getEmail();
                     Integer userId = response.getUserId();
 
                     if (access_token != null){
@@ -274,6 +274,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 // Save username
                 setUsername(mUsername);
+                setUserEmail(email);
 
                 // Start Main activity
                 Intent intent_name = new Intent();
@@ -327,6 +328,18 @@ public class LoginActivity extends AppCompatActivity {
     public static String getUsername(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences("SETTINGS", Context.MODE_PRIVATE);
         return sharedPreferences.getString("username", null);
+    }
+
+    public void setUserEmail(String userEmail) {
+        SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("SETTINGS", MODE_PRIVATE).edit();
+
+        editor.putString("userEmail", userEmail);
+        editor.apply();
+    }
+
+    public static String getUserEmail(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("SETTINGS", Context.MODE_PRIVATE);
+        return sharedPreferences.getString("userEmail", null);
     }
 
     public static void setFcmToken(String fcm_token, String token, Context context) {

@@ -82,6 +82,8 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
         }
+
+        InitApplicationTheme.initAppTheme(context);
     }
 
     @Override
