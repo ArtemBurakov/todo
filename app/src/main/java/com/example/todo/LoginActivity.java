@@ -17,7 +17,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -28,6 +27,8 @@ import com.example.todo.database.TodoDatabaseHelper;
 import com.example.todo.remote.ApiService;
 import com.example.todo.remote.ApiUser;
 import com.example.todo.remote.ApiUtils;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -44,22 +45,17 @@ public class LoginActivity extends AppCompatActivity {
     private String email;
     private UserLoginTask authTask = null;
 
-    // UI references.
-    private EditText usernameView;
-    private EditText passwordView;
-    private View progressView;
-    private View loginFormView;
-    private RelativeLayout footerLayout;
+    private TextInputLayout usernameView, passwordView;
+    private CircularProgressIndicator progressView;
+    private RelativeLayout loginFormView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        // Set up the login form.
-        usernameView = (EditText) findViewById(R.id.editTextUsername);
-
-        passwordView = (EditText) findViewById(R.id.editTextPassword);
-        passwordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        usernameView = findViewById(R.id.editTextUsername);
+        passwordView = findViewById(R.id.editTextPassword);
+        passwordView.getEditText().setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
@@ -79,7 +75,6 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         loginFormView = findViewById(R.id.mainLayout);
-        footerLayout = findViewById(R.id.footerLayout);
         progressView = findViewById(R.id.progressBar);
 
         TextView signUp = findViewById(R.id.sign_up);
@@ -112,8 +107,8 @@ public class LoginActivity extends AppCompatActivity {
         passwordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String username = usernameView.getText().toString();
-        String password = passwordView.getText().toString();
+        String username = usernameView.getEditText().getText().toString();
+        String password = passwordView.getEditText().getText().toString();
 
         boolean cancel = false;
         View focusView = null;
@@ -147,6 +142,7 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
+            MainActivity.hideKeyboard(getApplicationContext(), this.getCurrentFocus());
             showProgress(true);
             authTask = new UserLoginTask(username, password);
             authTask.execute((Void) null);
@@ -168,7 +164,6 @@ public class LoginActivity extends AppCompatActivity {
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
-
         int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
         loginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
@@ -177,15 +172,6 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onAnimationEnd(Animator animation) {
                 loginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-            }
-        });
-
-        footerLayout.setVisibility(show ? View.GONE : View.VISIBLE);
-        footerLayout.animate().setDuration(shortAnimTime).alpha(
-                show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                footerLayout.setVisibility(show ? View.GONE : View.VISIBLE);
             }
         });
 
@@ -205,7 +191,6 @@ public class LoginActivity extends AppCompatActivity {
      */
     @SuppressLint("StaticFieldLeak")
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
-
         private final String mUsername;
         private final String mPassword;
 
@@ -218,10 +203,9 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-
             // Attempt authentication against a network service.
             ApiUser response;
-            String apiUrl = "https://0aca-91-211-138-182.ngrok.io/v1/";
+            String apiUrl = "https://c832-91-211-138-182.ngrok.io/v1/";
             apiService = ApiUtils.getAPIService(apiUrl);
             try {
                 Call<ApiUser> call = apiService.authUser(mUsername, mPassword);
@@ -313,14 +297,12 @@ public class LoginActivity extends AppCompatActivity {
 
     public void setUserId(Integer userId) {
         SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("SETTINGS", MODE_PRIVATE).edit();
-
         editor.putLong("userId", userId);
         editor.apply();
     }
 
     public void setUsername(String username) {
         SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("SETTINGS", MODE_PRIVATE).edit();
-
         editor.putString("username", username);
         editor.apply();
     }
@@ -332,7 +314,6 @@ public class LoginActivity extends AppCompatActivity {
 
     public void setUserEmail(String userEmail) {
         SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("SETTINGS", MODE_PRIVATE).edit();
-
         editor.putString("userEmail", userEmail);
         editor.apply();
     }
