@@ -26,7 +26,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -130,7 +130,7 @@ public class WorkspacesFragment extends Fragment implements WorkspacesAdapter.On
 
         // Setting GridLayoutManager
         boardRecyclerView.setHasFixedSize(true);
-        boardRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        boardRecyclerView.setLayoutManager(new GridLayoutManager(context, 2));
 
         // Create the adapter to convert the array to views
         workspacesAdapter = new WorkspacesAdapter(boardsArray, context, this);
@@ -156,7 +156,7 @@ public class WorkspacesFragment extends Fragment implements WorkspacesAdapter.On
         ArrayList<Workspace> newBoardsArray = todoDatabaseHelper.getActiveBoards();
         workspacesAdapter.updateBoardsArrayList(newBoardsArray);
         if (!boardRecyclerView.canScrollVertically(-1)) {
-            LinearLayoutManager layoutManager = (LinearLayoutManager) boardRecyclerView.getLayoutManager();
+            GridLayoutManager layoutManager = (GridLayoutManager) boardRecyclerView.getLayoutManager();
             if (layoutManager != null) {
                 layoutManager.scrollToPositionWithOffset(0, 0);
             }

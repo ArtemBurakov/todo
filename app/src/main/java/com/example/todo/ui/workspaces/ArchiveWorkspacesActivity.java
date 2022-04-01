@@ -9,6 +9,7 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -91,7 +92,7 @@ public class ArchiveWorkspacesActivity extends AppCompatActivity implements Work
 
         // Setting GridLayoutManager
         workspaceRecyclerView.setHasFixedSize(true);
-        workspaceRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        workspaceRecyclerView.setLayoutManager(new GridLayoutManager(getApplicationContext(), 2));
 
         // Create the adapter to convert the array to views
         workspacesAdapter = new WorkspacesAdapter(archiveWorkspacesArray, getApplicationContext(), this);
@@ -104,7 +105,7 @@ public class ArchiveWorkspacesActivity extends AppCompatActivity implements Work
         ArrayList<Workspace> newArchiveWorkspacesArray = todoDatabaseHelper.getArchiveBoards();
         workspacesAdapter.updateBoardsArrayList(newArchiveWorkspacesArray);
         if (!workspaceRecyclerView.canScrollVertically(-1)) {
-            LinearLayoutManager layoutManager = (LinearLayoutManager) workspaceRecyclerView.getLayoutManager();
+            GridLayoutManager layoutManager = (GridLayoutManager) workspaceRecyclerView.getLayoutManager();
             if (layoutManager != null) {
                 layoutManager.scrollToPositionWithOffset(0, 0);
             }

@@ -37,7 +37,7 @@ public class WorkspaceDiffUtilCallback extends DiffUtil.Callback {
         Workspace newWorkspace = newList.get(newItemPosition);
 
         return oldWorkspace.getName().equals(newWorkspace.getName());
-                //&& oldBoard.getServer_id().equals(newBoard.getServer_id());
+                //&& oldWorkspace.getServer_id().equals(newWorkspace.getServer_id());
     }
 
     @Nullable

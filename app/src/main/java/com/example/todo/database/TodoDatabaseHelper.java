@@ -838,6 +838,27 @@ public class TodoDatabaseHelper extends SQLiteOpenHelper {
         return workspaces;
     }
 
+    // Get number of notes inside workspace
+    @SuppressLint("Range")
+    public int getNumberOfNotes(Integer workspace_id) {
+        int numberOfNotes = 0;
+
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("select count(id) from " + TABLE_NOTES + " where " + KEY_NOTE_STATUS + " = ? and " + KEY_NOTE_BOARD_ID + " = ?", new String[] {String.valueOf(10), String.valueOf(workspace_id)});
+        try {
+            if (cursor.moveToFirst()) {
+                numberOfNotes = cursor.getInt(0);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error while trying to get number of active notes in workspace from database");
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
+        return numberOfNotes;
+    }
+
     // Get archive boards
     @SuppressLint("Range")
     public ArrayList<Workspace> getArchiveBoards() {

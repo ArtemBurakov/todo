@@ -1,6 +1,7 @@
 package com.example.todo.adapters;
 
 import android.content.Context;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,16 +38,18 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteViewHold
         final Note note = notesArrayList.get(position);
         holder.noteName.setText(note.getName());
         holder.noteText.setText(note.getText());
+        holder.noteDate.setText(DateFormat.format("MMM d", note.getCreated_at()).toString());
     }
 
     public static class NoteViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView noteName, noteText;
-        OnNoteListener onNoteListener;
+        private final TextView noteName, noteText, noteDate;
+        private final OnNoteListener onNoteListener;
 
         public NoteViewHolder(@NonNull View itemView, OnNoteListener onNoteListener) {
             super(itemView);
             noteName = itemView.findViewById(R.id.noteName);
             noteText = itemView.findViewById(R.id.noteText);
+            noteDate = itemView.findViewById(R.id.noteDate);
             this.onNoteListener = onNoteListener;
 
             itemView.setOnClickListener(this);
