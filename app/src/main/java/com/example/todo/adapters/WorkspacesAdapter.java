@@ -70,7 +70,6 @@ public class WorkspacesAdapter extends RecyclerView.Adapter<WorkspacesAdapter.Wo
     }
 
     public void updateBoardsArrayList(final ArrayList<Workspace> newWorkspacesArrayList) {
-        // Attach differences to adapter
         final DiffUtil.DiffResult result = DiffUtil.calculateDiff(
                 new WorkspaceDiffUtilCallback(newWorkspacesArrayList, workspacesArrayList));
         workspacesArrayList = newWorkspacesArrayList;
@@ -81,9 +80,9 @@ public class WorkspacesAdapter extends RecyclerView.Adapter<WorkspacesAdapter.Wo
         String numberOfNotes = "No notes";
         final int number = todoDatabaseHelper.getNumberOfNotes(workspace.getId());
         if (number == 1)
-            numberOfNotes = String.valueOf(number) + " note";
+            numberOfNotes = number + " note";
         if (number > 1)
-            numberOfNotes = String.valueOf(number) + " notes";
+            numberOfNotes = number + " notes";
         return numberOfNotes;
     }
 }

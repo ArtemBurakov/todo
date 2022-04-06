@@ -13,8 +13,11 @@
         <entry key="app/src/main/res/drawable/ic_baseline_emoji_objects_24.xml" value="0.208" />
         <entry key="app/src/main/res/drawable/ic_baseline_favorite_border_24.xml" value="0.208" />
         <entry key="app/src/main/res/drawable/ic_favourite_24dp.xml" value="0.2085" />
+        <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.21" />
+        <entry key="app/src/main/res/drawable/ic_logo_background.xml" value="0.21" />
         <entry key="app/src/main/res/drawable/ic_more.xml" value="0.208" />
         <entry key="app/src/main/res/drawable/ic_outline_settings_24.xml" value="0.2045" />
+        <entry key="app/src/main/res/drawable/ic_outline_sticky_note_2_24.xml" value="0.21" />
         <entry key="app/src/main/res/drawable/ic_outline_workspaces_24.xml" value="0.208" />
         <entry key="app/src/main/res/drawable/ic_user_db.xml" value="0.2045" />
         <entry key="app/src/main/res/drawable/ios_back_drawable.xml" value="0.2045" />
@@ -90,12 +93,15 @@
         <entry key="app/src/main/res/menu/dashboard_app_bar.xml" value="0.35625" />
         <entry key="app/src/main/res/menu/home_app_bar.xml" value="0.35625" />
         <entry key="app/src/main/res/menu/main_app_bar.xml" value="0.3229166666666667" />
+        <entry key="app/src/main/res/menu/menu.xml" value="0.2923076923076923" />
         <entry key="app/src/main/res/menu/notes_app_bar.xml" value="0.35625" />
         <entry key="app/src/main/res/menu/selected_board_app_bar.xml" value="0.35625" />
         <entry key="app/src/main/res/menu/selected_note_app_bar.xml" value="0.1" />
         <entry key="app/src/main/res/menu/selected_task_app_bar.xml" value="0.3229166666666667" />
         <entry key="app/src/main/res/menu/selected_workspace_app_bar.xml" value="0.3229166666666667" />
         <entry key="app/src/main/res/menu/tasks_app_bar.xml" value="0.35625" />
+        <entry key="app/src/main/res/menu/workspaces_action_bar.xml" value="0.2923076923076923" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.21" />
         <entry key="app/src/main/res/xml/root_preferences.xml" value="0.35625" />
       </map>
     </option>

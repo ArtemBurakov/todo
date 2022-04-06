@@ -35,7 +35,7 @@ public interface ApiService {
     @GET("notes")
     Call<List<ApiNote>> getNotes(@Header("Authorization") String authorization, @Query("updated_after") String updated_after);
 
-    @GET("boards")
+    @GET("workspaces")
     Call<List<ApiWorkspace>> getBoards(@Header("Authorization") String authorization, @Query("updated_after") String updated_after);
 
     @Headers({
@@ -47,7 +47,7 @@ public interface ApiService {
     @POST("notes")
     Call<ApiNote> addNote(@Header("Authorization") String authorization, @Body ApiNote note);
 
-    @POST("boards")
+    @POST("workspaces")
     Call<ApiWorkspace> addBoard(@Header("Authorization") String authorization, @Body ApiWorkspace board);
 
     @Headers({
@@ -59,6 +59,6 @@ public interface ApiService {
     @PUT("notes/{id}")
     Call<ApiNote> updateNote(@Header("Authorization") String authorization, @Path("id") long id, @Body ApiNote note);
 
-    @PUT("boards/{id}")
+    @PUT("workspaces/{id}")
     Call<ApiWorkspace> updateBoard(@Header("Authorization") String authorization, @Path("id") long id, @Body ApiWorkspace board);
 }

@@ -38,7 +38,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteViewHold
         final Note note = notesArrayList.get(position);
         holder.noteName.setText(note.getName());
         holder.noteText.setText(note.getText());
-        holder.noteDate.setText(DateFormat.format("MMM d", note.getCreated_at()).toString());
+        holder.noteDate.setText(DateFormat.format("MMM d", note.getCreated_at() * 1000).toString());
     }
 
     public static class NoteViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

@@ -7,13 +7,15 @@
             android:selectable="false"
             android:enabled="true"
             android:key="username"
-            android:title="@string/username_title" />
+            android:title="@string/username_title"
+            android:icon="@drawable/ic_baseline_person_24" />
 
         <Preference
             android:selectable="false"
             android:enabled="true"
             android:key="email"
-            android:title="@string/email_title" />
+            android:title="@string/email_title"
+            android:icon="@drawable/ic_baseline_email_24" />
 
     </PreferenceCategory>
 
@@ -25,7 +27,8 @@
             app:defaultValue="SYSTEM_DEFAULT_MODE"
             app:key="theme"
             app:title="@string/theme_title"
-            app:useSimpleSummaryProvider="true" />
+            app:useSimpleSummaryProvider="true"
+            android:icon="@drawable/ic_baseline_dark_mode_24" />
 
     </PreferenceCategory>
 
@@ -57,7 +60,8 @@
             android:selectable="true"
             android:enabled="true"
             android:key="logout"
-            android:title="@string/logout_title" />
+            android:title="@string/logout_title"
+            android:icon="@drawable/ic_baseline_logout_24" />
 
     </PreferenceCategory>
 
