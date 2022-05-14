@@ -34,7 +34,7 @@ public class ApiSync extends AsyncTask<Void, Void, Boolean> {
     private TodoDatabaseHelper todoDatabaseHelper;
 
     private Boolean unauthorized = false;
-    private final String apiUrl = "https://c832-91-211-138-182.ngrok.io/v1/";
+    private final String apiUrl = "https://1321-212-55-74-9.ngrok.io/v1/";
     private final ApiService apiService = ApiUtils.getAPIService(apiUrl);
 
     public ApiSync(Context context) {

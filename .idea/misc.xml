@@ -102,6 +102,7 @@
         <entry key="app/src/main/res/menu/tasks_app_bar.xml" value="0.35625" />
         <entry key="app/src/main/res/menu/workspaces_action_bar.xml" value="0.2923076923076923" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.21" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.21" />
         <entry key="app/src/main/res/xml/root_preferences.xml" value="0.35625" />
       </map>
     </option>

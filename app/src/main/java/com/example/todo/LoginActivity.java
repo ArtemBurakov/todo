@@ -205,7 +205,7 @@ public class LoginActivity extends AppCompatActivity {
         protected Boolean doInBackground(Void... params) {
             // Attempt authentication against a network service.
             ApiUser response;
-            String apiUrl = "https://c832-91-211-138-182.ngrok.io/v1/";
+            String apiUrl = "https://1321-212-55-74-9.ngrok.io/v1/";
             apiService = ApiUtils.getAPIService(apiUrl);
             try {
                 Call<ApiUser> call = apiService.authUser(mUsername, mPassword);
