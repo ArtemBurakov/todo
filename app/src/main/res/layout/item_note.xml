@@ -34,6 +34,11 @@
                 android:textAppearance="?attr/textAppearanceBody2"
                 android:textColor="?android:attr/textColorSecondary"
                 />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/tasksInNoteRecyclerView"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:visibility="gone"/>
             <TextView
                 android:id="@+id/noteDate"
                 android:layout_width="wrap_content"

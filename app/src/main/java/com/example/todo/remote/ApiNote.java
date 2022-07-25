@@ -1,7 +1,7 @@
 package com.example.todo.remote;
 
 public class ApiNote {
-    private Integer id, user_id, status, board_id;
+    private Integer id, user_id, type, status, board_id;
     private String name, text;
     private long created_at, updated_at;
 
@@ -12,6 +12,10 @@ public class ApiNote {
 
     public Integer getBoard_id() {
         return board_id;
+    }
+
+    public Integer getType() {
+        return type;
     }
 
     public Integer getStatus() {
@@ -45,6 +49,10 @@ public class ApiNote {
 
     public void setBoard_id(Integer board_id) {
         this.board_id = board_id;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 
     public void setStatus(Integer status) {

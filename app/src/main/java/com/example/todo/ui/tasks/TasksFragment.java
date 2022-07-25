@@ -218,6 +218,16 @@ public class TasksFragment extends Fragment implements TasksAdapter.OnTaskListen
         Navigation.findNavController(requireView()).navigate(R.id.navigation_tasks);
     }
 
+    private void deleteTask() {
+        Task task = MainActivity.selectedTask;
+        task.setStatus(TodoDatabaseHelper.statusDeleted);
+        task.setSync_status(1);
+        todoDatabaseHelper.updateTask(task);
+
+        MainActivity.startSync();
+        Navigation.findNavController(requireView()).navigate(R.id.navigation_tasks);
+    }
+
     private void renameTask() {
         MaterialAlertDialogBuilder updateTaskBuilder = new MaterialAlertDialogBuilder(getActivity());
         updateTaskBuilder.setTitle("Rename task");
@@ -232,6 +242,11 @@ public class TasksFragment extends Fragment implements TasksAdapter.OnTaskListen
             dialogInterface.dismiss();
         });
         updateTaskBuilder.setNegativeButton("Cancel", (dialogInterface, i) -> {
+            hideKeyboard(context, taskNameView.getEditText());
+            dialogInterface.cancel();
+        });
+        updateTaskBuilder.setNeutralButton("Delete" , (dialogInterface, i) -> {
+            deleteTask();
             hideKeyboard(context, taskNameView.getEditText());
             dialogInterface.cancel();
         });

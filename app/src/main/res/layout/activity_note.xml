@@ -53,6 +53,24 @@
                 android:lineSpacingExtra="10dp"
                 android:maxLength="255"
                 android:textSize="20sp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/tasksInNoteRecyclerView"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/addNewTaskTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:padding="4dp"
+                android:drawablePadding="8dp"
+                android:visibility="gone"
+                android:textSize="16sp"
+                android:text="List item"
+                app:drawableStartCompat="@drawable/ic_baseline_add_24" />
         </LinearLayout>
     </ScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,48 +1,66 @@
 package com.example.todo.ui.note;
 
 import static com.example.todo.MainActivity.hideKeyboard;
+import static com.example.todo.MainActivity.selectedNote;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.todo.MainActivity;
 import com.example.todo.R;
+import com.example.todo.adapters.TasksInNoteAdapter;
 import com.example.todo.database.TodoDatabaseHelper;
 import com.example.todo.models.Note;
+import com.example.todo.models.Task;
+import com.example.todo.models.Workspace;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Objects;
 
 public class NoteActivity extends AppCompatActivity {
     private TodoDatabaseHelper todoDatabaseHelper;
 
-    private View focusView;
-    private String name, text;
     private EditText noteNameView, noteTextView;
+    private TextView addNewTaskTextView;
+
+    private TasksInNoteAdapter tasksAdapter;
+    private RecyclerView recyclerView;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
         todoDatabaseHelper = TodoDatabaseHelper.getInstance(getApplicationContext());
+        recyclerView = findViewById(R.id.tasksInNoteRecyclerView);
         noteNameView = findViewById(R.id.noteNameEditText);
-        noteNameView.setText(MainActivity.selectedNote.getName());
         noteTextView = findViewById(R.id.noteTextEditText);
-        noteTextView.setText(MainActivity.selectedNote.getText());
-
+        addNewTaskTextView = findViewById(R.id.addNewTaskTextView);
+        noteNameView.setText(MainActivity.selectedNote.getName());
+        if (selectedNote.getType() == 1) {
+            checkboxes();
+        } else {
+            noteTextView.setText(MainActivity.selectedNote.getText());
+        }
         MaterialToolbar selectedNoteToolbar = findViewById(R.id.selectedNoteToolbar);
         setSupportActionBar(selectedNoteToolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
         selectedNoteToolbar.setNavigationOnClickListener(view -> {
+            attemptUpdateNote();
             finish();
         });
     }
@@ -57,6 +75,12 @@ public class NoteActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.selected_note_app_bar, menu);
+        MenuItem checkboxMenuItem = menu.findItem(R.id.checkboxes);
+        if (selectedNote.getType() == 1) {
+            checkboxMenuItem.setTitle("Note");
+        } else {
+            checkboxMenuItem.setTitle("Checkboxes");
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -64,9 +88,18 @@ public class NoteActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.update:
-                attemptUpdateNote();
+            case R.id.checkboxes:{
+                if (selectedNote.getType() == 1) {
+                    item.setTitle("Checkboxes");
+                    taskToNote();
+                    note();
+                } else {
+                    item.setTitle("Note");
+                    noteToTask();
+                    checkboxes();
+                }
                 return true;
+            }
             case R.id.done:
                 doneNote();
                 return true;
@@ -77,47 +110,115 @@ public class NoteActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void attemptUpdateNote() {
-        Note note = MainActivity.selectedNote;
+    private void initRecyclerView() {
+        // Construct the data source
+        todoDatabaseHelper = TodoDatabaseHelper.getInstance(getApplicationContext());
+        ArrayList<Task> tasksArray = todoDatabaseHelper.getNoteTasks(selectedNote.getId());
 
-        if (validateInput()) {
-            note.setName(name);
-            note.setText(text);
-            note.setSync_status(1);
-            todoDatabaseHelper.updateNote(note);
-            MainActivity.startSync();
-            finish();
-        } else {
-            focusView.requestFocus();
-        }
+        // Setting LayoutManager
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        // Create the adapter to convert the array to views
+        tasksAdapter = new TasksInNoteAdapter(tasksArray, getApplicationContext());
+
+        // Attach the adapter to a RecyclerView
+        recyclerView.setAdapter(tasksAdapter);
     }
 
-    private boolean validateInput() {
-        // Reset errors
-        noteNameView.setError(null);
-        noteTextView.setError(null);
+    private void note() {
+        noteTextView.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.GONE);
+        addNewTaskTextView.setVisibility(View.GONE);
+    }
 
-        // Store values at the time of the create attempt
-        name = noteNameView.getText().toString();
-        text = noteTextView.getText().toString();
+    private void checkboxes() {
+        noteTextView.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.VISIBLE);
+        addNewTaskTextView.setVisibility(View.VISIBLE);
+        addNewTaskTextView.setOnClickListener(view -> attemptCreateTask());
+        initRecyclerView();
+    }
 
-        focusView = null;
+    private void attemptCreateTask() {
+        Task newTask = new Task();
+        newTask.setName("");
+        newTask.setNote_id(selectedNote.getId());
+        newTask.setStatus(TodoDatabaseHelper.statusActive);
+        newTask.setSync_status(1);
+        newTask.setCreated_at(0);
+        newTask.setUpdated_at(0);
+        tasksAdapter.addNewTask(todoDatabaseHelper.addTask(newTask));
+        MainActivity.startSync();
+    }
 
-        // Check for a valid note name
-        if (TextUtils.isEmpty(name)) {
-            noteNameView.setError(getString(R.string.error_field_required));
-            focusView = noteNameView;
-            return false;
+    private void taskToNote() {
+        StringBuilder finalString = new StringBuilder();
+        ArrayList<Task> tasksArray = todoDatabaseHelper.getNoteTasks(selectedNote.getId());
+        Iterator<Task> iterator = tasksArray.iterator();
+        for (Task task : tasksArray) {
+            if (!iterator.hasNext())
+                finalString.append(task.getName());
+            else
+                finalString.append(task.getName()).append("\n");
         }
 
-        // Check for a valid note text
-        if (TextUtils.isEmpty(text)) {
-            noteTextView.setError(getString(R.string.error_field_required));
-            focusView = noteTextView;
-            return false;
+        Note note = MainActivity.selectedNote;
+        note.setType(0);
+        note.setText(finalString.toString());
+        noteTextView.setText(finalString.toString());
+        note.setSync_status(1);
+        todoDatabaseHelper.updateNote(note);
+        MainActivity.startSync();
+    }
+
+    private void noteToTask() {
+        String noteText = String.valueOf(noteTextView.getText());
+        String[] splitNoteText = noteText.split("\n");
+        ArrayList<Task> tasksArray = todoDatabaseHelper.getNoteTasks(selectedNote.getId());
+
+        if (tasksArray.isEmpty()) {
+            Log.e("Here", "Note does not have tasks.");
+            for (String item : splitNoteText) {
+                Task newTask = new Task();
+                newTask.setName(item);
+                newTask.setStatus(TodoDatabaseHelper.statusActive);
+                newTask.setNote_id(selectedNote.getId());
+                newTask.setSync_status(1);
+                newTask.setCreated_at(0);
+                newTask.setUpdated_at(0);
+                todoDatabaseHelper.addTask(newTask);
+            }
+        } else {
+            Log.e("Here", "Note have tasks.");
+            todoDatabaseHelper.deleteNoteTasks(selectedNote.getId());
+            for (String item : splitNoteText) {
+                Task newTask = new Task();
+                newTask.setName(item);
+                newTask.setStatus(TodoDatabaseHelper.statusActive);
+                newTask.setNote_id(selectedNote.getId());
+                newTask.setSync_status(1);
+                newTask.setCreated_at(0);
+                newTask.setUpdated_at(0);
+                todoDatabaseHelper.addTask(newTask);
+            }
         }
 
-        return true;
+        Note note = MainActivity.selectedNote;
+        note.setText("");
+        note.setType(1);
+        note.setSync_status(1);
+        todoDatabaseHelper.updateNote(note);
+        MainActivity.startSync();
+    }
+
+    private void attemptUpdateNote() {
+        Note note = MainActivity.selectedNote;
+        note.setName(noteNameView.getText().toString());
+        note.setText(noteTextView.getText().toString());
+        note.setSync_status(1);
+        todoDatabaseHelper.updateNote(note);
+        MainActivity.startSync();
+        finish();
     }
 
     private void deleteNoteDialog() {

@@ -34,7 +34,7 @@ public class ApiSync extends AsyncTask<Void, Void, Boolean> {
     private TodoDatabaseHelper todoDatabaseHelper;
 
     private Boolean unauthorized = false;
-    private final String apiUrl = "https://1321-212-55-74-9.ngrok.io/v1/";
+    private final String apiUrl = "http://192.168.88.23/php-yii2-todo/backend/web/v1/";
     private final ApiService apiService = ApiUtils.getAPIService(apiUrl);
 
     public ApiSync(Context context) {
@@ -250,6 +250,7 @@ public class ApiSync extends AsyncTask<Void, Void, Boolean> {
                             note.setName(api_note.getName());
                             note.setText(api_note.getText());
                             note.setUpdated_at(api_note.getUpdated_at());
+                            note.setType(api_note.getType());
                             note.setStatus(api_note.getStatus());
                             todoDatabaseHelper.updateNote(note);
                         }
@@ -267,8 +268,9 @@ public class ApiSync extends AsyncTask<Void, Void, Boolean> {
                         newNote.setText(api_note.getText());
                         newNote.setCreated_at(api_note.getCreated_at());
                         newNote.setUpdated_at(api_note.getUpdated_at());
+                        newNote.setType(api_note.getType());
                         newNote.setStatus(api_note.getStatus());
-                        Note note = todoDatabaseHelper.addNote(newNote);
+                        todoDatabaseHelper.addNote(newNote);
                     }
                 }
                 return true;
@@ -300,6 +302,7 @@ public class ApiSync extends AsyncTask<Void, Void, Boolean> {
         apiNote.setText(note.getText());
         apiNote.setCreated_at(note.getCreated_at());
         apiNote.setUpdated_at(note.getUpdated_at());
+        apiNote.setType(note.getType());
         apiNote.setStatus(note.getStatus());
 
         Call<ApiNote> call;
@@ -323,6 +326,7 @@ public class ApiSync extends AsyncTask<Void, Void, Boolean> {
                 note.setText(api_note.getText());
                 note.setCreated_at(api_note.getCreated_at());
                 note.setUpdated_at(api_note.getUpdated_at());
+                note.setType(api_note.getType());
                 note.setStatus(api_note.getStatus());
 
                 if (note.getServer_id() == null) {
@@ -398,12 +402,16 @@ public class ApiSync extends AsyncTask<Void, Void, Boolean> {
                     else {
                         Task newTask = new Task();
                         newTask.setServer_id(api_task.getId());
+                        if (api_task.getNote_id() != null) {
+                            Note note = todoDatabaseHelper.getNoteByServerId(api_task.getNote_id());
+                            newTask.setNote_id(note.getId());
+                        }
                         newTask.setSync_status(0);
                         newTask.setName(api_task.getName());
                         newTask.setCreated_at(api_task.getCreated_at());
                         newTask.setUpdated_at(api_task.getUpdated_at());
                         newTask.setStatus(api_task.getStatus());
-                        Task task = todoDatabaseHelper.addTask(newTask);
+                        todoDatabaseHelper.addTask(newTask);
                     }
                 }
                 return true;
@@ -428,6 +436,9 @@ public class ApiSync extends AsyncTask<Void, Void, Boolean> {
     private Boolean syncTask(Task task){
         ApiTask apiTask = new ApiTask();
         apiTask.setId(task.getServer_id());
+        if (task.getNote_id() != null) {
+            apiTask.setNote_id(todoDatabaseHelper.getNote(task.getNote_id()).getServer_id());
+        }
         apiTask.setName(task.getName());
         apiTask.setCreated_at(task.getCreated_at());
         apiTask.setUpdated_at(task.getUpdated_at());

@@ -30,6 +30,7 @@ public class TodoDatabaseHelper extends SQLiteOpenHelper {
     // TASK Table Columns
     private static final String KEY_TASK_ID = "id";
     private static final String KEY_TASK_SERVER_ID = "server_id";
+    private static final String KEY_TASK_NOTE_ID = "note_id";
     private static final String KEY_TASK_SYNC_STATUS = "sync_status";
     private static final String KEY_TASK_NAME = "name";
     private static final String KEY_TASK_STATUS = "status";
@@ -43,6 +44,7 @@ public class TodoDatabaseHelper extends SQLiteOpenHelper {
     private static final String KEY_NOTE_SYNC_STATUS = "sync_status";
     private static final String KEY_NOTE_NAME = "name";
     private static final String KEY_NOTE_TEXT = "text";
+    private static final String KEY_NOTE_TYPE = "type";
     private static final String KEY_NOTE_STATUS = "status";
     private static final String KEY_NOTE_CREATED_AT = "created_at";
     private static final String KEY_NOTE_UPDATED_AT = "updated_at";
@@ -62,6 +64,9 @@ public class TodoDatabaseHelper extends SQLiteOpenHelper {
     public static int statusActive = 10;
     public static int statusDone = 20;
     public static int statusFavourite = 30;
+
+    public static int typeNote = 0;
+    public static int typeTask = 1;
 
     public static synchronized TodoDatabaseHelper getInstance(Context context) {
         if (sInstance == null) {
@@ -86,6 +91,7 @@ public class TodoDatabaseHelper extends SQLiteOpenHelper {
                 "(" +
                 KEY_TASK_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + // Define a primary key
                 KEY_TASK_SERVER_ID + " INTEGER," +
+                KEY_TASK_NOTE_ID + " INTEGER," +
                 KEY_TASK_SYNC_STATUS + " INTEGER," +
                 KEY_TASK_NAME + " TEXT," +
                 KEY_TASK_STATUS + " INTEGER," +
@@ -102,6 +108,7 @@ public class TodoDatabaseHelper extends SQLiteOpenHelper {
                 KEY_NOTE_SYNC_STATUS + " INTEGER," +
                 KEY_NOTE_NAME + " TEXT," +
                 KEY_NOTE_TEXT + " TEXT," +
+                KEY_NOTE_TYPE + " TYPE," +
                 KEY_NOTE_STATUS + " INTEGER," +
                 KEY_NOTE_CREATED_AT + " int," +
                 KEY_NOTE_UPDATED_AT + " int" +
@@ -169,7 +176,6 @@ public class TodoDatabaseHelper extends SQLiteOpenHelper {
     // Delete all boards from table boards
     public static void deleteAllBoards(Context context) {
         Log.e(TAG, "Deleting all boards from table " + TABLE_BOARDS);
-
         TodoDatabaseHelper todoDatabaseHelper = new TodoDatabaseHelper(context);
         SQLiteDatabase db = todoDatabaseHelper.getWritableDatabase();
 
@@ -198,6 +204,9 @@ public class TodoDatabaseHelper extends SQLiteOpenHelper {
         if (task.getServer_id() != null) {
             values.put(KEY_TASK_SERVER_ID, task.getServer_id());
         }
+        if (task.getNote_id() != null) {
+            values.put(KEY_TASK_NOTE_ID, task.getNote_id());
+        }
         long id = db.insert(TABLE_TASKS, null, values);
         if (id != -1) {
             task = getTask(id);
@@ -210,6 +219,7 @@ public class TodoDatabaseHelper extends SQLiteOpenHelper {
     public Note addNote(Note note) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
+        values.put(KEY_NOTE_TYPE, note.getType());
         values.put(KEY_NOTE_SYNC_STATUS, note.getSync_status());
         values.put(KEY_NOTE_NAME, note.getName());
         values.put(KEY_NOTE_TEXT, note.getText());
@@ -268,7 +278,16 @@ public class TodoDatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_TASK_STATUS, task.getStatus());
         values.put(KEY_TASK_CREATED_AT, task.getCreated_at());
         values.put(KEY_TASK_UPDATED_AT, task.getUpdated_at());
-        long result = db.update(TABLE_TASKS, values, KEY_TASK_ID + " = ?", new String[] {String.valueOf(task.getId())});
+        db.update(TABLE_TASKS, values, KEY_TASK_ID + " = ?", new String[] {String.valueOf(task.getId())});
+    }
+
+    // Delete tasks in note
+    public void deleteNoteTasks(Integer note_id) {
+        Log.e("Here", "Deleting note tasks.");
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        db.execSQL("update " + TABLE_TASKS + " set " + KEY_TASK_STATUS + " = 0 where " + KEY_TASK_NOTE_ID + " = ?", new String[] {String.valueOf(note_id)});
+        db.close();
     }
 
     // Update note
@@ -278,13 +297,14 @@ public class TodoDatabaseHelper extends SQLiteOpenHelper {
         if (note.getServer_id() != null) {
             values.put(KEY_NOTE_SERVER_ID, note.getServer_id());
         }
+        values.put(KEY_NOTE_TYPE, note.getType());
         values.put(KEY_NOTE_SYNC_STATUS, note.getSync_status());
         values.put(KEY_NOTE_NAME, note.getName());
         values.put(KEY_NOTE_TEXT, note.getText());
         values.put(KEY_NOTE_STATUS, note.getStatus());
         values.put(KEY_NOTE_CREATED_AT, note.getCreated_at());
         values.put(KEY_NOTE_UPDATED_AT, note.getUpdated_at());
-        long result = db.update(TABLE_NOTES, values, KEY_NOTE_ID + " = ?", new String[] {String.valueOf(note.getId())});
+        db.update(TABLE_NOTES, values, KEY_NOTE_ID + " = ?", new String[] {String.valueOf(note.getId())});
     }
 
     // Update board
@@ -344,8 +364,10 @@ public class TodoDatabaseHelper extends SQLiteOpenHelper {
             if (cursor.moveToFirst()) {
                 Note note = new Note();
                 note.setId(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_ID)));
+                note.setServer_id(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_SERVER_ID)));
                 note.setName(cursor.getString(cursor.getColumnIndex(KEY_NOTE_NAME)));
                 note.setText(cursor.getString(cursor.getColumnIndex(KEY_NOTE_TEXT)));
+                note.setType(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_TYPE)));
                 note.setStatus(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_STATUS)));
                 note.setCreated_at(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_CREATED_AT)));
                 note.setUpdated_at(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_UPDATED_AT)));
@@ -353,6 +375,35 @@ public class TodoDatabaseHelper extends SQLiteOpenHelper {
             }
         } catch (Exception e) {
             Log.e(TAG, "Error while trying to get NOTE from database");
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
+        return null;
+    }
+
+    // Get note
+    @SuppressLint("Range")
+    public Note getNoteByServerId(Integer id) {
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor cursor = db.rawQuery("select * from " + TABLE_NOTES + " where " + KEY_NOTE_SERVER_ID + " = ? ", new String[] {String.valueOf(id)});
+
+        try {
+            if (cursor.moveToFirst()) {
+                Note note = new Note();
+                note.setId(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_ID)));
+                note.setServer_id(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_SERVER_ID)));
+                note.setName(cursor.getString(cursor.getColumnIndex(KEY_NOTE_NAME)));
+                note.setText(cursor.getString(cursor.getColumnIndex(KEY_NOTE_TEXT)));
+                note.setType(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_TYPE)));
+                note.setStatus(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_STATUS)));
+                note.setCreated_at(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_CREATED_AT)));
+                note.setUpdated_at(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_UPDATED_AT)));
+                return note;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error while trying to get note from database");
         } finally {
             if (cursor != null && !cursor.isClosed()) {
                 cursor.close();
@@ -430,6 +481,7 @@ public class TodoDatabaseHelper extends SQLiteOpenHelper {
                     note.setBoard_id(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_BOARD_ID)));
                     note.setName(cursor.getString(cursor.getColumnIndex(KEY_NOTE_NAME)));
                     note.setText(cursor.getString(cursor.getColumnIndex(KEY_NOTE_TEXT)));
+                    note.setType(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_TYPE)));
                     note.setStatus(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_STATUS)));
                     note.setCreated_at(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_CREATED_AT)));
                     note.setUpdated_at(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_UPDATED_AT)));
@@ -446,19 +498,88 @@ public class TodoDatabaseHelper extends SQLiteOpenHelper {
         return notes;
     }
 
-    // Get Active tasks
+    // Get Note tasks
     @SuppressLint("Range")
-    public ArrayList<Task> getActiveAndDoneTasks() {
+    public ArrayList<Task> getNoteTasks(Integer note_id) {
         ArrayList<Task> tasks = new ArrayList<>();
 
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery("select * from " + TABLE_TASKS + " where " + KEY_TASK_STATUS + " in (" + statusActive + ", " + statusDone + ") order by `status` ASC, `name` asc", null);
+        Cursor cursor = db.rawQuery("select * from " + TABLE_TASKS + " where " + KEY_TASK_NOTE_ID + " = ? AND " + KEY_TASK_STATUS + " in (" + statusActive + ", " + statusDone + ") order by `status` ASC, `name` asc", new String[] {String.valueOf(note_id)}, null);
         try {
             if (cursor.moveToFirst()) {
                 do {
                     Task task = new Task();
                     if (!cursor.isNull(cursor.getColumnIndex(KEY_TASK_SERVER_ID))) {
                         task.setServer_id(cursor.getInt(cursor.getColumnIndex(KEY_TASK_SERVER_ID)));
+                    }
+                    task.setId(cursor.getInt(cursor.getColumnIndex(KEY_TASK_ID)));
+                    task.setNote_id(cursor.getInt(cursor.getColumnIndex(KEY_TASK_NOTE_ID)));
+                    task.setName(cursor.getString(cursor.getColumnIndex(KEY_TASK_NAME)));
+                    task.setStatus(cursor.getInt(cursor.getColumnIndex(KEY_TASK_STATUS)));
+                    task.setCreated_at(cursor.getInt(cursor.getColumnIndex(KEY_TASK_CREATED_AT)));
+                    task.setUpdated_at(cursor.getInt(cursor.getColumnIndex(KEY_TASK_UPDATED_AT)));
+                    tasks.add(task);
+                } while(cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error while trying to get tasks from database");
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
+        return tasks;
+    }
+
+    // Get Note tasks for note view
+    @SuppressLint("Range")
+    public ArrayList<Task> getNoteTasksForView(Integer note_id) {
+        ArrayList<Task> tasks = new ArrayList<>();
+
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("select * from " + TABLE_TASKS + " where " + KEY_TASK_NOTE_ID + " = ? AND " + KEY_TASK_STATUS + " in (" + statusActive + ", " + statusDone + ") order by `status` ASC, `name` asc limit 4", new String[] {String.valueOf(note_id)}, null);
+        try {
+            if (cursor.moveToFirst()) {
+                do {
+                    Task task = new Task();
+                    if (!cursor.isNull(cursor.getColumnIndex(KEY_TASK_SERVER_ID))) {
+                        task.setServer_id(cursor.getInt(cursor.getColumnIndex(KEY_TASK_SERVER_ID)));
+                    }
+                    task.setId(cursor.getInt(cursor.getColumnIndex(KEY_TASK_ID)));
+                    task.setNote_id(cursor.getInt(cursor.getColumnIndex(KEY_TASK_NOTE_ID)));
+                    task.setName(cursor.getString(cursor.getColumnIndex(KEY_TASK_NAME)));
+                    task.setStatus(cursor.getInt(cursor.getColumnIndex(KEY_TASK_STATUS)));
+                    task.setCreated_at(cursor.getInt(cursor.getColumnIndex(KEY_TASK_CREATED_AT)));
+                    task.setUpdated_at(cursor.getInt(cursor.getColumnIndex(KEY_TASK_UPDATED_AT)));
+                    tasks.add(task);
+                } while(cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error while trying to get tasks from database");
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
+        return tasks;
+    }
+
+    // Get Active tasks
+    @SuppressLint("Range")
+    public ArrayList<Task> getActiveAndDoneTasks() {
+        ArrayList<Task> tasks = new ArrayList<>();
+
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("select * from " + TABLE_TASKS + " where " + KEY_TASK_NOTE_ID + " IS NULL AND " + KEY_TASK_STATUS + " in (" + statusActive + ", " + statusDone + ") order by `status` ASC, `name` asc", null);
+        try {
+            if (cursor.moveToFirst()) {
+                do {
+                    Task task = new Task();
+                    if (!cursor.isNull(cursor.getColumnIndex(KEY_TASK_SERVER_ID))) {
+                        task.setServer_id(cursor.getInt(cursor.getColumnIndex(KEY_TASK_SERVER_ID)));
+                    }
+                    if (!cursor.isNull(cursor.getColumnIndex(KEY_TASK_NOTE_ID))) {
+                        task.setServer_id(cursor.getInt(cursor.getColumnIndex(KEY_TASK_NOTE_ID)));
                     }
                     task.setId(cursor.getInt(cursor.getColumnIndex(KEY_TASK_ID)));
                     task.setName(cursor.getString(cursor.getColumnIndex(KEY_TASK_NAME)));
@@ -484,7 +605,7 @@ public class TodoDatabaseHelper extends SQLiteOpenHelper {
         ArrayList<Task> tasks = new ArrayList<>();
 
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery("select * from " + TABLE_TASKS + " where " + KEY_TASK_STATUS + " = ? ", new String[] {String.valueOf(0)});
+        Cursor cursor = db.rawQuery("select * from " + TABLE_TASKS + " where " + KEY_TASK_STATUS + " = ? and " + KEY_TASK_NOTE_ID + " is NULL", new String[] {String.valueOf(0)});
         try {
             if (cursor.moveToFirst()) {
                 do {
@@ -527,6 +648,7 @@ public class TodoDatabaseHelper extends SQLiteOpenHelper {
                     note.setId(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_ID)));
                     note.setName(cursor.getString(cursor.getColumnIndex(KEY_NOTE_NAME)));
                     note.setText(cursor.getString(cursor.getColumnIndex(KEY_NOTE_TEXT)));
+                    note.setType(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_TYPE)));
                     note.setStatus(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_STATUS)));
                     note.setCreated_at(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_CREATED_AT)));
                     note.setUpdated_at(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_UPDATED_AT)));
@@ -560,6 +682,7 @@ public class TodoDatabaseHelper extends SQLiteOpenHelper {
                     note.setId(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_ID)));
                     note.setName(cursor.getString(cursor.getColumnIndex(KEY_NOTE_NAME)));
                     note.setText(cursor.getString(cursor.getColumnIndex(KEY_NOTE_TEXT)));
+                    note.setType(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_TYPE)));
                     note.setStatus(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_STATUS)));
                     note.setCreated_at(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_CREATED_AT)));
                     note.setUpdated_at(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_UPDATED_AT)));
@@ -590,6 +713,7 @@ public class TodoDatabaseHelper extends SQLiteOpenHelper {
                     note.setId(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_ID)));
                     note.setName(cursor.getString(cursor.getColumnIndex(KEY_NOTE_NAME)));
                     note.setText(cursor.getString(cursor.getColumnIndex(KEY_NOTE_TEXT)));
+                    note.setType(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_TYPE)));
                     note.setStatus(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_STATUS)));
                     note.setCreated_at(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_CREATED_AT)));
                     note.setUpdated_at(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_UPDATED_AT)));
@@ -620,6 +744,7 @@ public class TodoDatabaseHelper extends SQLiteOpenHelper {
                     note.setId(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_ID)));
                     note.setName(cursor.getString(cursor.getColumnIndex(KEY_NOTE_NAME)));
                     note.setText(cursor.getString(cursor.getColumnIndex(KEY_NOTE_TEXT)));
+                    note.setType(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_TYPE)));
                     note.setStatus(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_STATUS)));
                     note.setCreated_at(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_CREATED_AT)));
                     note.setUpdated_at(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_UPDATED_AT)));
@@ -651,6 +776,11 @@ public class TodoDatabaseHelper extends SQLiteOpenHelper {
                         task.setServer_id(null);
                     } else {
                         task.setServer_id(cursor.getInt(cursor.getColumnIndex(KEY_TASK_SERVER_ID)));
+                    }
+                    if (cursor.isNull(cursor.getColumnIndex(KEY_TASK_NOTE_ID))) {
+                        task.setNote_id(null);
+                    } else {
+                        task.setNote_id(cursor.getInt(cursor.getColumnIndex(KEY_TASK_NOTE_ID)));
                     }
                     task.setId(cursor.getInt(cursor.getColumnIndex(KEY_TASK_ID)));
                     task.setSync_status(cursor.getInt(cursor.getColumnIndex(KEY_TASK_SYNC_STATUS)));
@@ -696,6 +826,7 @@ public class TodoDatabaseHelper extends SQLiteOpenHelper {
                     note.setSync_status(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_SYNC_STATUS)));
                     note.setName(cursor.getString(cursor.getColumnIndex(KEY_NOTE_NAME)));
                     note.setText(cursor.getString(cursor.getColumnIndex(KEY_NOTE_TEXT)));
+                    note.setType(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_TYPE)));
                     note.setStatus(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_STATUS)));
                     note.setCreated_at(cursor.getLong(cursor.getColumnIndex(KEY_NOTE_CREATED_AT)));
                     note.setUpdated_at(cursor.getLong(cursor.getColumnIndex(KEY_NOTE_UPDATED_AT)));
@@ -792,6 +923,7 @@ public class TodoDatabaseHelper extends SQLiteOpenHelper {
                     note.setId(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_ID)));
                     note.setName(cursor.getString(cursor.getColumnIndex(KEY_NOTE_NAME)));
                     note.setText(cursor.getString(cursor.getColumnIndex(KEY_NOTE_TEXT)));
+                    note.setType(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_TYPE)));
                     note.setStatus(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_STATUS)));
                     note.setCreated_at(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_CREATED_AT)));
                     note.setUpdated_at(cursor.getInt(cursor.getColumnIndex(KEY_NOTE_UPDATED_AT)));

@@ -33,7 +33,6 @@ import com.example.todo.adapters.NotesAdapter;
 import com.example.todo.database.TodoDatabaseHelper;
 import com.example.todo.models.Note;
 import com.example.todo.models.Workspace;
-import com.example.todo.ui.note.CreateNoteActivity;
 import com.example.todo.ui.note.NoteActivity;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -75,7 +74,8 @@ public class WorkspaceActivity extends AppCompatActivity implements NotesAdapter
         extendedFloatingActionButton = findViewById(R.id.workspace_extended_fab);
         extendedFloatingActionButton.setText("New note");
         extendedFloatingActionButton.setOnClickListener(view -> {
-            Intent intent = new Intent(this, CreateNoteActivity.class);
+            onNoteCreate();
+            Intent intent = new Intent(this, NoteActivity.class);
             startActivity(intent);
         });
     }
@@ -248,6 +248,22 @@ public class WorkspaceActivity extends AppCompatActivity implements NotesAdapter
 
         MainActivity.startSync();
         finish();
+    }
+
+    private void onNoteCreate() {
+        Note newNote = new Note();
+        newNote.setName("");
+        newNote.setText("");
+        newNote.setType(TodoDatabaseHelper.typeNote);
+        newNote.setStatus(TodoDatabaseHelper.statusActive);
+        newNote.setSync_status(1);
+        if (MainActivity.selectedWorkspace != null) {
+            newNote.setBoard_id(MainActivity.selectedWorkspace.getId());
+        }
+        newNote.setCreated_at(0);
+        newNote.setUpdated_at(0);
+        MainActivity.selectedNote = todoDatabaseHelper.addNote(newNote);
+        MainActivity.startSync();
     }
 
     public void onNoteClick(int position) {

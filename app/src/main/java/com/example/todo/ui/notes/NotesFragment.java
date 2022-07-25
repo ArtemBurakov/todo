@@ -29,7 +29,6 @@ import com.example.todo.R;
 import com.example.todo.adapters.NotesAdapter;
 import com.example.todo.database.TodoDatabaseHelper;
 import com.example.todo.models.Note;
-import com.example.todo.ui.note.CreateNoteActivity;
 import com.example.todo.ui.note.NoteActivity;
 
 import java.util.ArrayList;
@@ -80,7 +79,8 @@ public class NotesFragment extends Fragment implements NotesAdapter.OnNoteListen
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), CreateNoteActivity.class);
+                onNoteCreate();
+                Intent intent = new Intent(getActivity(), NoteActivity.class);
                 startActivity(intent);
             }
         });
@@ -146,7 +146,6 @@ public class NotesFragment extends Fragment implements NotesAdapter.OnNoteListen
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-
                 if (!recyclerView.canScrollVertically(-1) && newState==RecyclerView.SCROLL_STATE_IDLE) {
                     floatingActionButton.extend();
                 } else {
@@ -165,6 +164,22 @@ public class NotesFragment extends Fragment implements NotesAdapter.OnNoteListen
                 layoutManager.scrollToPositionWithOffset(0, 0);
             }
         }
+    }
+
+    private void onNoteCreate() {
+        Note newNote = new Note();
+        newNote.setName("");
+        newNote.setText("");
+        newNote.setType(TodoDatabaseHelper.typeNote);
+        newNote.setStatus(TodoDatabaseHelper.statusActive);
+        newNote.setSync_status(1);
+        if (MainActivity.selectedWorkspace != null) {
+            newNote.setBoard_id(MainActivity.selectedWorkspace.getId());
+        }
+        newNote.setCreated_at(0);
+        newNote.setUpdated_at(0);
+        MainActivity.selectedNote = todoDatabaseHelper.addNote(newNote);
+        MainActivity.startSync();
     }
 
     public void onNoteClick(int position) {
